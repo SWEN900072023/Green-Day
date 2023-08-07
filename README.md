@@ -1,6 +1,6 @@
 # Music Events System - Green Day
 
-It is the project repository for the team Green Day in SWEN90007 Software Design and Architecture of 2023 Semester 2. During the project, we will implement an online music events system consisting of a React application and a Java web server.
+It is the project repository for the team Green Day in SWEN90007 Software Design and Architecture. During the project, the team will implement an online music events system consisting of a React application and a Java web server.
 
 ## Team Overview
 
@@ -13,10 +13,17 @@ The team comprises four Master of Software Engineering students from the Univers
 
 ## Change Log
 
+| Date          | Change Log                       |
+| ------------- | -------------------------------- |
+| 7 August 2023 | Add Week 2 team meeting minutes. |
+| 4 August 2023 | Add an initial README.md.        |
+
 ## Repository Structure
 
-| Directory | Content                                                      |
-| --------- | ------------------------------------------------------------ |
-| docs/     | All the process and product documents generated during the project |
-| src/      | Source code                                                  |
+| Directory            | Content                                                      |
+| -------------------- | ------------------------------------------------------------ |
+| docs/                | All the process and product documents generated during the project |
+| docs/part1           | The submission for Assignment Part 1                         |
+| docs/meeting-minutes | All the weekly team meeting minutes                          |
+| src/                 | Source code                                                  |
 
