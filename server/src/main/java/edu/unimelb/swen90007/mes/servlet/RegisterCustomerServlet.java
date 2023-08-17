@@ -32,6 +32,7 @@ public class RegisterCustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String requestString = IOUtils.toString(request.getReader());
+        System.out.println(request.getReader().readLine());
         JSONObject requestData = JSON.parseObject(requestString);
         JSONObject responseData = new JSONObject();
 
