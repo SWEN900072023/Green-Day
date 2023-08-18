@@ -26,14 +26,13 @@ public class RegisterCustomerServlet extends HttpServlet {
 
         DBConnection db = new DBConnection();
         String sql = "INSERT INTO users (email, password, first_name, last_name, type)\n" +
-                "VALUES (?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, 'C')";
 
         try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
             ps.setString(1, requestData.getString("email"));
             ps.setString(2, requestData.getString("password"));
             ps.setString(3, requestData.getString("firstName"));
             ps.setString(4, requestData.getString("lastName"));
-            ps.setInt(5, requestData.getInteger("type"));
             ps.executeUpdate();
             responseData.put("message", "success");
             response.setStatus(200);
