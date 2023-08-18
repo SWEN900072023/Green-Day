@@ -2,17 +2,27 @@ import "./signup.scss";
 import Form from "../form-input/form-input";
 import Button from "../button/button";
 import { useState } from "react";
+import Axiosapi from "./../axiosAPI/api";
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
+  const signUp = async (e) => {
+    e.preventDefault();
+    await Axiosapi.post("/register", {
+      email,
+      lastName,
+      firstName,
+      password,
+    }).then((res) => console.log(res));
+  };
   return (
     // <div className="container">
     <div className="sign-up-container">
       <h1>Don't have any account?</h1>
       <h2>Sign up with your account!</h2>
-      <form onSubmit={console.log("click to sign up")}>
+      <form onSubmit={signUp}>
         <Form
           label="FirstName"
           type="text"

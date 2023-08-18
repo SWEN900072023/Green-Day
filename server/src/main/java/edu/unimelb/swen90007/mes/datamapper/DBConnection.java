@@ -16,7 +16,7 @@ public class DBConnection {
         try {
             Class.forName("org.postgresql.Driver");
             this.connection = DriverManager.getConnection(
-                    System.getProperty("jdbc.uri"),
+                    System.getProperty("jdbc.url"),
                     System.getProperty("jdbc.user"),
                     System.getProperty("jdbc.password")
             );
