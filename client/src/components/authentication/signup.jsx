@@ -1,7 +1,12 @@
 import "./signup.scss";
 import Form from "../form-input/form-input";
 import Button from "../button/button";
+import { useState } from "react";
 const Signup = () => {
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
   return (
     // <div className="container">
     <div className="sign-up-container">
@@ -12,41 +17,33 @@ const Signup = () => {
           label="FirstName"
           type="text"
           required
-          //   onChange={handleChange}
           name="FirstName"
-          value=""
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
         ></Form>
         <Form
           label="LastName"
           type="text"
           required
-          //   onChange={handleChange}
+          onChange={(e) => setLastName(e.target.value)}
           name="LastName"
-          value=""
+          value={lastName}
         ></Form>
         <Form
           label="Email"
           type="email"
           required
-          //   onChange={handleChange}
+          onChange={(e) => setEmail(e.target.value)}
           name="email"
-          value=""
+          value={email}
         ></Form>
         <Form
           label="Password"
           type="password"
           required
-          //   onChange={handleChange}
+          onChange={(e) => setPassword(e.target.value)}
           name="password"
-          value=""
-        ></Form>
-        <Form
-          label="ConfirmPassword"
-          type="password"
-          required
-          //   onChange={handleChange}
-          name="confirmPassword"
-          value=""
+          value={password}
         ></Form>
         <Button type="submit" buttonType="google">
           Sign up
