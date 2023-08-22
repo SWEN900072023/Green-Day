@@ -1,6 +1,6 @@
 # Music Events System - Green Day
 
-It is the project repository for the team Green Day in SWEN90007 Software Design and Architecture. During the project, the team will implement an online music events system named MES consisting of a React application and a Java web server and deploy it to Render.
+This is the project repository for the team Green Day in SWEN90007 Software Design and Architecture. During the project, the team will implement an online music events system aka MES consisting of a React application and a Java web server and deploy it to Render.
 
 ## Team Overview
 
@@ -21,13 +21,16 @@ The following three links contain the page structure for each type of user.
 
 ## Change Log
 
-| Date           | Change Log                                                   |
-| -------------- | ------------------------------------------------------------ |
-| 16 August 2023 | Add init.sql and drop.sql.                                   |
-| 15 August 2023 | Add external links about page structures.<br/>Add Week 4 team meeting minutes. |
-| 11 August 2023 | Add Part 1A submission. <br />Add Week 3 team meeting minutes. |
-| 7 August 2023  | Add Week 2 team meeting minutes.                             |
-| 4 August 2023  | Add an initial README.md.                                    |
+| Date           | Change Log                                                |
+| ----------- | ------------------------------------------------------------ |
+| 20 Aug 2023 | Deploy MES on Render                                         |
+| 19 Aug 2023 | Develop customer signup page;<br/>Integrate UI with server app |
+| 18 Aug 2023 | Develop runnable server architecture with customer registation API |
+| 16 Aug 2023 | Setup database                                               |
+| 15 Aug 2023 | Add external links about page structures;<br/>Add Week 4 team meeting minutes |
+| 11 Aug 2023 | Add Part 1A submission;<br/>Add Week 3 team meeting minutes |
+| 7 Aug 2023  | Add Week 2 team meeting minutes                              |
+| 4 Aug 2023  | Add an initial README.md                                     |
 
 ## Repository Structure
 
