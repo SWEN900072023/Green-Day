@@ -3,11 +3,11 @@ package edu.unimelb.swen90007.mes.model;
 import java.util.List;
 
 public abstract class User {
-    private final int id;
     private final String email;
     private final String password;
     private final String firstName;
     private final String lastName;
+    private int id;
 
     public User(int id, String email, String password, String firstName, String lastName) {
         this.id = id;
@@ -21,8 +21,12 @@ public abstract class User {
         return null;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
+    }
+
+    public void setID(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
