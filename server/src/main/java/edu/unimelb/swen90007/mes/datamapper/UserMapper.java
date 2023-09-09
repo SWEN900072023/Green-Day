@@ -44,6 +44,11 @@ public final class UserMapper {
         preparedStatement.setString(3, firstName);
         preparedStatement.setString(4, lastName);
         preparedStatement.setString(5, type);
+        preparedStatement.executeUpdate();
+
+        sql = "SELECT id FROM users WHERE email = ?";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, email);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
@@ -56,6 +61,13 @@ public final class UserMapper {
         }
     }
 
+    /**
+     * Check if the user already exists.
+     *
+     * @param email the email received from the client request
+     * @return a boolean indicating whether the user exists
+     * @throws SQLException if some error occurs while interacting with the database
+     */
     private static boolean doesUserExist(String email) throws SQLException {
         String sql = "SELECT * FROM users WHERE email = ?";
         Connection connection = DBConnection.getConnection();
@@ -86,6 +98,7 @@ public final class UserMapper {
             String firstName = resultSet.getString("first_name");
             String lastName = resultSet.getString("last_name");
             String type = resultSet.getString("type");
+            type = type.trim();
 
             if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
                 users.add(new EventPlanner(id, email, password, firstName, lastName));
@@ -122,15 +135,31 @@ public final class UserMapper {
             String firstName = resultSet.getString("first_name");
             String lastName = resultSet.getString("last_name");
             String type = resultSet.getString("type");
+            type = type.trim();
 
-            if (type.equalsIgnoreCase(Administrator.class.getSimpleName()))
+            if (type.equals(Administrator.class.getSimpleName()))
                 user = new Administrator(id, email, password, firstName, lastName);
-            else if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
+            else if (type.equals(EventPlanner.class.getSimpleName()))
                 user = new EventPlanner(id, email, password, firstName, lastName);
-            else if (type.equalsIgnoreCase(Customer.class.getSimpleName()))
+            else if (type.equals(Customer.class.getSimpleName()))
                 user = new Customer(id, email, password, firstName, lastName);
         }
 
         return user;
+    }
+
+    /**
+     * Delete a user by ID.
+     *
+     * @param id the user ID
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static void deleteByID(int id) throws SQLException {
+        String sql = "DELETE FROM users WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+        logger.info("Existing User Deleted [id=" + id + "]");
     }
 }
