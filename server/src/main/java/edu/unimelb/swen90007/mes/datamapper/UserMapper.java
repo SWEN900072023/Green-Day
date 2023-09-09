@@ -6,10 +6,7 @@ import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +35,7 @@ public final class UserMapper {
 
         String sql = "INSERT INTO users (email, password, first_name, last_name, type) Values (?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, email);
         preparedStatement.setString(2, password);
         preparedStatement.setString(3, firstName);
@@ -46,19 +43,14 @@ public final class UserMapper {
         preparedStatement.setString(5, type);
         preparedStatement.executeUpdate();
 
-        sql = "SELECT id FROM users WHERE email = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, email);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        if (generatedKeys.next())
+            user.setID(generatedKeys.getInt("id"));
 
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            user.setID(id);
-            if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
-                logger.info("New Event Planner Created [id=" + id + "]");
-            else
-                logger.info("New Customer Created [id=" + id + "]");
-        }
+        if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
+            logger.info("New Event Planner Created [id=" + user.getID() + "]");
+        else
+            logger.info("New Customer Created [id=" + user.getID() + "]");
     }
 
     /**
@@ -104,6 +96,8 @@ public final class UserMapper {
                 users.add(new EventPlanner(id, email, password, firstName, lastName));
             else if (type.equalsIgnoreCase(Customer.class.getSimpleName()))
                 users.add(new Customer(id, email, password, firstName, lastName));
+
+            logger.info("User Loaded [id=" + id + "]");
         }
 
         return users;
@@ -143,6 +137,8 @@ public final class UserMapper {
                 user = new EventPlanner(id, email, password, firstName, lastName);
             else if (type.equals(Customer.class.getSimpleName()))
                 user = new Customer(id, email, password, firstName, lastName);
+
+            logger.info("User Loaded [id=" + id + "]");
         }
 
         return user;
