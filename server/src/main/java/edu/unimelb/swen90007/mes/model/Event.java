@@ -4,32 +4,32 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public class Event {
-    private final int id;
-    private final List<EventPlanner> eventPlanners;
     private final List<Section> sections;
+    private int id;
     private String title;
     private String artist;
     private Venue venue;
-    private OffsetDateTime datetime;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
     private String status;
 
-    public Event(int id, List<EventPlanner> eventPlanners, List<Section> sections, String title, String artist, Venue venue, OffsetDateTime datetime, String status) {
+    public Event(int id, List<Section> sections, String title, String artist, Venue venue, OffsetDateTime startTime, OffsetDateTime endTime, String status) {
         this.id = id;
-        this.eventPlanners = eventPlanners;
         this.sections = sections;
         this.title = title;
         this.artist = artist;
         this.venue = venue;
-        this.datetime = datetime;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.status = status;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 
-    public List<EventPlanner> getEventPlanners() {
-        return eventPlanners;
+    public void setID(int id) {
+        this.id = id;
     }
 
     public List<Section> getSections() {
@@ -60,12 +60,12 @@ public class Event {
         this.venue = venue;
     }
 
-    public OffsetDateTime getDatetime() {
-        return datetime;
+    public OffsetDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setDatetime(OffsetDateTime datetime) {
-        this.datetime = datetime;
+    public void setStartTime(OffsetDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public String getStatus() {
@@ -74,5 +74,13 @@ public class Event {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public OffsetDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(OffsetDateTime endTime) {
+        this.endTime = endTime;
     }
 }

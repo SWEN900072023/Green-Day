@@ -1,8 +1,8 @@
 package edu.unimelb.swen90007.mes.model;
 
 public class Section {
-    private final int id;
-    private final Event event;
+    private int id;
+    private Event event;
     private String name;
     private Money money;
     private int capacity;
@@ -17,12 +17,20 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
+    }
+
+    public void setID(int id) {
+        this.id = id;
     }
 
     public Event getEvent() {
         return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public String getName() {
