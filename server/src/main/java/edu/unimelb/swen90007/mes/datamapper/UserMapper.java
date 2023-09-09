@@ -26,7 +26,7 @@ public final class UserMapper {
      * @throws SQLException               if some error occurs while interacting with the database
      * @throws UserAlreadyExistsException if the user already exists
      */
-    public static void createUser(User user) throws SQLException, UserAlreadyExistsException {
+    public static void create(User user) throws SQLException, UserAlreadyExistsException {
         String email = user.getEmail();
         if (doesUserExist(email))
             throw new UserAlreadyExistsException();

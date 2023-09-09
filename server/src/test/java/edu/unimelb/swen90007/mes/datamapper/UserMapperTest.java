@@ -19,9 +19,9 @@ class UserMapperTest {
         String lastName = "Chen";
 
         EventPlanner eventPlanner = new EventPlanner(id, email, password, firstName, lastName);
-        UserMapper.createUser(eventPlanner);
+        UserMapper.create(eventPlanner);
 
-        Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.createUser(eventPlanner));
+        Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.create(eventPlanner));
 
         EventPlanner actualEventPlanner = (EventPlanner) UserMapper.loadByEmail(email);
         Assertions.assertEquals(eventPlanner.getID(), actualEventPlanner.getID());
@@ -42,9 +42,9 @@ class UserMapperTest {
         String lastName = "Chen";
 
         Customer customer = new Customer(id, email, password, firstName, lastName);
-        UserMapper.createUser(customer);
+        UserMapper.create(customer);
 
-        Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.createUser(customer));
+        Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.create(customer));
 
         Customer actualCustomer = (Customer) UserMapper.loadByEmail(email);
         Assertions.assertEquals(customer.getID(), actualCustomer.getID());
