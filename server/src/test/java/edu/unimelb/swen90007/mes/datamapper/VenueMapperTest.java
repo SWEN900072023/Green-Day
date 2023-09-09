@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 class VenueMapperTest {
     @Test
-    void create() throws SQLException {
+    void testCreate() throws SQLException {
         int id = 0;
         String name = "Wonderful Venue";
         String address = "388 Queensberry St, North Melbourne, 3051";
