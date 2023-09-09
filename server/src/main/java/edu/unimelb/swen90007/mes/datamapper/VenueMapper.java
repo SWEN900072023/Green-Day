@@ -5,6 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data mapper that sits between the domain objects and the table venues in the relational database.
@@ -32,6 +34,27 @@ public final class VenueMapper {
             venue.setID(generatedKeys.getInt("id"));
 
         logger.info("New Venue Created [id=" + venue.getID() + "]");
+    }
+
+    public static List<Venue> loadAll() throws SQLException {
+        List<Venue> venues = new ArrayList<>();
+
+        String sql = "SELECT * FROM venues";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            String name = resultSet.getString("name");
+            String address = resultSet.getString("address");
+            int capacity = resultSet.getInt("capacity");
+
+            venues.add(new Venue(id, name, address, capacity));
+            logger.info("Venue Loaded [id=" + id + "]");
+        }
+
+        return venues;
     }
 
     /**
