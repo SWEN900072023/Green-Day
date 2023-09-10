@@ -61,7 +61,7 @@ class OrderMapperTest {
     }
 
     @Test
-    void testCreate() throws SQLException {
+    void test() throws SQLException {
         int id = 0;
         List<Section> sections = event.getSections();
         Section section1 = sections.get(0);
@@ -77,12 +77,13 @@ class OrderMapperTest {
 
         Order order = new Order(id, customer, subOrders, OffsetDateTime.now(), status);
         OrderMapper.create(customer.getID(), order);
+        OrderMapper.cancel(order.getID());
 
         List<Order> actualOrders = OrderMapper.loadByCustomerID(customer.getID());
         Order actualOrder = actualOrders.get(0);
         Assertions.assertEquals(order.getID(), actualOrder.getID());
         Assertions.assertEquals(customer.getID(), actualOrder.getCustomer().getID());
-        Assertions.assertEquals(status, order.getStatus());
+        Assertions.assertEquals("Cancelled", actualOrder.getStatus());
 
         List<SubOrder> actualSubOrders = actualOrder.getSubOrders();
 
