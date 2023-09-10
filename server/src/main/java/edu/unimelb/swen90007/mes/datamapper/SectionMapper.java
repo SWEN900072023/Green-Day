@@ -55,6 +55,10 @@ public final class SectionMapper {
         return sections;
     }
 
+    public static Section loadByID(int id) {
+        return null;
+    }
+
     public static void update(Section section) {
 
     }

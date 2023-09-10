@@ -4,36 +4,34 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public class Order {
-    private final int id;
     private final Customer customer;
-    private final Event event;
-    private final List<Ticket> tickets;
+    private final List<SubOrder> subOrders;
     private final OffsetDateTime createdAt;
+    private int id;
     private String status;
 
-    public Order(int id, Customer customer, Event event, List<Ticket> tickets, OffsetDateTime createdAt, String status) {
+    public Order(int id, Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
         this.id = id;
         this.customer = customer;
-        this.event = event;
-        this.tickets = tickets;
+        this.subOrders = subOrders;
         this.createdAt = createdAt;
         this.status = status;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
+    }
+
+    public void setID(int id) {
+        this.id = id;
     }
 
     public Customer getCustomer() {
         return customer;
     }
 
-    public Event getEvent() {
-        return event;
-    }
-
-    public List<Ticket> getTickets() {
-        return tickets;
+    public List<SubOrder> getSubOrders() {
+        return subOrders;
     }
 
     public OffsetDateTime getCreatedAt() {
