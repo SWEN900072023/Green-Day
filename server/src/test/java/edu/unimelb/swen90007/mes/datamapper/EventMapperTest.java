@@ -30,12 +30,12 @@ class EventMapperTest {
 
     @AfterAll
     static void deleteEventPlannerAndVenue() throws SQLException {
-        UserMapper.deleteByID(eventPlanner.getID());
+        UserMapper.delete(eventPlanner.getID());
         VenueMapper.delete(venue.getID());
     }
 
     @Test
-    void create() throws SQLException {
+    void testCreate() throws SQLException {
         int id = 0;
         String title = "Mock Event";
         String artist = "Mock Artist";
@@ -80,17 +80,5 @@ class EventMapperTest {
 
         SectionMapper.delete(section.getID());
         EventMapper.delete(event.getID(), eventPlanner.getID());
-    }
-
-    @Test
-    void loadByEventPlanner() {
-    }
-
-    @Test
-    void loadByPattern() {
-    }
-
-    @Test
-    void update() {
     }
 }

@@ -32,13 +32,25 @@ public final class SectionMapper {
     }
 
     public static List<Section> loadByEventID(int eventID) throws SQLException {
-        List<Section> sections = new ArrayList<>();
-
         String sql = "SELECT * FROM sections WHERE event_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, eventID);
         ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet);
+    }
+
+    public static Section loadByID(int id) throws SQLException {
+        String sql = "SELECT * FROM sections WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet).get(0);
+    }
+
+    private static List<Section> load(ResultSet resultSet) throws SQLException {
+        List<Section> sections = new ArrayList<>();
 
         while (resultSet.next()) {
             int id = resultSet.getInt("id");
@@ -55,12 +67,14 @@ public final class SectionMapper {
         return sections;
     }
 
-    public static Section loadByID(int id) {
-        return null;
-    }
-
-    public static void update(Section section) {
-
+    public static void decreaseRemainingTickets(int id, int quantity) throws SQLException {
+        String sql = "UPDATE sections SET remaining_tickets = remaining_tickets - ? WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, quantity);
+        preparedStatement.setInt(2, id);
+        preparedStatement.executeUpdate();
+        logger.info("Remaining Tickets Decreased By " + quantity + " [id=" + id + "]");
     }
 
     public static void delete(int id) throws SQLException {

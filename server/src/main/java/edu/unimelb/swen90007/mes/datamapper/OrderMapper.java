@@ -30,15 +30,7 @@ public final class OrderMapper {
 
         List<SubOrder> subOrders = order.getSubOrders();
         for (SubOrder subOrder : subOrders) {
-            sql = "INSERT INTO order_sections (order_id, section_id, quantity, unit_price, currency) VALUES (?, ?, ?, ?, ?)";
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, order.getID());
-            preparedStatement.setInt(2, subOrder.getSection().getID());
-            preparedStatement.setInt(3, subOrder.getQuantity());
-            preparedStatement.setBigDecimal(4, subOrder.getMoney().getUnitPrice());
-            preparedStatement.setString(5, subOrder.getMoney().getCurrency());
-            preparedStatement.executeUpdate();
-            logger.info("New Association Created [customer_id=" + customerID + "], [section_id=" + subOrder.getSection().getID() + "]");
+            SubOrderMapper.create(order.getID(), subOrder);
         }
     }
 
@@ -58,7 +50,7 @@ public final class OrderMapper {
             int orderID = resultSet.getInt("id");
             int customerID = resultSet.getInt("customer_id");
             OffsetDateTime createdAt = resultSet.getObject("created_at", OffsetDateTime.class);
-            String status = resultSet.getString("status");
+            String status = resultSet.getString("status").trim();
 
             Customer customer = new Customer(customerID, null, null, null, null);
             List<SubOrder> subOrders = SubOrderMapper.loadByOrderID(orderID);

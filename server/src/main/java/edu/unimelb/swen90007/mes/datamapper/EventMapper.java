@@ -40,19 +40,8 @@ public final class EventMapper {
         List<Section> sections = event.getSections();
         for (Section section : sections) {
             SectionMapper.create(section);
+            section.setEvent(event);
         }
-    }
-
-    public static List<Event> loadAll() {
-        return null;
-    }
-
-    public static List<Event> loadByEventPlanner(int eventPlannerID) {
-        return null;
-    }
-
-    public static List<Event> loadByPattern(String pattern) {
-        return null;
     }
 
     public static Event loadByID(int eventID) throws SQLException {
@@ -84,10 +73,6 @@ public final class EventMapper {
         }
 
         return event;
-    }
-
-    public static void update(Event event) {
-
     }
 
     public static void delete(int eventID, int plannerID) throws SQLException {

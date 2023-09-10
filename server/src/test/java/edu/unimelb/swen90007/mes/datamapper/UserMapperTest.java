@@ -30,7 +30,7 @@ class UserMapperTest {
         Assertions.assertEquals(firstName, actualEventPlanner.getFirstName());
         Assertions.assertEquals(lastName, actualEventPlanner.getLastName());
 
-        UserMapper.deleteByID(eventPlanner.getID());
+        UserMapper.delete(eventPlanner.getID());
     }
 
     @Test
@@ -53,6 +53,6 @@ class UserMapperTest {
         Assertions.assertEquals(firstName, actualCustomer.getFirstName());
         Assertions.assertEquals(lastName, actualCustomer.getLastName());
 
-        UserMapper.deleteByID(customer.getID());
+        UserMapper.delete(customer.getID());
     }
 }

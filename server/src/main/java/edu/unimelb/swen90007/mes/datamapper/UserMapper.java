@@ -150,7 +150,7 @@ public final class UserMapper {
      * @param id the user ID
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static void deleteByID(int id) throws SQLException {
+    public static void delete(int id) throws SQLException {
         String sql = "DELETE FROM users WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

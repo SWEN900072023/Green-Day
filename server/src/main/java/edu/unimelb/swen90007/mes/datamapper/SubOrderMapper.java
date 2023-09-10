@@ -17,6 +17,21 @@ import java.util.List;
 public final class SubOrderMapper {
     private static final Logger logger = LogManager.getLogger(SubOrderMapper.class);
 
+    public static void create(int orderID, SubOrder subOrder) throws SQLException {
+        String sql = "INSERT INTO order_sections (order_id, section_id, quantity, unit_price, currency) VALUES (?, ?, ?, ?, ?)";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, orderID);
+        preparedStatement.setInt(2, subOrder.getSection().getID());
+        preparedStatement.setInt(3, subOrder.getQuantity());
+        preparedStatement.setBigDecimal(4, subOrder.getMoney().getUnitPrice());
+        preparedStatement.setString(5, subOrder.getMoney().getCurrency());
+        preparedStatement.executeUpdate();
+        logger.info("New Association Created [order_id=" + orderID + "], [section_id=" + subOrder.getSection().getID() + "]");
+
+        SectionMapper.decreaseRemainingTickets(subOrder.getSection().getID(), subOrder.getQuantity());
+    }
+
     public static List<SubOrder> loadByOrderID(int orderID) throws SQLException {
         List<SubOrder> subOrders = new ArrayList<>();
 
@@ -30,7 +45,7 @@ public final class SubOrderMapper {
             int sectionID = resultSet.getInt("section_id");
             int quantity = resultSet.getInt("quantity");
             BigDecimal unitPrice = resultSet.getBigDecimal("unit_price");
-            String currency = resultSet.getString("currency");
+            String currency = resultSet.getString("currency").trim();
 
             Section section = SectionMapper.loadByID(sectionID);
             Money money = new Money(unitPrice, currency);
