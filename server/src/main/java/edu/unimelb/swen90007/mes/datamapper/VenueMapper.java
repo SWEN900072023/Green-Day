@@ -36,13 +36,45 @@ public final class VenueMapper {
         logger.info("New Venue Created [id=" + venue.getID() + "]");
     }
 
+    /**
+     * Load all venues.
+     *
+     * @return the list of all venues
+     * @throws SQLException if some error occurs while interacting with the database
+     */
     public static List<Venue> loadAll() throws SQLException {
-        List<Venue> venues = new ArrayList<>();
-
         String sql = "SELECT * FROM venues";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet);
+    }
+
+    /**
+     * Load a venue by ID.
+     *
+     * @param id the venue ID
+     * @return a venue object
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static Venue loadByID(int id) throws SQLException {
+        String sql = "SELECT * FROM venues WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet).get(0);
+    }
+
+    /**
+     * Load a list of venues given the ResultSet object.
+     *
+     * @param resultSet a ResultSet object
+     * @return a list of venues
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    private static List<Venue> load(ResultSet resultSet) throws SQLException {
+        List<Venue> venues = new ArrayList<>();
 
         while (resultSet.next()) {
             int id = resultSet.getInt("id");
@@ -55,34 +87,6 @@ public final class VenueMapper {
         }
 
         return venues;
-    }
-
-    /**
-     * Load a venue by ID.
-     *
-     * @param id the venue ID
-     * @return a venue object
-     * @throws SQLException if some error occurs while interacting with the database
-     */
-    public static Venue loadByID(int id) throws SQLException {
-        Venue venue = null;
-
-        String sql = "SELECT * FROM venues WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, id);
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next()) {
-            String name = resultSet.getString("name");
-            String address = resultSet.getString("address");
-            int capacity = resultSet.getInt("capacity");
-
-            venue = new Venue(id, name, address, capacity);
-            logger.info("Venue Loaded [id=" + id + "]");
-        }
-
-        return venue;
     }
 
     /**
