@@ -23,7 +23,6 @@ public class RegisterCustomerServlet extends HttpServlet {
         String requestString = IOUtils.toString(request.getReader());
         JSONObject requestData = JSON.parseObject(requestString);
         JSONObject responseData = new JSONObject();
-
         DBConnection db = new DBConnection();
         String sql = "INSERT INTO users (email, password, first_name, last_name, type)\n" +
                 "VALUES (?, ?, ?, ?, 'C')";
