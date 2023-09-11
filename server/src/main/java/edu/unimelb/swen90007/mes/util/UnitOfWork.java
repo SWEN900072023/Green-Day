@@ -14,14 +14,6 @@ public class UnitOfWork {
 
     }
 
-    public static void newCurrent() {
-        setCurrent(new UnitOfWork());
-    }
-
-    public static UnitOfWork getCurrent() {
-        return (UnitOfWork) current.get();
-    }
-
     public static void setCurrent(UnitOfWork uow) {
         current.set(uow);
     }
