@@ -9,5 +9,8 @@
 </h1>
 <br/>
 <a href="hello-servlet">Hello Servlet</a>
+<form method="post" action="/api/logout">
+    <input type="submit" value="Logout"/>
+</form>
 </body>
 </html>

@@ -23,7 +23,7 @@ public final class UserMapper {
      * @throws SQLException               if some error occurs while interacting with the database
      * @throws UserAlreadyExistsException if the user already exists
      */
-    public static void create(User user) throws SQLException, UserAlreadyExistsException {
+    public static void create(AppUser user) throws SQLException, UserAlreadyExistsException {
         String email = user.getEmail();
         if (doesUserExist(email))
             throw new UserAlreadyExistsException();
@@ -45,12 +45,12 @@ public final class UserMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next())
-            user.setID(generatedKeys.getInt("id"));
+            user.setId(generatedKeys.getInt("id"));
 
         if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
-            logger.info("New Event Planner Created [id=" + user.getID() + "]");
+            logger.info("New Event Planner Created [id=" + user.getId() + "]");
         else
-            logger.info("New Customer Created [id=" + user.getID() + "]");
+            logger.info("New Customer Created [id=" + user.getId() + "]");
     }
 
     /**
@@ -75,8 +75,8 @@ public final class UserMapper {
      * @return the list of all event planners and customers
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static List<User> loadAll() throws SQLException {
-        List<User> users = new ArrayList<>();
+    public static List<AppUser> loadAll() throws SQLException {
+        List<AppUser> users = new ArrayList<>();
 
         String sql = "SELECT * FROM users WHERE type != 'Administrator'";
         Connection connection = DBConnection.getConnection();
@@ -111,8 +111,8 @@ public final class UserMapper {
      * @throws SQLException          if some error occurs while interacting with the database
      * @throws UserNotFoundException if the user does not exist
      */
-    public static User loadByEmail(String email) throws SQLException, UserNotFoundException {
-        User user = null;
+    public static AppUser loadByEmail(String email) throws SQLException, UserNotFoundException {
+        AppUser user = null;
 
         String sql = "SELECT * FROM users WHERE email = ?";
         Connection connection = DBConnection.getConnection();

@@ -2,14 +2,15 @@ package edu.unimelb.swen90007.mes.model;
 
 import java.util.List;
 
-public abstract class User {
+public abstract class AppUser {
+    private int id;
     private final String email;
-    private final String password;
+    private String password;
     private final String firstName;
     private final String lastName;
-    private int id;
+    private String type;
 
-    public User(int id, String email, String password, String firstName, String lastName) {
+    public AppUser(int id, String email, String password, String firstName, String lastName) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -21,11 +22,11 @@ public abstract class User {
         return null;
     }
 
-    public int getID() {
+    public int getId() {
         return id;
     }
 
-    public void setID(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -37,11 +38,23 @@ public abstract class User {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getFirstName() {
         return firstName;
     }
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

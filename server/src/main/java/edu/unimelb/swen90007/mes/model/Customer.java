@@ -2,9 +2,10 @@ package edu.unimelb.swen90007.mes.model;
 
 import java.util.List;
 
-public class Customer extends User {
+public class Customer extends AppUser {
     public Customer(int id, String email, String password, String firstName, String lastName) {
         super(id, email, password, firstName, lastName);
+        this.setType(Customer.class.getSimpleName());
     }
 
     public List<Event> searchEvent(String eventName) {
