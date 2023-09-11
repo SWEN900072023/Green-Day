@@ -30,28 +30,36 @@ public class WebSecurityConfig {
                 .requestMatchers("/hello-servlet").hasRole(Administrator.class.getSimpleName())
                 .anyRequest().authenticated());
 
+        http.exceptionHandling(cfg -> cfg
+                // Customize unauthenticated request handler
+                .authenticationEntryPoint((request, response, authException) ->
+                        ResponseWriter.write(response, 401, "unauthenticated"))
+                // Customize unauthorized request handler
+                .accessDeniedHandler((request, response, accessDeniedException) ->
+                        ResponseWriter.write(response, 403, "unauthorized"))
+        );
+
         // Configure AuthenticationManagerBuilder
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder authenticationManagerBuilder
+                = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder
                 .userDetailsService(new AppUserServiceImpl())
                 .passwordEncoder(new BCryptPasswordEncoder());
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
+        // Customize login response
         http.authenticationManager(authenticationManager);
         http.formLogin(login -> login
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .successHandler((request, response, authentication) -> {
-                    ResponseWriter.write(response, 200, "successfully logged in");
-                })
-                .failureHandler((request, response, exception) -> {
-                    ResponseWriter.write(response, 401, "unauthenticated");
-                })
-                .loginProcessingUrl("/api/login"))
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler((request, response, authentication) ->
+                                ResponseWriter.write(response, 200, "successfully logged in"))
+                        .failureHandler((request, response, exception) ->
+                                ResponseWriter.write(response, 401, "unauthenticated"))
+                        .loginProcessingUrl("/api/login"))
                 .logout(logout -> logout
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            ResponseWriter.write(response, 200, "successfully logged out");
-                        })
+                        .logoutSuccessHandler((request, response, authentication) ->
+                                ResponseWriter.write(response, 200, "successfully logged out"))
                         .logoutUrl("/api/logout"));
 
         http.csrf(AbstractHttpConfigurer::disable);
