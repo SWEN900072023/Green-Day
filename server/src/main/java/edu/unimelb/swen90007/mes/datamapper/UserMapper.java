@@ -19,19 +19,19 @@ public final class UserMapper {
     /**
      * Create an event planner or a customer.
      *
-     * @param user a User object
+     * @param appUser a User object
      * @throws SQLException               if some error occurs while interacting with the database
      * @throws UserAlreadyExistsException if the user already exists
      */
-    public static void create(User user) throws SQLException, UserAlreadyExistsException {
-        String email = user.getEmail();
+    public static void create(AppUser appUser) throws SQLException, UserAlreadyExistsException {
+        String email = appUser.getEmail();
         if (doesUserExist(email))
             throw new UserAlreadyExistsException();
 
-        String password = user.getPassword();
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
-        String type = user instanceof EventPlanner ? EventPlanner.class.getSimpleName() : Customer.class.getSimpleName();
+        String password = appUser.getPassword();
+        String firstName = appUser.getFirstName();
+        String lastName = appUser.getLastName();
+        String type = appUser instanceof EventPlanner ? EventPlanner.class.getSimpleName() : Customer.class.getSimpleName();
 
         String sql = "INSERT INTO users (email, password, first_name, last_name, type) Values (?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
@@ -45,12 +45,12 @@ public final class UserMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next())
-            user.setID(generatedKeys.getInt("id"));
+            appUser.setId(generatedKeys.getInt("id"));
 
         if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
-            logger.info("New Event Planner Created [id=" + user.getID() + "]");
+            logger.info("New Event Planner Created [id=" + appUser.getId() + "]");
         else
-            logger.info("New Customer Created [id=" + user.getID() + "]");
+            logger.info("New Customer Created [id=" + appUser.getId() + "]");
     }
 
     /**
@@ -75,7 +75,7 @@ public final class UserMapper {
      * @return the list of all event planners and customers
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static List<User> loadAll() throws SQLException {
+    public static List<AppUser> loadAll() throws SQLException {
         String sql = "SELECT * FROM users WHERE type != 'Administrator'";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -92,7 +92,7 @@ public final class UserMapper {
      * @throws SQLException          if some error occurs while interacting with the database
      * @throws UserNotFoundException if the user does not exist
      */
-    public static User loadByEmail(String email) throws SQLException, UserNotFoundException {
+    public static AppUser loadByEmail(String email) throws SQLException, UserNotFoundException {
         String sql = "SELECT * FROM users WHERE email = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -112,7 +112,7 @@ public final class UserMapper {
      * @return a User object
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static User loadByID(int id) throws SQLException {
+    public static AppUser loadById(int id) throws SQLException {
         String sql = "SELECT * FROM users WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -128,8 +128,8 @@ public final class UserMapper {
      * @return a list of users
      * @throws SQLException if some error occurs while interacting with the database
      */
-    private static List<User> load(ResultSet resultSet) throws SQLException {
-        List<User> users = new ArrayList<>();
+    private static List<AppUser> load(ResultSet resultSet) throws SQLException {
+        List<AppUser> appUsers = new ArrayList<>();
 
         if (resultSet.next()) {
             int id = resultSet.getInt("id");
@@ -141,16 +141,16 @@ public final class UserMapper {
             type = type.trim();
 
             if (type.equals(Administrator.class.getSimpleName()))
-                users.add(new Administrator(id, email, password, firstName, lastName));
+                appUsers.add(new Administrator(id, email, password, firstName, lastName));
             else if (type.equals(EventPlanner.class.getSimpleName()))
-                users.add(new EventPlanner(id, email, password, firstName, lastName));
+                appUsers.add(new EventPlanner(id, email, password, firstName, lastName));
             else if (type.equals(Customer.class.getSimpleName()))
-                users.add(new Customer(id, email, password, firstName, lastName));
+                appUsers.add(new Customer(id, email, password, firstName, lastName));
 
             logger.info("User Loaded [id=" + id + "]");
         }
 
-        return users;
+        return appUsers;
     }
 
     /**

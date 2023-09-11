@@ -30,8 +30,8 @@ class EventMapperTest {
 
     @AfterAll
     static void deleteEventPlannerAndVenue() throws SQLException {
-        UserMapper.delete(eventPlanner.getID());
-        VenueMapper.delete(venue.getID());
+        UserMapper.delete(eventPlanner.getId());
+        VenueMapper.delete(venue.getId());
     }
 
     @Test
@@ -54,16 +54,16 @@ class EventMapperTest {
         for (Section singleSection : sections)
             singleSection.setEvent(event);
 
-        EventMapper.create(eventPlanner.getID(), event);
+        EventMapper.create(eventPlanner.getId(), event);
 
-        Event actualEvent = EventMapper.loadByID(event.getID());
-        Assertions.assertEquals(event.getID(), actualEvent.getID());
+        Event actualEvent = EventMapper.loadById(event.getId());
+        Assertions.assertEquals(event.getId(), actualEvent.getId());
         Assertions.assertEquals(title, actualEvent.getTitle());
         Assertions.assertEquals(artist, actualEvent.getArtist());
         Assertions.assertEquals(status, actualEvent.getStatus());
 
         Section actualSection = actualEvent.getSections().get(0);
-        Assertions.assertEquals(section.getID(), actualSection.getID());
+        Assertions.assertEquals(section.getId(), actualSection.getId());
         Assertions.assertEquals(sectionName, actualSection.getName());
         Assertions.assertEquals(venue.getCapacity(), actualSection.getCapacity());
         Assertions.assertEquals(venue.getCapacity(), actualSection.getCapacity());
@@ -73,12 +73,12 @@ class EventMapperTest {
         Assertions.assertEquals(currency, actualMoney.getCurrency());
 
         Venue actualVenue = actualEvent.getVenue();
-        Assertions.assertEquals(venue.getID(), actualVenue.getID());
+        Assertions.assertEquals(venue.getId(), actualVenue.getId());
         Assertions.assertEquals(venue.getName(), actualVenue.getName());
         Assertions.assertEquals(venue.getAddress(), actualVenue.getAddress());
         Assertions.assertEquals(venue.getCapacity(), actualVenue.getCapacity());
 
-        SectionMapper.delete(section.getID());
-        EventMapper.delete(event.getID(), eventPlanner.getID());
+        SectionMapper.delete(section.getId());
+        EventMapper.delete(event.getId(), eventPlanner.getId());
     }
 }

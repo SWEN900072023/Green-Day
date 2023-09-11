@@ -25,12 +25,12 @@ public final class OrderMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next())
-            order.setID(generatedKeys.getInt("id"));
-        logger.info("New Order Created [id=" + order.getID() + "]");
+            order.setId(generatedKeys.getInt("id"));
+        logger.info("New Order Created [id=" + order.getId() + "]");
 
         List<SubOrder> subOrders = order.getSubOrders();
         for (SubOrder subOrder : subOrders) {
-            SubOrderMapper.create(order.getID(), subOrder);
+            SubOrderMapper.create(order.getId(), subOrder);
         }
     }
 
@@ -43,6 +43,15 @@ public final class OrderMapper {
         return load(resultSet);
     }
 
+    public static Order loadById(int id) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet).get(0);
+    }
+
     private static List<Order> load(ResultSet resultSet) throws SQLException {
         List<Order> orders = new ArrayList<>();
 
@@ -52,8 +61,8 @@ public final class OrderMapper {
             OffsetDateTime createdAt = resultSet.getObject("created_at", OffsetDateTime.class);
             String status = resultSet.getString("status").trim();
 
-            Customer customer = new Customer(customerID, null, null, null, null);
-            List<SubOrder> subOrders = SubOrderMapper.loadByOrderID(orderID);
+            Customer customer = new Customer(customerID);
+            List<SubOrder> subOrders = SubOrderMapper.loadByOrderId(orderID);
 
             Order order = new Order(orderID, customer, subOrders, createdAt, status);
             orders.add(order);
@@ -73,7 +82,7 @@ public final class OrderMapper {
     }
 
     public static void delete(int id) throws SQLException {
-        SubOrderMapper.deleteByOrderID(id);
+        SubOrderMapper.deleteByOrderId(id);
 
         String sql = "DELETE FROM orders WHERE id = ?";
         Connection connection = DBConnection.getConnection();

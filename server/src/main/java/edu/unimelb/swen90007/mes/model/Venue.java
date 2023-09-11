@@ -24,11 +24,11 @@ public class Venue {
         this.capacity = capacity;
     }
 
-    public int getID() {
+    public int getId() {
         return id;
     }
 
-    public void setID(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -52,7 +52,7 @@ public class Venue {
 
     private void load() throws SQLException {
         logger.info("Loading Venue [id=" + id + "]");
-        Venue venue = VenueMapper.loadByID(id);
+        Venue venue = VenueMapper.loadById(id);
         assert venue != null;
         name = venue.getName();
         address = venue.getAddress();

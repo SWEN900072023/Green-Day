@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-class UserMapperTest {
+class AppUserMapperTest {
     @Test
     void testCreateEventPlanner() throws SQLException, UserAlreadyExistsException, UserNotFoundException {
         int id = 0;
@@ -24,13 +24,13 @@ class UserMapperTest {
         Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.create(eventPlanner));
 
         EventPlanner actualEventPlanner = (EventPlanner) UserMapper.loadByEmail(email);
-        Assertions.assertEquals(eventPlanner.getID(), actualEventPlanner.getID());
+        Assertions.assertEquals(eventPlanner.getId(), actualEventPlanner.getId());
         Assertions.assertEquals(email, actualEventPlanner.getEmail());
         Assertions.assertEquals(password, actualEventPlanner.getPassword());
         Assertions.assertEquals(firstName, actualEventPlanner.getFirstName());
         Assertions.assertEquals(lastName, actualEventPlanner.getLastName());
 
-        UserMapper.delete(eventPlanner.getID());
+        UserMapper.delete(eventPlanner.getId());
     }
 
     @Test
@@ -47,12 +47,12 @@ class UserMapperTest {
         Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.create(customer));
 
         Customer actualCustomer = (Customer) UserMapper.loadByEmail(email);
-        Assertions.assertEquals(customer.getID(), actualCustomer.getID());
+        Assertions.assertEquals(customer.getId(), actualCustomer.getId());
         Assertions.assertEquals(email, actualCustomer.getEmail());
         Assertions.assertEquals(password, actualCustomer.getPassword());
         Assertions.assertEquals(firstName, actualCustomer.getFirstName());
         Assertions.assertEquals(lastName, actualCustomer.getLastName());
 
-        UserMapper.delete(customer.getID());
+        UserMapper.delete(customer.getId());
     }
 }

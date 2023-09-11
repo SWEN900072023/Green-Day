@@ -1,6 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
-public class EventPlanner extends User {
+public class EventPlanner extends AppUser {
     public EventPlanner(int id) {
         super(id);
     }

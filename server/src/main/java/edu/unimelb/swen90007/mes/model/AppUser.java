@@ -6,19 +6,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 
-public abstract class User {
-    private static final Logger logger = LogManager.getLogger(User.class);
+public abstract class AppUser {
+    private static final Logger logger = LogManager.getLogger(AppUser.class);
     private Integer id;
     private String email;
     private String password;
     private String firstName;
     private String lastName;
 
-    public User(int id) {
+    public AppUser(int id) {
         this.id = id;
     }
 
-    public User(int id, String email, String password, String firstName, String lastName) {
+    public AppUser(int id, String email, String password, String firstName, String lastName) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -26,11 +26,11 @@ public abstract class User {
         this.lastName = lastName;
     }
 
-    public int getID() {
+    public int getId() {
         return id;
     }
 
-    public void setID(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -60,11 +60,11 @@ public abstract class User {
 
     private void load() throws SQLException {
         logger.info("Loading User [id=" + id + "]");
-        User user = UserMapper.loadByID(id);
-        assert user != null;
-        email = user.getEmail();
-        password = user.getPassword();
-        firstName = user.getFirstName();
-        lastName = user.getLastName();
+        AppUser appUser = UserMapper.loadById(id);
+        assert appUser != null;
+        email = appUser.getEmail();
+        password = appUser.getPassword();
+        firstName = appUser.getFirstName();
+        lastName = appUser.getLastName();
     }
 }

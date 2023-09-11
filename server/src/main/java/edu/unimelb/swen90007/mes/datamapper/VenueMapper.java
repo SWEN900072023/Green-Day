@@ -31,9 +31,9 @@ public final class VenueMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         while (generatedKeys.next())
-            venue.setID(generatedKeys.getInt("id"));
+            venue.setId(generatedKeys.getInt("id"));
 
-        logger.info("New Venue Created [id=" + venue.getID() + "]");
+        logger.info("New Venue Created [id=" + venue.getId() + "]");
     }
 
     /**
@@ -57,7 +57,7 @@ public final class VenueMapper {
      * @return a venue object
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static Venue loadByID(int id) throws SQLException {
+    public static Venue loadById(int id) throws SQLException {
         String sql = "SELECT * FROM venues WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

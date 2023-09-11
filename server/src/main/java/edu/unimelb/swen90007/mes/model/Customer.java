@@ -1,6 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
-public class Customer extends User {
+public class Customer extends AppUser {
     public Customer(int id) {
         super(id);
     }

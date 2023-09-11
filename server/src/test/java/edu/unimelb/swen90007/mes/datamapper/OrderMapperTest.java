@@ -43,7 +43,7 @@ class OrderMapperTest {
         event = new Event(0, sections, "Mock Event", "Mock Artist", venue, OffsetDateTime.now(), OffsetDateTime.now(), "Active");
         for (Section section : sections)
             section.setEvent(event);
-        EventMapper.create(eventPlanner.getID(), event);
+        EventMapper.create(eventPlanner.getId(), event);
 
         customer = new Customer(0, "customer@gmail.com", "mock.password", "Quanchi", "Chen");
         UserMapper.create(customer);
@@ -52,12 +52,12 @@ class OrderMapperTest {
     @AfterAll
     static void cleanup() throws SQLException {
         for (Section section : event.getSections())
-            SectionMapper.delete(section.getID());
+            SectionMapper.delete(section.getId());
 
-        EventMapper.delete(event.getID(), eventPlanner.getID());
-        UserMapper.delete(eventPlanner.getID());
-        UserMapper.delete(customer.getID());
-        VenueMapper.delete(venue.getID());
+        EventMapper.delete(event.getId(), eventPlanner.getId());
+        UserMapper.delete(eventPlanner.getId());
+        UserMapper.delete(customer.getId());
+        VenueMapper.delete(venue.getId());
     }
 
     @Test
@@ -76,26 +76,26 @@ class OrderMapperTest {
         String status = "Active";
 
         Order order = new Order(id, customer, subOrders, OffsetDateTime.now(), status);
-        OrderMapper.create(customer.getID(), order);
-        OrderMapper.cancel(order.getID());
+        OrderMapper.create(customer.getId(), order);
+        OrderMapper.cancel(order.getId());
 
-        List<Order> actualOrders = OrderMapper.loadByCustomerID(customer.getID());
+        List<Order> actualOrders = OrderMapper.loadByCustomerID(customer.getId());
         Order actualOrder = actualOrders.get(0);
-        Assertions.assertEquals(order.getID(), actualOrder.getID());
-        Assertions.assertEquals(customer.getID(), actualOrder.getCustomer().getID());
+        Assertions.assertEquals(order.getId(), actualOrder.getId());
+        Assertions.assertEquals(customer.getId(), actualOrder.getCustomer().getId());
         Assertions.assertEquals("Cancelled", actualOrder.getStatus());
 
         List<SubOrder> actualSubOrders = actualOrder.getSubOrders();
 
         SubOrder actualSubOrder1 = actualSubOrders.get(0);
-        Assertions.assertEquals(section1.getID(), actualSubOrder1.getSection().getID());
+        Assertions.assertEquals(section1.getId(), actualSubOrder1.getSection().getId());
         Assertions.assertEquals(capacitySection1, actualSubOrder1.getSection().getCapacity());
         Assertions.assertEquals(quantitySection1, actualSubOrder1.getQuantity());
         Assertions.assertEquals(money.getUnitPrice(), actualSubOrder1.getMoney().getUnitPrice());
         Assertions.assertEquals(money.getCurrency(), actualSubOrder1.getMoney().getCurrency());
 
         SubOrder actualSubOrder2 = actualSubOrders.get(1);
-        Assertions.assertEquals(section2.getID(), actualSubOrder2.getSection().getID());
+        Assertions.assertEquals(section2.getId(), actualSubOrder2.getSection().getId());
         Assertions.assertEquals(capacitySection2, actualSubOrder2.getSection().getCapacity());
         Assertions.assertEquals(quantitySection2, actualSubOrder2.getQuantity());
         Assertions.assertEquals(money.getUnitPrice(), actualSubOrder2.getMoney().getUnitPrice());
@@ -107,6 +107,6 @@ class OrderMapperTest {
         int expectedSection2RemainingTickets = capacitySection2 - quantitySection2; // 2000 - 200 = 1800
         Assertions.assertEquals(expectedSection2RemainingTickets, actualSubOrder2.getSection().getRemainingTickets());
 
-        OrderMapper.delete(order.getID());
+        OrderMapper.delete(order.getId());
     }
 }

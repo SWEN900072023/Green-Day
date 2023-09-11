@@ -8,18 +8,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class EventMapper {
     private static final Logger logger = LogManager.getLogger(EventMapper.class);
 
-    public static void create(int eventPlannerID, Event event) throws SQLException {
+    public static void create(int eventPlannerId, Event event) throws SQLException {
         String sql = "INSERT INTO events (title, artist, venue_id, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
-        preparedStatement.setInt(3, event.getVenue().getID());
+        preparedStatement.setInt(3, event.getVenue().getId());
         preparedStatement.setObject(4, event.getStartTime());
         preparedStatement.setObject(5, event.getEndTime());
         preparedStatement.setString(6, "Active");
@@ -27,15 +28,15 @@ public final class EventMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next())
-            event.setID(generatedKeys.getInt("id"));
-        logger.info("New Event Created [id=" + event.getID() + "]");
+            event.setId(generatedKeys.getInt("id"));
+        logger.info("New Event Created [id=" + event.getId() + "]");
 
         sql = "INSERT INTO planner_events (event_id, planner_id) VALUES (?, ?)";
         preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, event.getID());
-        preparedStatement.setInt(2, eventPlannerID);
+        preparedStatement.setInt(1, event.getId());
+        preparedStatement.setInt(2, eventPlannerId);
         preparedStatement.executeUpdate();
-        logger.info("New Association Created [event_id=" + event.getID() + "], [planner_id=" + eventPlannerID + "]");
+        logger.info("New Association Created [event_id=" + event.getId() + "], [planner_id=" + eventPlannerId + "]");
 
         List<Section> sections = event.getSections();
         for (Section section : sections) {
@@ -44,50 +45,66 @@ public final class EventMapper {
         }
     }
 
-    public static Event loadByID(int eventID) throws SQLException {
-        Event event = null;
+    public static List<Event> loadAll() throws SQLException {
+        String sql = "SELECT * FROM events";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet);
+    }
 
+    public static Event loadById(int eventId) throws SQLException {
         String sql = "SELECT * FROM events WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, eventID);
+        preparedStatement.setInt(1, eventId);
         ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet).get(0);
+    }
+
+    private static List<Event> load(ResultSet resultSet) throws SQLException {
+        List<Event> events = new ArrayList<>();
 
         while (resultSet.next()) {
+            int eventId = resultSet.getInt("id");
             String title = resultSet.getString("title").trim();
             String artist = resultSet.getString("artist").trim();
-            int venueID = resultSet.getInt("venue_id");
+            int venueId = resultSet.getInt("venue_id");
             OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class);
             OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class);
             String status = resultSet.getString("status").trim();
 
-            List<Section> sections = SectionMapper.loadByEventID(eventID);
-            Venue venue = VenueMapper.loadByID(venueID);
+            List<Section> sections = new ArrayList<>();
+            List<Integer> sectionIds = SectionMapper.loadSectionIdsByEventId(eventId);
+            for (Integer sectionId : sectionIds)
+                sections.add(new Section(sectionId));
 
-            event = new Event(eventID, sections, title, artist, venue, startTime, endTime, status);
+            Venue venue = new Venue(venueId);
+
+            Event event = new Event(eventId, sections, title, artist, venue, startTime, endTime, status);
 
             for (Section section : sections)
                 section.setEvent(event);
 
-            logger.info("Event Loaded [id=" + eventID + "]");
+            logger.info("Event Loaded [id=" + eventId + "]");
         }
 
-        return event;
+        return events;
     }
 
-    public static void delete(int eventID, int plannerID) throws SQLException {
+    public static void delete(int eventId, int plannerId) throws SQLException {
         String sql = "DELETE FROM planner_events WHERE event_id = ? AND planner_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, eventID);
-        preparedStatement.setInt(2, plannerID);
+        preparedStatement.setInt(1, eventId);
+        preparedStatement.setInt(2, plannerId);
         preparedStatement.executeUpdate();
-        logger.info("Association Deleted [event_id=" + eventID + "], [planner_id=" + plannerID + "]");
+        logger.info("Association Deleted [event_id=" + eventId + "], [planner_id=" + plannerId + "]");
 
         sql = "DELETE FROM events WHERE id = ?";
         preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, eventID);
+        preparedStatement.setInt(1, eventId);
         preparedStatement.executeUpdate();
-        logger.info("Existing Event Deleted [id=" + eventID + "]");
+        logger.info("Existing Event Deleted [id=" + eventId + "]");
     }
 }
