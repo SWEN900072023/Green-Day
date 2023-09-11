@@ -53,6 +53,16 @@ public final class EventMapper {
         return load(resultSet);
     }
 
+    public static List<Event> loadByPattern(String pattern) throws SQLException {
+        pattern = "%" + pattern + "%";
+        String sql = "SELECT * FROM events WHERE title LIKE ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, pattern);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet);
+    }
+
     public static Event loadById(int eventId) throws SQLException {
         String sql = "SELECT * FROM events WHERE id = ?";
         Connection connection = DBConnection.getConnection();
