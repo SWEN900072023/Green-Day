@@ -1,7 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
-import edu.unimelb.swen90007.mes.util.UnitOfWork;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,7 +56,6 @@ public class Event {
 
     public void setTitle(String title) {
         this.title = title;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public String getArtist() throws SQLException {
@@ -68,7 +66,6 @@ public class Event {
 
     public void setArtist(String artist) {
         this.artist = artist;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public Venue getVenue() throws SQLException {
@@ -79,7 +76,6 @@ public class Event {
 
     public void setVenue(Venue venue) {
         this.venue = venue;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public OffsetDateTime getStartTime() throws SQLException {
@@ -90,7 +86,6 @@ public class Event {
 
     public void setStartTime(OffsetDateTime startTime) {
         this.startTime = startTime;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public OffsetDateTime getEndTime() throws SQLException {
@@ -101,7 +96,6 @@ public class Event {
 
     public void setEndTime(OffsetDateTime endTime) {
         this.endTime = endTime;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public String getStatus() throws SQLException {
@@ -112,7 +106,6 @@ public class Event {
 
     public void setStatus(String status) {
         this.status = status;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     private void load() throws SQLException {

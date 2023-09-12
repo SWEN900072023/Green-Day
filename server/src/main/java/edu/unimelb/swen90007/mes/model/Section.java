@@ -1,7 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
-import edu.unimelb.swen90007.mes.util.UnitOfWork;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,7 +44,6 @@ public class Section {
 
     public void setEvent(Event event) {
         this.event = event;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public String getName() throws SQLException {
@@ -56,7 +54,6 @@ public class Section {
 
     public void setName(String name) {
         this.name = name;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public Money getMoney() throws SQLException {
@@ -67,7 +64,6 @@ public class Section {
 
     public void setMoney(Money money) {
         this.money = money;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public int getCapacity() throws SQLException {
@@ -78,7 +74,6 @@ public class Section {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     public int getRemainingTickets() throws SQLException {
@@ -89,7 +84,6 @@ public class Section {
 
     public void setRemainingTickets(int remainingTickets) {
         this.remainingTickets = remainingTickets;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     private void load() throws SQLException {

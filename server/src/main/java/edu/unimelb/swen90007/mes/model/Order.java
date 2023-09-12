@@ -1,7 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
-import edu.unimelb.swen90007.mes.util.UnitOfWork;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,7 +56,6 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
-        UnitOfWork.getInstance().registerDirty(this);
     }
 
     private void load() throws SQLException {
