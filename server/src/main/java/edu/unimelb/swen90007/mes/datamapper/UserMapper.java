@@ -31,7 +31,14 @@ public final class UserMapper {
         String password = user.getPassword();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String type = user instanceof EventPlanner ? EventPlanner.class.getSimpleName() : Customer.class.getSimpleName();
+        String type;
+        if (user instanceof Administrator) {
+            type = Administrator.class.getSimpleName();
+        } else if (user instanceof EventPlanner) {
+            type = EventPlanner.class.getSimpleName();
+        } else {
+            type = Customer.class.getSimpleName();
+        }
 
         String sql = "INSERT INTO users (email, password, first_name, last_name, type) Values (?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
@@ -47,10 +54,13 @@ public final class UserMapper {
         if (generatedKeys.next())
             user.setId(generatedKeys.getInt("id"));
 
-        if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
+        if (type.equalsIgnoreCase(Administrator.class.getSimpleName())) {
+            logger.info("New Administrator Created [id=" + user.getId() + "]");
+        } else if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName())) {
             logger.info("New Event Planner Created [id=" + user.getId() + "]");
-        else
+        } else {
             logger.info("New Customer Created [id=" + user.getId() + "]");
+        }
     }
 
     /**

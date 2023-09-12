@@ -1,7 +1,8 @@
 package edu.unimelb.swen90007.mes.security;
 
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.model.Administrator;
-import edu.unimelb.swen90007.mes.service.impl.AppUserServiceImpl;
+import edu.unimelb.swen90007.mes.service.impl.AppUserService;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +26,18 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(registry -> registry
-                .requestMatchers("/index.jsp").permitAll()
-                .requestMatchers("/api/login", "/api/register").permitAll()
-                .requestMatchers("/hello-servlet").hasRole(Administrator.class.getSimpleName())
+                // public API
+                .requestMatchers(
+                        "/index.jsp",
+                        Constant.API_PREFIX + "/login",
+                        Constant.API_PREFIX + "/register/customer"
+                ).permitAll()
+                // Administrator permission
+                .requestMatchers(
+                        "/hello-servlet",
+                        Constant.API_PREFIX + "/register/event-planner"
+                ).hasRole(Administrator.class.getSimpleName())
+                // Any logged-in users
                 .anyRequest().authenticated());
 
         http.exceptionHandling(cfg -> cfg
@@ -43,7 +53,7 @@ public class WebSecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder
                 = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder
-                .userDetailsService(new AppUserServiceImpl())
+                .userDetailsService(new AppUserService())
                 .passwordEncoder(new BCryptPasswordEncoder());
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
@@ -56,11 +66,11 @@ public class WebSecurityConfig {
                                 ResponseWriter.write(response, 200, "successfully logged in"))
                         .failureHandler((request, response, exception) ->
                                 ResponseWriter.write(response, 401, "unauthenticated"))
-                        .loginProcessingUrl("/api/login"))
+                        .loginProcessingUrl(Constant.API_PREFIX + "/login"))
                 .logout(logout -> logout
                         .logoutSuccessHandler((request, response, authentication) ->
                                 ResponseWriter.write(response, 200, "successfully logged out"))
-                        .logoutUrl("/api/logout"));
+                        .logoutUrl(Constant.API_PREFIX + "/logout"));
 
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(Customizer.withDefaults());

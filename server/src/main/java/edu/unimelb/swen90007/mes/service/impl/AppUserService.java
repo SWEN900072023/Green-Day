@@ -3,7 +3,6 @@ package edu.unimelb.swen90007.mes.service.impl;
 import edu.unimelb.swen90007.mes.datamapper.UserMapper;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.AppUser;
-import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.service.IAppUserService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.SQLException;
 
-public class AppUserServiceImpl implements IAppUserService {
+public class AppUserService implements IAppUserService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        AppUser user = null;
+        AppUser user;
         try {
             user = UserMapper.loadByEmail(email);
         } catch (Exception e) {
@@ -29,17 +28,17 @@ public class AppUserServiceImpl implements IAppUserService {
 
         var userBuilder = User.withUsername(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getType());
+                .roles(user.getClass().getSimpleName());
 
         return userBuilder.build();
     }
 
     public void register(AppUser user) throws SQLException, UserAlreadyExistsException {
-        user.setType(Customer.class.getSimpleName());
         // encode password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+        // create user
         UserMapper.create(user);
     }
 }

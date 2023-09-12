@@ -5,7 +5,6 @@ import java.util.List;
 public class EventPlanner extends AppUser {
     public EventPlanner(int id, String email, String password, String firstName, String lastName) {
         super(id, email, password, firstName, lastName);
-        this.setType(EventPlanner.class.getSimpleName());
     }
 
     public void createEvent(Event event) {

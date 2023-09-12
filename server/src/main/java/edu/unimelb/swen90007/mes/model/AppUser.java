@@ -8,7 +8,6 @@ public abstract class AppUser {
     private String password;
     private final String firstName;
     private final String lastName;
-    private String type;
 
     public AppUser(int id, String email, String password, String firstName, String lastName) {
         this.id = id;
@@ -48,13 +47,5 @@ public abstract class AppUser {
 
     public String getLastName() {
         return lastName;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }
