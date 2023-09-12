@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 
 public class Money {
     private final String currency;
-    private BigDecimal price;
+    private BigDecimal unitPrice;
 
-    public Money(BigDecimal price, String currency) {
-        this.price = price;
+    public Money(BigDecimal unitPrice, String currency) {
+        this.unitPrice = unitPrice;
         this.currency = currency;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public String getCurrency() {

@@ -1,12 +1,23 @@
 package edu.unimelb.swen90007.mes.model;
 
+import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.SQLException;
+
 public class Section {
-    private final int id;
-    private final Event event;
+    private static final Logger logger = LogManager.getLogger(Section.class);
+    private Integer id;
+    private Event event;
     private String name;
     private Money money;
-    private int capacity;
-    private int remainingTickets;
+    private Integer capacity;
+    private Integer remainingTickets;
+
+    public Section(int id) {
+        this.id = id;
+    }
 
     public Section(int id, Event event, String name, Money money, int capacity, int remainingTickets) {
         this.id = id;
@@ -21,11 +32,23 @@ public class Section {
         return id;
     }
 
-    public Event getEvent() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Event getEvent() throws SQLException {
+        if (event == null)
+            load();
         return event;
     }
 
-    public String getName() {
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public String getName() throws SQLException {
+        if (name == null)
+            load();
         return name;
     }
 
@@ -33,7 +56,9 @@ public class Section {
         this.name = name;
     }
 
-    public Money getMoney() {
+    public Money getMoney() throws SQLException {
+        if (money == null)
+            load();
         return money;
     }
 
@@ -41,7 +66,9 @@ public class Section {
         this.money = money;
     }
 
-    public int getCapacity() {
+    public int getCapacity() throws SQLException {
+        if (capacity == null)
+            load();
         return capacity;
     }
 
@@ -49,11 +76,23 @@ public class Section {
         this.capacity = capacity;
     }
 
-    public int getRemainingTickets() {
+    public int getRemainingTickets() throws SQLException {
+        if (remainingTickets == null)
+            load();
         return remainingTickets;
     }
 
     public void setRemainingTickets(int remainingTickets) {
         this.remainingTickets = remainingTickets;
+    }
+
+    private void load() throws SQLException {
+        logger.info("Loading Section [id=" + id + "]");
+        Section section = SectionMapper.loadById(id);
+        event = section.getEvent();
+        name = section.getName();
+        money = section.getMoney();
+        capacity = section.getCapacity();
+        remainingTickets = section.getRemainingTickets();
     }
 }

@@ -86,44 +86,23 @@ public final class UserMapper {
      * @throws SQLException if some error occurs while interacting with the database
      */
     public static List<AppUser> loadAll() throws SQLException {
-        List<AppUser> users = new ArrayList<>();
-
         String sql = "SELECT * FROM users WHERE type != 'Administrator'";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            String email = resultSet.getString("email");
-            String password = resultSet.getString("password");
-            String firstName = resultSet.getString("first_name");
-            String lastName = resultSet.getString("last_name");
-            String type = resultSet.getString("type");
-            type = type.trim();
-
-            if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
-                users.add(new EventPlanner(id, email, password, firstName, lastName));
-            else if (type.equalsIgnoreCase(Customer.class.getSimpleName()))
-                users.add(new Customer(id, email, password, firstName, lastName));
-
-            logger.info("User Loaded [id=" + id + "]");
-        }
-
-        return users;
+        return load(resultSet);
     }
 
     /**
      * Load a user that may be the administrator, an event planner, or a customer.
      *
      * @param email the email received from the client request
-     * @return a user object
+     * @return an AppUser object
      * @throws SQLException          if some error occurs while interacting with the database
      * @throws UserNotFoundException if the user does not exist
      */
-    public static AppUser loadByEmail(String email) throws SQLException, UserNotFoundException {
-        AppUser user = null;
-
+    public static AppUser loadByEmail(String email) throws SQLException, AppUserNotFoundException {
         String sql = "SELECT * FROM users WHERE email = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -133,8 +112,38 @@ public final class UserMapper {
         if (!resultSet.isBeforeFirst())
             throw new UserNotFoundException();
 
-        while (resultSet.next()) {
+        return load(resultSet).get(0);
+    }
+
+    /**
+     * Load a user by ID.
+     *
+     * @param id the user ID
+     * @return an AppUser object
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static AppUser loadById(int id) throws SQLException {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet).get(0);
+    }
+
+    /**
+     * Load a list of users given the ResultSet object.
+     *
+     * @param resultSet a ResultSet object
+     * @return a list of users
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    private static List<AppUser> load(ResultSet resultSet) throws SQLException {
+        List<AppUser> users = new ArrayList<>();
+
+        if (resultSet.next()) {
             int id = resultSet.getInt("id");
+            String email = resultSet.getString("email");
             String password = resultSet.getString("password");
             String firstName = resultSet.getString("first_name");
             String lastName = resultSet.getString("last_name");
@@ -142,16 +151,16 @@ public final class UserMapper {
             type = type.trim();
 
             if (type.equals(Administrator.class.getSimpleName()))
-                user = new Administrator(id, email, password, firstName, lastName);
+                users.add(new Administrator(id, email, password, firstName, lastName));
             else if (type.equals(EventPlanner.class.getSimpleName()))
-                user = new EventPlanner(id, email, password, firstName, lastName);
+                users.add(new EventPlanner(id, email, password, firstName, lastName));
             else if (type.equals(Customer.class.getSimpleName()))
-                user = new Customer(id, email, password, firstName, lastName);
+                users.add(new Customer(id, email, password, firstName, lastName));
 
             logger.info("User Loaded [id=" + id + "]");
         }
 
-        return user;
+        return users;
     }
 
     /**
@@ -160,7 +169,7 @@ public final class UserMapper {
      * @param id the user ID
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static void deleteByID(int id) throws SQLException {
+    public static void delete(int id) throws SQLException {
         String sql = "DELETE FROM users WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

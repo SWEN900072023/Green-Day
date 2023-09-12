@@ -1,26 +1,36 @@
 package edu.unimelb.swen90007.mes.model;
 
+import edu.unimelb.swen90007.mes.datamapper.EventMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 public class Event {
-    private final int id;
-    private final List<EventPlanner> eventPlanners;
-    private final List<Section> sections;
+    private static final Logger logger = LogManager.getLogger(Event.class);
+    private Integer id;
+    private List<Section> sections;
     private String title;
     private String artist;
     private Venue venue;
-    private OffsetDateTime datetime;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
     private String status;
 
-    public Event(int id, List<EventPlanner> eventPlanners, List<Section> sections, String title, String artist, Venue venue, OffsetDateTime datetime, String status) {
+    public Event(int id) {
         this.id = id;
-        this.eventPlanners = eventPlanners;
+    }
+
+    public Event(int id, List<Section> sections, String title, String artist, Venue venue, OffsetDateTime startTime, OffsetDateTime endTime, String status) {
+        this.id = id;
         this.sections = sections;
         this.title = title;
         this.artist = artist;
         this.venue = venue;
-        this.datetime = datetime;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.status = status;
     }
 
@@ -28,15 +38,19 @@ public class Event {
         return id;
     }
 
-    public List<EventPlanner> getEventPlanners() {
-        return eventPlanners;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public List<Section> getSections() {
+    public List<Section> getSections() throws SQLException {
+        if (sections == null)
+            load();
         return sections;
     }
 
-    public String getTitle() {
+    public String getTitle() throws SQLException {
+        if (title == null)
+            load();
         return title;
     }
 
@@ -44,7 +58,9 @@ public class Event {
         this.title = title;
     }
 
-    public String getArtist() {
+    public String getArtist() throws SQLException {
+        if (artist == null)
+            load();
         return artist;
     }
 
@@ -52,7 +68,9 @@ public class Event {
         this.artist = artist;
     }
 
-    public Venue getVenue() {
+    public Venue getVenue() throws SQLException {
+        if (venue == null)
+            load();
         return venue;
     }
 
@@ -60,19 +78,46 @@ public class Event {
         this.venue = venue;
     }
 
-    public OffsetDateTime getDatetime() {
-        return datetime;
+    public OffsetDateTime getStartTime() throws SQLException {
+        if (startTime == null)
+            load();
+        return startTime;
     }
 
-    public void setDatetime(OffsetDateTime datetime) {
-        this.datetime = datetime;
+    public void setStartTime(OffsetDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public String getStatus() {
+    public OffsetDateTime getEndTime() throws SQLException {
+        if (endTime == null)
+            load();
+        return endTime;
+    }
+
+    public void setEndTime(OffsetDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getStatus() throws SQLException {
+        if (status == null)
+            load();
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    private void load() throws SQLException {
+        logger.info("Loading Event [id=" + id + "]");
+        Event event = EventMapper.loadById(id);
+        assert event != null;
+        sections = event.getSections();
+        title = event.getTitle();
+        artist = event.getArtist();
+        venue = event.getVenue();
+        startTime = event.getStartTime();
+        endTime = event.getEndTime();
+        status = event.getStatus();
     }
 }
