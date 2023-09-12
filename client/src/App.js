@@ -4,6 +4,7 @@ import Signup from "./components/routes/authentication/signup";
 import Signin from "./components/routes/authentication/signin";
 import Navigation from "./components/routes/navigation/navigation";
 import Home from "./components/routes/home/home";
+import MyBookings from "./components/routes/myBookings/myBookings";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="login" element={<Signin />}></Route>
         {/* <Route></Route> */}
         <Route path="home" element={<Home />}></Route>
+        <Route path="mybookings" element={<MyBookings />}></Route>
       </Route>
     </Routes>
   );

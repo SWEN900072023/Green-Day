@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Divider from "@mui/material/Divider";
@@ -13,96 +13,78 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 const Home = () => {
-  const top100Films = [
-    { label: "The Shawshank Redemption", year: 1994 },
-    { label: "The Godfather", year: 1972 },
-    { label: "The Godfather: Part II", year: 1974 },
-    { label: "The Dark Knight", year: 2008 },
-    { label: "12 Angry Men", year: 1957 },
-    { label: "Schindler's List", year: 1993 },
-    { label: "Pulp Fiction", year: 1994 },
+  const exampleEvents = [
+    { label: "Brunch this weekend?", year: 1994 },
+    { label: "Summer BBQ", year: 1972 },
+    { label: "Oui Oui", year: 1974 },
   ];
+  const [text, setText] = useState("");
+  const [optionText, setOptionText] = useState("");
+
+  const searchEvent = exampleEvents.filter((event) => {
+    return event.label.toLowerCase().includes(text.toLowerCase());
+  });
+
   return (
     <div className="container">
       <div className="eventsList">
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
-                </Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Summer BBQ"
-              secondary={
-                <Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    to Scott, Alex, Jennifer
-                  </Typography>
-                  {" — Wish I could come, but I'm out of town this…"}
-                </Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Oui Oui"
-              secondary={
-                <Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Sandra Adams
-                  </Typography>
-                  {" — Do you have Paris recommendations? Have you ever…"}
-                </Fragment>
-              }
-            />
-          </ListItem>
+          {searchEvent.map((event) => {
+            return (
+              <>
+                <ListItem alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src="/static/images/avatar/1.jpg"
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={`${event.label}`}
+                    secondary={
+                      <Fragment>
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          Ali Connors
+                        </Typography>
+                        {" — I'll be in your neighborhood doing errands this…"}
+                      </Fragment>
+                    }
+                  />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+              </>
+            );
+          })}
         </List>
       </div>
       <div className="searchBar-calendar">
         <Autocomplete
+          inputValue={text}
+          onInputChange={(e, newValue) => {
+            console.log(newValue);
+            setText(newValue);
+          }}
           disablePortal
-          id="combo-box-demo"
-          options={top100Films}
+          id="controllable-states-demo"
+          options={exampleEvents}
           sx={{ width: 500 }}
           renderInput={(params) => (
-            <TextField {...params} label="Type Music Events" />
+            <TextField
+              {...params}
+              label="Type Music Events"
+              //   onChange={(e) => {
+              //     console.log(e.target.value);
+              //     setText(e.target.value);
+              //   }
+              // }
+            />
           )}
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>

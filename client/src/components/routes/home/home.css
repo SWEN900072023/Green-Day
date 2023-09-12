@@ -3,7 +3,7 @@
   flex-direction: row;
 }
 .eventsList {
-  width: "30%";
+  width: 360px;
 }
 .searchBar-calendar {
   width: 70%;
