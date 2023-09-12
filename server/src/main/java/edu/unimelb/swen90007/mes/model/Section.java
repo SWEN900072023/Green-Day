@@ -36,7 +36,7 @@ public class Section {
         this.id = id;
     }
 
-    public Event getEvent() throws SQLException {
+    public Event getEvent() {
         if (event == null)
             load();
         return event;
@@ -46,7 +46,7 @@ public class Section {
         this.event = event;
     }
 
-    public String getName() throws SQLException {
+    public String getName() {
         if (name == null)
             load();
         return name;
@@ -56,7 +56,7 @@ public class Section {
         this.name = name;
     }
 
-    public Money getMoney() throws SQLException {
+    public Money getMoney() {
         if (money == null)
             load();
         return money;
@@ -66,7 +66,7 @@ public class Section {
         this.money = money;
     }
 
-    public int getCapacity() throws SQLException {
+    public int getCapacity() {
         if (capacity == null)
             load();
         return capacity;
@@ -76,7 +76,7 @@ public class Section {
         this.capacity = capacity;
     }
 
-    public int getRemainingTickets() throws SQLException {
+    public int getRemainingTickets() {
         if (remainingTickets == null)
             load();
         return remainingTickets;
@@ -86,13 +86,17 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading Section [id=" + id + "]");
-        Section section = SectionMapper.loadById(id);
-        event = section.getEvent();
-        name = section.getName();
-        money = section.getMoney();
-        capacity = section.getCapacity();
-        remainingTickets = section.getRemainingTickets();
+        try {
+            Section section = SectionMapper.loadById(id);
+            event = section.getEvent();
+            name = section.getName();
+            money = section.getMoney();
+            capacity = section.getCapacity();
+            remainingTickets = section.getRemainingTickets();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading Section [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }

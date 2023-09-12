@@ -1,7 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
-import edu.unimelb.swen90007.mes.exceptions.AppUserNotFoundException;
+import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.UserNotFoundException;
 import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,19 +19,26 @@ public final class AppUserMapper {
     /**
      * Create an event planner or a customer.
      *
-     * @param appUser an AppUser object
-     * @throws SQLException                  if some error occurs while interacting with the database
-     * @throws AppUserAlreadyExistsException if the user already exists
+     * @param user a user object
+     * @throws SQLException               if some error occurs while interacting with the database
+     * @throws UserAlreadyExistsException if the user already exists
      */
-    public static void create(AppUser appUser) throws SQLException, AppUserAlreadyExistsException {
-        String email = appUser.getEmail();
+    public static void create(AppUser user) throws SQLException, UserAlreadyExistsException {
+        String email = user.getEmail();
         if (doesUserExist(email))
-            throw new AppUserAlreadyExistsException();
+            throw new UserAlreadyExistsException();
 
-        String password = appUser.getPassword();
-        String firstName = appUser.getFirstName();
-        String lastName = appUser.getLastName();
-        String type = appUser instanceof EventPlanner ? EventPlanner.class.getSimpleName() : Customer.class.getSimpleName();
+        String password = user.getPassword();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String type;
+        if (user instanceof Administrator) {
+            type = Administrator.class.getSimpleName();
+        } else if (user instanceof EventPlanner) {
+            type = EventPlanner.class.getSimpleName();
+        } else {
+            type = Customer.class.getSimpleName();
+        }
 
         String sql = "INSERT INTO users (email, password, first_name, last_name, type) Values (?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
@@ -45,12 +52,15 @@ public final class AppUserMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next())
-            appUser.setId(generatedKeys.getInt("id"));
+            user.setId(generatedKeys.getInt("id"));
 
-        if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName()))
-            logger.info("New Event Planner Created [id=" + appUser.getId() + "]");
-        else
-            logger.info("New Customer Created [id=" + appUser.getId() + "]");
+        if (type.equalsIgnoreCase(Administrator.class.getSimpleName())) {
+            logger.info("New Administrator Created [id=" + user.getId() + "]");
+        } else if (type.equalsIgnoreCase(EventPlanner.class.getSimpleName())) {
+            logger.info("New Event Planner Created [id=" + user.getId() + "]");
+        } else {
+            logger.info("New Customer Created [id=" + user.getId() + "]");
+        }
     }
 
     /**
@@ -89,10 +99,10 @@ public final class AppUserMapper {
      *
      * @param email the email received from the client request
      * @return an AppUser object
-     * @throws SQLException             if some error occurs while interacting with the database
-     * @throws AppUserNotFoundException if the user does not exist
+     * @throws SQLException          if some error occurs while interacting with the database
+     * @throws UserNotFoundException if the user does not exist
      */
-    public static AppUser loadByEmail(String email) throws SQLException, AppUserNotFoundException {
+    public static AppUser loadByEmail(String email) throws SQLException, UserNotFoundException {
         String sql = "SELECT * FROM users WHERE email = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -100,7 +110,7 @@ public final class AppUserMapper {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (!resultSet.isBeforeFirst())
-            throw new AppUserNotFoundException();
+            throw new UserNotFoundException();
 
         return load(resultSet).get(0);
     }
@@ -129,9 +139,9 @@ public final class AppUserMapper {
      * @throws SQLException if some error occurs while interacting with the database
      */
     private static List<AppUser> load(ResultSet resultSet) throws SQLException {
-        List<AppUser> appUsers = new ArrayList<>();
+        List<AppUser> users = new ArrayList<>();
 
-        if (resultSet.next()) {
+        while (resultSet.next()) {
             int id = resultSet.getInt("id");
             String email = resultSet.getString("email");
             String password = resultSet.getString("password");
@@ -141,16 +151,16 @@ public final class AppUserMapper {
             type = type.trim();
 
             if (type.equals(Administrator.class.getSimpleName()))
-                appUsers.add(new Administrator(id, email, password, firstName, lastName));
+                users.add(new Administrator(id, email, password, firstName, lastName));
             else if (type.equals(EventPlanner.class.getSimpleName()))
-                appUsers.add(new EventPlanner(id, email, password, firstName, lastName));
+                users.add(new EventPlanner(id, email, password, firstName, lastName));
             else if (type.equals(Customer.class.getSimpleName()))
-                appUsers.add(new Customer(id, email, password, firstName, lastName));
+                users.add(new Customer(id, email, password, firstName, lastName));
 
             logger.info("User Loaded [id=" + id + "]");
         }
 
-        return appUsers;
+        return users;
     }
 
     /**

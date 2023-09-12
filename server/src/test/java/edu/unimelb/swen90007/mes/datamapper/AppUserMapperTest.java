@@ -1,7 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
-import edu.unimelb.swen90007.mes.exceptions.AppUserNotFoundException;
+import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.UserNotFoundException;
 import edu.unimelb.swen90007.mes.model.AppUser;
 import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.model.EventPlanner;
@@ -13,7 +13,7 @@ import java.util.List;
 
 class AppUserMapperTest {
     @Test
-    void testCreateEventPlanner() throws SQLException, AppUserAlreadyExistsException, AppUserNotFoundException {
+    void testCreateEventPlanner() throws SQLException, UserAlreadyExistsException, UserNotFoundException {
         int id = 0;
         String email = "quanchi.chen.3@gmail.com";
         String password = "some.hash";
@@ -23,7 +23,7 @@ class AppUserMapperTest {
         EventPlanner eventPlanner = new EventPlanner(id, email, password, firstName, lastName);
         AppUserMapper.create(eventPlanner);
 
-        Assertions.assertThrows(AppUserAlreadyExistsException.class, () -> AppUserMapper.create(eventPlanner));
+        Assertions.assertThrows(UserAlreadyExistsException.class, () -> AppUserMapper.create(eventPlanner));
 
         EventPlanner actualEventPlanner = (EventPlanner) AppUserMapper.loadByEmail(email);
         Assertions.assertEquals(eventPlanner.getId(), actualEventPlanner.getId());
@@ -36,7 +36,7 @@ class AppUserMapperTest {
     }
 
     @Test
-    void testCreateCustomer() throws SQLException, AppUserAlreadyExistsException {
+    void testCreateCustomer() throws SQLException, UserAlreadyExistsException {
         int id = 0;
         String email = "quanchi.chen.3@gmail.com";
         String password = "some.hash";
@@ -46,7 +46,7 @@ class AppUserMapperTest {
         Customer customer = new Customer(id, email, password, firstName, lastName);
         AppUserMapper.create(customer);
 
-        Assertions.assertThrows(AppUserAlreadyExistsException.class, () -> AppUserMapper.create(customer));
+        Assertions.assertThrows(UserAlreadyExistsException.class, () -> AppUserMapper.create(customer));
 
         List<AppUser> appUsers = AppUserMapper.loadAll();
         Assertions.assertEquals(1, appUsers.size());
