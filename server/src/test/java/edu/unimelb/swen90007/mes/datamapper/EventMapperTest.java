@@ -22,7 +22,7 @@ class EventMapperTest {
     @BeforeAll
     static void createEventPlannerAndVenue() throws SQLException, AppUserAlreadyExistsException {
         eventPlanner = new EventPlanner(0, "mock@gmail.com", "mock.hash", "Quanchi", "Chen");
-        UserMapper.create(eventPlanner);
+        AppUserMapper.create(eventPlanner);
 
         venue = new Venue(0, "Mock Venue", "Mock Address", 1000);
         VenueMapper.create(venue);
@@ -30,12 +30,12 @@ class EventMapperTest {
 
     @AfterAll
     static void deleteEventPlannerAndVenue() throws SQLException {
-        UserMapper.delete(eventPlanner.getId());
+        AppUserMapper.delete(eventPlanner.getId());
         VenueMapper.delete(venue.getId());
     }
 
     @Test
-    void testCreate() throws SQLException {
+    void test() throws SQLException {
         int id = 0;
         String title = "Mock Event";
         String artist = "Mock Artist";

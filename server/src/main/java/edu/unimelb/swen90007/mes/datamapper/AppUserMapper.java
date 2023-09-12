@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * Data mapper that sits between the domain objects and the table users in the relational database.
  */
-public final class UserMapper {
-    private static final Logger logger = LogManager.getLogger(UserMapper.class);
+public final class AppUserMapper {
+    private static final Logger logger = LogManager.getLogger(AppUserMapper.class);
 
     /**
      * Create an event planner or a customer.

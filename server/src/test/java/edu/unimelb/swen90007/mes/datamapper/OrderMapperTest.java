@@ -33,7 +33,7 @@ class OrderMapperTest {
         VenueMapper.create(venue);
 
         eventPlanner = new EventPlanner(0, "event.planner@gmail.com", "mock.password", "Quanchi", "Chen");
-        UserMapper.create(eventPlanner);
+        AppUserMapper.create(eventPlanner);
 
         List<Section> sections = new ArrayList<>();
         money = new Money(BigDecimal.valueOf(10.00).setScale(2, RoundingMode.HALF_UP), "AUD");
@@ -46,7 +46,7 @@ class OrderMapperTest {
         EventMapper.create(eventPlanner.getId(), event);
 
         customer = new Customer(0, "customer@gmail.com", "mock.password", "Quanchi", "Chen");
-        UserMapper.create(customer);
+        AppUserMapper.create(customer);
     }
 
     @AfterAll
@@ -55,8 +55,8 @@ class OrderMapperTest {
             SectionMapper.delete(section.getId());
 
         EventMapper.delete(event.getId(), eventPlanner.getId());
-        UserMapper.delete(eventPlanner.getId());
-        UserMapper.delete(customer.getId());
+        AppUserMapper.delete(eventPlanner.getId());
+        AppUserMapper.delete(customer.getId());
         VenueMapper.delete(venue.getId());
     }
 

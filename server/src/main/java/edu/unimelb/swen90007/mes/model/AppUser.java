@@ -1,6 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
-import edu.unimelb.swen90007.mes.datamapper.UserMapper;
+import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,7 +60,7 @@ public abstract class AppUser {
 
     private void load() throws SQLException {
         logger.info("Loading User [id=" + id + "]");
-        AppUser appUser = UserMapper.loadById(id);
+        AppUser appUser = AppUserMapper.loadById(id);
         assert appUser != null;
         email = appUser.getEmail();
         password = appUser.getPassword();
