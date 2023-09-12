@@ -1,7 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
-import edu.unimelb.swen90007.mes.exceptions.UserNotFoundException;
+import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.AppUserNotFoundException;
 import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.model.EventPlanner;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 class AppUserMapperTest {
     @Test
-    void testCreateEventPlanner() throws SQLException, UserAlreadyExistsException, UserNotFoundException {
+    void testCreateEventPlanner() throws SQLException, AppUserAlreadyExistsException, AppUserNotFoundException {
         int id = 0;
         String email = "quanchi.chen.3@gmail.com";
         String password = "some.hash";
@@ -21,7 +21,7 @@ class AppUserMapperTest {
         EventPlanner eventPlanner = new EventPlanner(id, email, password, firstName, lastName);
         UserMapper.create(eventPlanner);
 
-        Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.create(eventPlanner));
+        Assertions.assertThrows(AppUserAlreadyExistsException.class, () -> UserMapper.create(eventPlanner));
 
         EventPlanner actualEventPlanner = (EventPlanner) UserMapper.loadByEmail(email);
         Assertions.assertEquals(eventPlanner.getId(), actualEventPlanner.getId());
@@ -34,7 +34,7 @@ class AppUserMapperTest {
     }
 
     @Test
-    void testCreateCustomer() throws SQLException, UserAlreadyExistsException, UserNotFoundException {
+    void testCreateCustomer() throws SQLException, AppUserAlreadyExistsException, AppUserNotFoundException {
         int id = 0;
         String email = "quanchi.chen.3@gmail.com";
         String password = "some.hash";
@@ -44,7 +44,7 @@ class AppUserMapperTest {
         Customer customer = new Customer(id, email, password, firstName, lastName);
         UserMapper.create(customer);
 
-        Assertions.assertThrows(UserAlreadyExistsException.class, () -> UserMapper.create(customer));
+        Assertions.assertThrows(AppUserAlreadyExistsException.class, () -> UserMapper.create(customer));
 
         Customer actualCustomer = (Customer) UserMapper.loadByEmail(email);
         Assertions.assertEquals(customer.getId(), actualCustomer.getId());

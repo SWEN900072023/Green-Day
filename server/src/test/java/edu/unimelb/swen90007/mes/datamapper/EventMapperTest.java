@@ -1,6 +1,6 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +20,7 @@ class EventMapperTest {
     static Venue venue;
 
     @BeforeAll
-    static void createEventPlannerAndVenue() throws SQLException, UserAlreadyExistsException {
+    static void createEventPlannerAndVenue() throws SQLException, AppUserAlreadyExistsException {
         eventPlanner = new EventPlanner(0, "mock@gmail.com", "mock.hash", "Quanchi", "Chen");
         UserMapper.create(eventPlanner);
 

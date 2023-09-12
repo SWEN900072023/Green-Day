@@ -1,7 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
-import edu.unimelb.swen90007.mes.exceptions.UserNotFoundException;
+import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.AppUserNotFoundException;
 import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,12 +21,12 @@ public final class UserMapper {
      *
      * @param appUser a User object
      * @throws SQLException               if some error occurs while interacting with the database
-     * @throws UserAlreadyExistsException if the user already exists
+     * @throws AppUserAlreadyExistsException if the user already exists
      */
-    public static void create(AppUser appUser) throws SQLException, UserAlreadyExistsException {
+    public static void create(AppUser appUser) throws SQLException, AppUserAlreadyExistsException {
         String email = appUser.getEmail();
         if (doesUserExist(email))
-            throw new UserAlreadyExistsException();
+            throw new AppUserAlreadyExistsException();
 
         String password = appUser.getPassword();
         String firstName = appUser.getFirstName();
@@ -90,9 +90,9 @@ public final class UserMapper {
      * @param email the email received from the client request
      * @return a User object
      * @throws SQLException          if some error occurs while interacting with the database
-     * @throws UserNotFoundException if the user does not exist
+     * @throws AppUserNotFoundException if the user does not exist
      */
-    public static AppUser loadByEmail(String email) throws SQLException, UserNotFoundException {
+    public static AppUser loadByEmail(String email) throws SQLException, AppUserNotFoundException {
         String sql = "SELECT * FROM users WHERE email = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -100,7 +100,7 @@ public final class UserMapper {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (!resultSet.isBeforeFirst())
-            throw new UserNotFoundException();
+            throw new AppUserNotFoundException();
 
         return load(resultSet).get(0);
     }
