@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  flex-direction: row;
+}
+.eventsList {
+  width: "30%";
+}
+.searchBar-calendar {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
