@@ -40,6 +40,7 @@ public final class EventMapper {
 
         List<Section> sections = event.getSections();
         for (Section section : sections) {
+            section.setEvent(event);
             SectionMapper.create(section);
             section.setEvent(event);
         }
@@ -106,6 +107,8 @@ public final class EventMapper {
                 section.setEvent(event);
 
             logger.info("Event Loaded [id=" + eventId + "]");
+
+            events.add(event);
         }
 
         return events;

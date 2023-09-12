@@ -19,8 +19,8 @@ public final class AppUserMapper {
     /**
      * Create an event planner or a customer.
      *
-     * @param appUser a User object
-     * @throws SQLException               if some error occurs while interacting with the database
+     * @param appUser an AppUser object
+     * @throws SQLException                  if some error occurs while interacting with the database
      * @throws AppUserAlreadyExistsException if the user already exists
      */
     public static void create(AppUser appUser) throws SQLException, AppUserAlreadyExistsException {
@@ -88,8 +88,8 @@ public final class AppUserMapper {
      * Load a user that may be the administrator, an event planner, or a customer.
      *
      * @param email the email received from the client request
-     * @return a User object
-     * @throws SQLException          if some error occurs while interacting with the database
+     * @return an AppUser object
+     * @throws SQLException             if some error occurs while interacting with the database
      * @throws AppUserNotFoundException if the user does not exist
      */
     public static AppUser loadByEmail(String email) throws SQLException, AppUserNotFoundException {
@@ -109,7 +109,7 @@ public final class AppUserMapper {
      * Load a user by ID.
      *
      * @param id the user ID
-     * @return a User object
+     * @return an AppUser object
      * @throws SQLException if some error occurs while interacting with the database
      */
     public static AppUser loadById(int id) throws SQLException {
