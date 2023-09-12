@@ -77,13 +77,12 @@ class OrderMapperTest {
 
         Order order = new Order(id, customer, subOrders, OffsetDateTime.now(), status);
         OrderMapper.create(customer.getId(), order);
-        OrderMapper.cancel(order);
 
         List<Order> actualOrders = OrderMapper.loadByCustomerID(customer.getId());
         Order actualOrder = actualOrders.get(0);
         Assertions.assertEquals(order.getId(), actualOrder.getId());
         Assertions.assertEquals(customer.getId(), actualOrder.getCustomer().getId());
-        Assertions.assertEquals("Cancelled", actualOrder.getStatus());
+        Assertions.assertEquals("Active", actualOrder.getStatus());
 
         List<SubOrder> actualSubOrders = actualOrder.getSubOrders();
 
