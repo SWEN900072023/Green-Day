@@ -72,13 +72,17 @@ public final class OrderMapper {
         return orders;
     }
 
-    public static void cancel(int id) throws SQLException {
+    public static void cancel(Order order) throws SQLException {
         String sql = "UPDATE orders SET status = 'Cancelled' WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, id);
+        preparedStatement.setInt(1, order.getId());
         preparedStatement.executeUpdate();
-        logger.info("Existing Order Cancelled [id=" + id + "]");
+
+        for (SubOrder subOrder : order.getSubOrders())
+            SectionMapper.increaseRemainingTickets(subOrder.getSection().getId(), subOrder.getQuantity());
+
+        logger.info("Existing Order Cancelled [id=" + order.getId() + "]");
     }
 
     public static void delete(int id) throws SQLException {

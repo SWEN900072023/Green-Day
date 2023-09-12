@@ -53,6 +53,15 @@ public final class EventMapper {
         return load(resultSet);
     }
 
+    public static List<Event> loadNextSixMonths() throws SQLException {
+        String sql = "SELECT * FROM events WHERE end_time <= ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setObject(1, OffsetDateTime.now().plusMonths(6));
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet);
+    }
+
     public static List<Event> loadByPattern(String pattern) throws SQLException {
         pattern = "%" + pattern + "%";
         String sql = "SELECT * FROM events WHERE title LIKE ?";
@@ -100,6 +109,25 @@ public final class EventMapper {
         }
 
         return events;
+    }
+
+    public static void update(Event event) throws SQLException {
+        String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, start_time = ?, end_time = ?, status = ? WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, event.getTitle());
+        preparedStatement.setString(2, event.getArtist());
+        preparedStatement.setInt(3, event.getVenue().getId());
+        preparedStatement.setObject(4, event.getStartTime());
+        preparedStatement.setObject(5, event.getEndTime());
+        preparedStatement.setString(6, event.getStatus());
+        preparedStatement.setInt(7, event.getId());
+        preparedStatement.executeUpdate();
+
+        for (Section section : event.getSections())
+            SectionMapper.update(section);
+
+        logger.info("Event Updated [id=" + event.getId() + "]");
     }
 
     public static void delete(int eventId, int plannerId) throws SQLException {
