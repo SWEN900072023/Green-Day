@@ -32,13 +32,13 @@ public class Order {
         this.id = id;
     }
 
-    public Customer getCustomer() throws SQLException {
+    public Customer getCustomer() {
         if (customer == null)
             load();
         return customer;
     }
 
-    public List<SubOrder> getSubOrders() throws SQLException {
+    public List<SubOrder> getSubOrders() {
         if (subOrders == null)
             load();
         return subOrders;
@@ -48,7 +48,7 @@ public class Order {
         return createdAt;
     }
 
-    public String getStatus() throws SQLException {
+    public String getStatus() {
         if (status == null)
             load();
         return status;
@@ -58,13 +58,17 @@ public class Order {
         this.status = status;
     }
 
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading Order [id=" + id + "]");
-        Order order = OrderMapper.loadById(id);
-        assert order != null;
-        customer = order.getCustomer();
-        subOrders = order.getSubOrders();
-        createdAt = order.getCreatedAt();
-        status = order.getStatus();
+        try {
+            Order order = OrderMapper.loadById(id);
+            assert order != null;
+            customer = order.getCustomer();
+            subOrders = order.getSubOrders();
+            createdAt = order.getCreatedAt();
+            status = order.getStatus();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading Order [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }

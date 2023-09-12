@@ -32,30 +32,34 @@ public class Venue {
         this.id = id;
     }
 
-    public String getName() throws SQLException {
+    public String getName() {
         if (name == null)
             load();
         return name;
     }
 
-    public String getAddress() throws SQLException {
+    public String getAddress() {
         if (address == null)
             load();
         return address;
     }
 
-    public int getCapacity() throws SQLException {
+    public int getCapacity() {
         if (capacity == null)
             load();
         return capacity;
     }
 
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading Venue [id=" + id + "]");
-        Venue venue = VenueMapper.loadById(id);
-        assert venue != null;
-        name = venue.getName();
-        address = venue.getAddress();
-        capacity = venue.getCapacity();
+        try {
+            Venue venue = VenueMapper.loadById(id);
+            assert venue != null;
+            name = venue.getName();
+            address = venue.getAddress();
+            capacity = venue.getCapacity();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading Venue [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }

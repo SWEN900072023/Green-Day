@@ -34,13 +34,13 @@ public abstract class AppUser {
         this.id = id;
     }
 
-    public String getEmail() throws SQLException {
+    public String getEmail() {
         if (email == null)
             load();
         return email;
     }
 
-    public String getPassword() throws SQLException {
+    public String getPassword() {
         if (password == null)
             load();
         return password;
@@ -50,25 +50,30 @@ public abstract class AppUser {
         this.password = password;
     }
 
-    public String getFirstName() throws SQLException {
+    public String getFirstName() {
         if (firstName == null)
             load();
         return firstName;
     }
 
-    public String getLastName() throws SQLException {
+    public String getLastName() {
         if (lastName == null)
             load();
         return lastName;
     }
 
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading User [id=" + id + "]");
-        AppUser appUser = AppUserMapper.loadById(id);
-        assert appUser != null;
-        email = appUser.getEmail();
-        password = appUser.getPassword();
-        firstName = appUser.getFirstName();
-        lastName = appUser.getLastName();
+        AppUser appUser;
+        try {
+            appUser = AppUserMapper.loadById(id);
+            assert appUser != null;
+            email = appUser.getEmail();
+            password = appUser.getPassword();
+            firstName = appUser.getFirstName();
+            lastName = appUser.getLastName();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading User [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }

@@ -1,6 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
-import edu.unimelb.swen90007.mes.datamapper.UserMapper;
+import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.AppUser;
 import edu.unimelb.swen90007.mes.service.IAppUserService;
@@ -17,7 +17,7 @@ public class AppUserService implements IAppUserService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         AppUser user;
         try {
-            user = UserMapper.loadByEmail(email);
+            user = AppUserMapper.loadByEmail(email);
         } catch (Exception e) {
             throw new UsernameNotFoundException(email);
         }
@@ -34,11 +34,12 @@ public class AppUserService implements IAppUserService {
     }
 
     public void register(AppUser user) throws SQLException, UserAlreadyExistsException {
+        // TODO: Use UnitOfWork
         // encode password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         // create user
-        UserMapper.create(user);
+        AppUserMapper.create(user);
     }
 }

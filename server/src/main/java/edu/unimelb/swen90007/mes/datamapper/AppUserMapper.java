@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * Data mapper that sits between the domain objects and the table users in the relational database.
  */
-public final class UserMapper {
-    private static final Logger logger = LogManager.getLogger(UserMapper.class);
+public final class AppUserMapper {
+    private static final Logger logger = LogManager.getLogger(AppUserMapper.class);
 
     /**
      * Create an event planner or a customer.
@@ -102,7 +102,7 @@ public final class UserMapper {
      * @throws SQLException          if some error occurs while interacting with the database
      * @throws UserNotFoundException if the user does not exist
      */
-    public static AppUser loadByEmail(String email) throws SQLException, AppUserNotFoundException {
+    public static AppUser loadByEmail(String email) throws SQLException, UserNotFoundException {
         String sql = "SELECT * FROM users WHERE email = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -141,7 +141,7 @@ public final class UserMapper {
     private static List<AppUser> load(ResultSet resultSet) throws SQLException {
         List<AppUser> users = new ArrayList<>();
 
-        if (resultSet.next()) {
+        while (resultSet.next()) {
             int id = resultSet.getInt("id");
             String email = resultSet.getString("email");
             String password = resultSet.getString("password");

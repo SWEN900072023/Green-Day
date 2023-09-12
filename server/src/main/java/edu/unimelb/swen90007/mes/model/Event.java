@@ -42,13 +42,13 @@ public class Event {
         this.id = id;
     }
 
-    public List<Section> getSections() throws SQLException {
+    public List<Section> getSections() {
         if (sections == null)
             load();
         return sections;
     }
 
-    public String getTitle() throws SQLException {
+    public String getTitle() {
         if (title == null)
             load();
         return title;
@@ -58,7 +58,7 @@ public class Event {
         this.title = title;
     }
 
-    public String getArtist() throws SQLException {
+    public String getArtist() {
         if (artist == null)
             load();
         return artist;
@@ -68,7 +68,7 @@ public class Event {
         this.artist = artist;
     }
 
-    public Venue getVenue() throws SQLException {
+    public Venue getVenue() {
         if (venue == null)
             load();
         return venue;
@@ -78,7 +78,7 @@ public class Event {
         this.venue = venue;
     }
 
-    public OffsetDateTime getStartTime() throws SQLException {
+    public OffsetDateTime getStartTime() {
         if (startTime == null)
             load();
         return startTime;
@@ -88,7 +88,7 @@ public class Event {
         this.startTime = startTime;
     }
 
-    public OffsetDateTime getEndTime() throws SQLException {
+    public OffsetDateTime getEndTime() {
         if (endTime == null)
             load();
         return endTime;
@@ -98,7 +98,7 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public String getStatus() throws SQLException {
+    public String getStatus() {
         if (status == null)
             load();
         return status;
@@ -108,16 +108,20 @@ public class Event {
         this.status = status;
     }
 
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading Event [id=" + id + "]");
-        Event event = EventMapper.loadById(id);
-        assert event != null;
-        sections = event.getSections();
-        title = event.getTitle();
-        artist = event.getArtist();
-        venue = event.getVenue();
-        startTime = event.getStartTime();
-        endTime = event.getEndTime();
-        status = event.getStatus();
+        try {
+            Event event = EventMapper.loadById(id);
+            assert event != null;
+            sections = event.getSections();
+            title = event.getTitle();
+            artist = event.getArtist();
+            venue = event.getVenue();
+            startTime = event.getStartTime();
+            endTime = event.getEndTime();
+            status = event.getStatus();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading Event [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }
