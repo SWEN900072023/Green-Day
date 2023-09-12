@@ -13,6 +13,12 @@ const Navigation = () => {
           <Link className="nav-link" to={"/login"}>
             Sign in
           </Link>
+          <Link className="nav-link" to={"/"}>
+            Sign out
+          </Link>
+          <Link className="nav-link" to={"/mybookings"}>
+            Bookings
+          </Link>
         </div>
       </div>
       <Outlet />
