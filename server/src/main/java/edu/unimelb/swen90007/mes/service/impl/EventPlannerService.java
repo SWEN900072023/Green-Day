@@ -7,6 +7,7 @@ import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
 import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
+import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.model.Event;
 import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.model.Order;
@@ -20,20 +21,25 @@ import java.util.List;
 public class EventPlannerService implements EventPlannerServiceInterface {
     @Override
     public void createEvent(Event event)
-            throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException {
+            throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, TimeConflictException {
         if(capacityCheck(event))
             throw new CapacityExceedsException();
+        if(EventMapper.timeCheck(event))
+            throw new TimeConflictException();
         UnitOfWork.getInstance().registerNew(event);
         UnitOfWork.getInstance().commit();
     }
 
     @Override
     public void modifyEvent(EventPlanner ep, Event event)
-            throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, PermissionDeniedException {
+            throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException,
+            PermissionDeniedException, TimeConflictException {
         if(!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
         if(capacityCheck(event))
             throw new CapacityExceedsException();
+        if(EventMapper.timeCheck(event))
+            throw new TimeConflictException();
         UnitOfWork.getInstance().registerDirty(event);
         UnitOfWork.getInstance().commit();
     }

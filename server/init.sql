@@ -21,6 +21,7 @@ CREATE TABLE Events (
 	title VARCHAR(255) NOT NULL,
 	artist VARCHAR(255) NOT NULL,
 	venue_id INT NOT NULL,
+    status INT NOT NULL,
 	start_time TIMESTAMP WITH TIME ZONE NOT NULL,
 	end_time TIMESTAMP WITH TIME ZONE NOT NULL,
 	PRIMARY KEY (id),
@@ -28,16 +29,7 @@ CREATE TABLE Events (
 		REFERENCES Venues(id)
 );
 
-CREATE TABLE Events_Expired (
-    id INT GENERATED ALWAYS AS IDENTITY,
-    title VARCHAR(255) NOT NULL,
-    artist VARCHAR(255) NOT NULL,
-    venue_name VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    end_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    PRIMARY KEY (id)
-);
+CREATE INDEX status_index ON Events (status);
 
 CREATE TABLE Planner_Events (
 	event_id INT,

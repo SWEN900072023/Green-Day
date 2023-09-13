@@ -1,8 +1,10 @@
 package edu.unimelb.swen90007.mes.util.test;
 
+import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
+import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.impl.AdminService;
 import edu.unimelb.swen90007.mes.service.impl.CustomerService;
@@ -18,7 +20,7 @@ import java.util.List;
 
 public class ServiceTest {
     public static void main(String[] args)
-            throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, PermissionDeniedException {
+            throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, PermissionDeniedException, TimeConflictException {
 
         // Create Service
         PublicService publicService = new PublicService();
@@ -120,9 +122,12 @@ public class ServiceTest {
         eventPlannerService.cancelOrder(ep2, order22);
 
         event1.setArtist("Tom");
+        event1.setStartTime(OffsetDateTime.now().minusDays(2));
+        event1.setEndTime(OffsetDateTime.now().minusDays(1));
         sections2.get(0).setCapacity(90);
         eventPlannerService.modifyEvent(ep1, event1);
         eventPlannerService.modifyEvent(ep2, event2);
+        EventMapper.updateExpiredEvent();
 
         ep1.setUserDetail("YYY@YYY.YYY", "abcdefg", "YYY", "YYY");
         publicService.modifyUser(ep1);

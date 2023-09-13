@@ -16,6 +16,7 @@ public class Event {
     private String title;
     private String artist;
     private Venue venue;
+    private Integer status; // 1 : Coming Soon, 2 : Long After, 3 : Ended
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
 
@@ -24,12 +25,13 @@ public class Event {
     }
 
     public Event(int id, List<Section> sections, String title, String artist,
-                 Venue venue, OffsetDateTime startTime, OffsetDateTime endTime) {
+                 Venue venue, int status, OffsetDateTime startTime, OffsetDateTime endTime) {
         this.id = id;
         this.sections = sections;
         this.title = title;
         this.artist = artist;
         this.venue = venue;
+        this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;
     }
@@ -41,6 +43,13 @@ public class Event {
         this.venue = venue;
         this.startTime = startTime;
         this.endTime = endTime;
+        OffsetDateTime now = OffsetDateTime.now();
+        if(startTime.isBefore(now))
+            this.status = 3;
+        else if (startTime.isBefore(now.plusMonths(6)))
+            this.status = 1;
+        else
+            this.status = 2;
     }
 
     public int getFirstPlannerId() { return firstPlannerId; }
@@ -92,6 +101,12 @@ public class Event {
 
     public void setVenue(Venue venue) {
         this.venue = venue;
+    }
+
+    public int getStatus() throws SQLException {
+        if (status == null)
+            load();
+        return status;
     }
 
     public OffsetDateTime getStartTime() throws SQLException {

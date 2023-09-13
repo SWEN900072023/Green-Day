@@ -16,14 +16,15 @@ public final class EventMapper {
     private static final Logger logger = LogManager.getLogger(EventMapper.class);
 
     public static void create(Event event) throws SQLException {
-        String sql = "INSERT INTO events (title, artist, venue_id, start_time, end_time) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO events (title, artist, venue_id, status, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
         preparedStatement.setInt(3, event.getVenue().getId());
-        preparedStatement.setObject(4, event.getStartTime());
-        preparedStatement.setObject(5, event.getEndTime());
+        preparedStatement.setInt(4, event.getStatus());
+        preparedStatement.setObject(5, event.getStartTime());
+        preparedStatement.setObject(6, event.getEndTime());
         preparedStatement.executeUpdate();
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -41,21 +42,6 @@ public final class EventMapper {
         }
     }
 
-    public static void moveToEventExpired(Event event) throws SQLException {
-        String sql = "INSERT INTO events_expired " +
-                "(id, title, artist, venue_name, address, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, event.getId());
-        preparedStatement.setString(2, event.getTitle());
-        preparedStatement.setString(3, event.getArtist());
-        preparedStatement.setString(4, event.getVenue().getName());
-        preparedStatement.setString(5, event.getVenue().getAddress());
-        preparedStatement.setObject(6, event.getStartTime());
-        preparedStatement.setObject(7, event.getEndTime());
-        preparedStatement.executeUpdate();
-    }
-
     public static List<Event> loadAll() throws SQLException {
         String sql = "SELECT * FROM events";
         Connection connection = DBConnection.getConnection();
@@ -65,22 +51,33 @@ public final class EventMapper {
     }
 
     public static List<Event> loadNextSixMonths() throws SQLException {
-        String sql = "SELECT * FROM events WHERE start_time <= ? AND start_time >= ?";
+        String sql = "SELECT * FROM events WHERE status = 1";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setObject(1, OffsetDateTime.now().plusMonths(6));
-        preparedStatement.setObject(2, OffsetDateTime.now());
         ResultSet resultSet = preparedStatement.executeQuery();
         return load(resultSet);
     }
 
-    public static List<Event> loadExpiredEvent() throws SQLException {
-        String sql = "SELECT * FROM events WHERE end_time <= ?";
+    public static void updateExpiredEvent() throws SQLException {
+        String sql = "UPDATE events SET status = 3 WHERE start_time <= ? AND status = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setObject(1, OffsetDateTime.now());
-        ResultSet resultSet = preparedStatement.executeQuery();
-        return load(resultSet);
+        preparedStatement.setObject(2, 1);
+        preparedStatement.executeUpdate();
+
+        logger.info("Update Events Status to Expired");
+    }
+
+    public static void updateComingEvent() throws SQLException {
+        String sql = "UPDATE events SET status = 1 WHERE start_time <= ? AND status = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setObject(1, OffsetDateTime.now().plusMonths(6));
+        preparedStatement.setObject(2, 2);
+        preparedStatement.executeUpdate();
+
+        logger.info("Update Events Status to Coming Soom");
     }
 
     public static List<Event> loadByPattern(String pattern) throws SQLException {
@@ -128,6 +125,7 @@ public final class EventMapper {
             String title = resultSet.getString("title").trim();
             String artist = resultSet.getString("artist").trim();
             int venueId = resultSet.getInt("venue_id");
+            int status = resultSet.getInt("status");
             OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class);
             OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class);
 
@@ -135,7 +133,7 @@ public final class EventMapper {
 
             Venue venue = new Venue(venueId);
 
-            Event event = new Event(eventId, sections, title, artist, venue, startTime, endTime);
+            Event event = new Event(eventId, sections, title, artist, venue, status, startTime, endTime);
 
             for (Section section : sections)
                 section.setEvent(event);
@@ -148,30 +146,33 @@ public final class EventMapper {
         return events;
     }
 
-    public static boolean timeCheck(OffsetDateTime start, OffsetDateTime end, int venueId) throws SQLException {
-        String sql = "SELECT * FROM events WHERE " +
+    public static boolean timeCheck(Event event) throws SQLException {
+        String sql = "SELECT * FROM events WHERE status = ? AND id <> ? AND" +
                 "(( start_time <= ? AND end_time <= ? ) OR ( start_time <= ? AND end_time <= ? )) AND venue_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setObject(1, start);
-        preparedStatement.setObject(2, start);
-        preparedStatement.setObject(3, end);
-        preparedStatement.setObject(4, end);
-        preparedStatement.setObject(5, venueId);
+        preparedStatement.setInt(1, event.getStatus());
+        preparedStatement.setInt(2, event.getId());
+        preparedStatement.setObject(3, event.getStartTime());
+        preparedStatement.setObject(4, event.getStartTime());
+        preparedStatement.setObject(5, event.getEndTime());
+        preparedStatement.setObject(6, event.getEndTime());
+        preparedStatement.setObject(7, event.getVenue().getId());
         ResultSet resultSet = preparedStatement.executeQuery();
         return resultSet.isBeforeFirst();
     }
 
     public static void update(Event event) throws SQLException {
-        String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, start_time = ?, end_time = ? WHERE id = ?";
+        String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
         preparedStatement.setInt(3, event.getVenue().getId());
-        preparedStatement.setObject(4, event.getStartTime());
-        preparedStatement.setObject(5, event.getEndTime());
-        preparedStatement.setInt(6, event.getId());
+        preparedStatement.setInt(4, event.getStatus());
+        preparedStatement.setObject(5, event.getStartTime());
+        preparedStatement.setObject(6, event.getEndTime());
+        preparedStatement.setInt(7, event.getId());
         preparedStatement.executeUpdate();
 
         for (Section section : event.getSections())
