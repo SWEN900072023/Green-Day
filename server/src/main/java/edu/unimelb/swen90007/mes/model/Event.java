@@ -10,20 +10,21 @@ import java.util.List;
 
 public class Event {
     private static final Logger logger = LogManager.getLogger(Event.class);
-    private Integer id;
+    private int id;
+    private int firstPlannerId;
     private List<Section> sections;
     private String title;
     private String artist;
     private Venue venue;
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
-    private String status;
 
     public Event(int id) {
         this.id = id;
     }
 
-    public Event(int id, List<Section> sections, String title, String artist, Venue venue, OffsetDateTime startTime, OffsetDateTime endTime, String status) {
+    public Event(int id, List<Section> sections, String title, String artist,
+                 Venue venue, OffsetDateTime startTime, OffsetDateTime endTime) {
         this.id = id;
         this.sections = sections;
         this.title = title;
@@ -31,8 +32,19 @@ public class Event {
         this.venue = venue;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.status = status;
     }
+
+    public Event(String title, String artist,
+                 Venue venue, OffsetDateTime startTime, OffsetDateTime endTime) {
+        this.title = title;
+        this.artist = artist;
+        this.venue = venue;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public int getFirstPlannerId() { return firstPlannerId; }
+    public void setFirstPlannerId(int id) { this.firstPlannerId = id; }
 
     public int getId() {
         return id;
@@ -46,6 +58,10 @@ public class Event {
         if (sections == null)
             load();
         return sections;
+    }
+
+    public void setSections(List<Section> sections) throws SQLException {
+        this.sections = sections;
     }
 
     public String getTitle() throws SQLException {
@@ -98,16 +114,6 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public String getStatus() throws SQLException {
-        if (status == null)
-            load();
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     private void load() throws SQLException {
         logger.info("Loading Event [id=" + id + "]");
         Event event = EventMapper.loadById(id);
@@ -118,6 +124,5 @@ public class Event {
         venue = event.getVenue();
         startTime = event.getStartTime();
         endTime = event.getEndTime();
-        status = event.getStatus();
     }
 }

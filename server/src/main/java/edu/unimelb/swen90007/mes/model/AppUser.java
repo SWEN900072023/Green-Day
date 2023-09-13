@@ -26,6 +26,13 @@ public abstract class AppUser {
         this.lastName = lastName;
     }
 
+    public AppUser(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public int getId() {
         return id;
     }
@@ -56,6 +63,13 @@ public abstract class AppUser {
         if (lastName == null)
             load();
         return lastName;
+    }
+
+    public void setUserDetail(String email, String password, String firstName, String lastName){
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     private void load() throws SQLException {

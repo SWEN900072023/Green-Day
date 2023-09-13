@@ -85,6 +85,38 @@ public final class AppUserMapper {
     }
 
     /**
+     * Load all customers.
+     *
+     * @return the list of all customers
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static List<AppUser> loadAllCustomer() throws SQLException {
+        String sql = "SELECT * FROM users WHERE type = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, Customer.class.getSimpleName());
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        return load(resultSet);
+    }
+
+    /**
+     * Load all event planners.
+     *
+     * @return the list of all event planners
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static List<AppUser> loadAllEventPlanners() throws SQLException {
+        String sql = "SELECT * FROM users WHERE type = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, EventPlanner.class.getSimpleName());
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        return load(resultSet);
+    }
+
+    /**
      * Load a user that may be the administrator, an event planner, or a customer.
      *
      * @param email the email received from the client request
@@ -154,12 +186,32 @@ public final class AppUserMapper {
     }
 
     /**
-     * Delete a user by ID.
+     * Update a user by ID.
      *
-     * @param id the user ID
+     * @param user an AppUser object
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static void delete(int id) throws SQLException {
+    public static void update(AppUser user) throws SQLException {
+        String sql = "UPDATE users SET email = ?, password = ?, first_name = ?, last_name = ? WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, user.getEmail());
+        preparedStatement.setString(2, user.getPassword());
+        preparedStatement.setString(3, user.getFirstName());
+        preparedStatement.setString(4, user.getLastName());
+        preparedStatement.setInt(5, user.getId());
+        preparedStatement.executeUpdate();
+        logger.info("User Updated [id=" + user.getId() + "]");
+    }
+
+    /**
+     * Delete a user by ID.
+     *
+     * @param user an AppUser object
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static void delete(AppUser user) throws SQLException {
+        int id = user.getId();
         String sql = "DELETE FROM users WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

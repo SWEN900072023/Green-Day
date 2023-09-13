@@ -24,6 +24,12 @@ public class Venue {
         this.capacity = capacity;
     }
 
+    public Venue(String name, String address, int capacity) {
+        this.name = name;
+        this.address = address;
+        this.capacity = capacity;
+    }
+
     public int getId() {
         return id;
     }

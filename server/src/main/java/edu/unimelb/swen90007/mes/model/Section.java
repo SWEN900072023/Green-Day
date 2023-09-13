@@ -28,6 +28,14 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
+    public Section(Event event, String name, Money money, int capacity, int remainingTickets) {
+        this.event = event;
+        this.name = name;
+        this.money = money;
+        this.capacity = capacity;
+        this.remainingTickets = remainingTickets;
+    }
+
     public int getId() {
         return id;
     }

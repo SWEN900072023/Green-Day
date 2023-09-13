@@ -17,8 +17,9 @@ import java.util.List;
 public final class SubOrderMapper {
     private static final Logger logger = LogManager.getLogger(SubOrderMapper.class);
 
-    public static void create(int OrderId, SubOrder subOrder) throws SQLException {
+    public static void create(SubOrder subOrder) throws SQLException {
         String sql = "INSERT INTO order_sections (order_id, section_id, quantity, unit_price, currency) VALUES (?, ?, ?, ?, ?)";
+        int OrderId = subOrder.getOrderId();
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, OrderId);
@@ -53,7 +54,7 @@ public final class SubOrderMapper {
 
             Section section = new Section(sectionId);
             Money money = new Money(unitPrice, currency);
-            SubOrder subOrder = new SubOrder(section, quantity, money);
+            SubOrder subOrder = new SubOrder(orderId, section, quantity, money);
 
             subOrders.add(subOrder);
             logger.info("Association Loaded [order_id=" + orderId + "], [section_id=" + sectionId + "]");
