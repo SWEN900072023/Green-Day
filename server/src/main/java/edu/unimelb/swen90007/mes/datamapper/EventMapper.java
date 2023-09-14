@@ -43,7 +43,7 @@ public final class EventMapper {
     }
 
     public static List<Event> loadAll() throws SQLException {
-        String sql = "SELECT * FROM events";
+        String sql = "SELECT * FROM events WHERE status <> 3";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();

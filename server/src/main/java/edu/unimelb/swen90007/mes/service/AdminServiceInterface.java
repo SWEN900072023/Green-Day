@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface AdminServiceInterface {
-    public ArrayList<AppUser> viewAllEventPlanners() throws SQLException, AppUserNotFoundException;
+    public  ArrayList<AppUser> viewAllEventPlanners() throws SQLException, AppUserNotFoundException;
     public ArrayList<AppUser> viewAllCustomers() throws SQLException, AppUserNotFoundException;
     public ArrayList<AppUser> viewAllUsers() throws SQLException;
     public void createVenue(Venue venue) throws SQLException, AppUserAlreadyExistsException;

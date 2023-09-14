@@ -16,7 +16,7 @@ public class Event {
     private String title;
     private String artist;
     private Venue venue;
-    private Integer status; // 1 : Coming Soon, 2 : Long After, 3 : Ended
+    private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
 
