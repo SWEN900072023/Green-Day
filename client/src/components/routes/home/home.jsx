@@ -12,6 +12,7 @@ import "./home.css";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
   const exampleEvents = [
     { label: "Brunch this weekend?", year: 1994 },
@@ -19,7 +20,7 @@ const Home = () => {
     { label: "Oui Oui", year: 1974 },
   ];
   const [text, setText] = useState("");
-  const [optionText, setOptionText] = useState("");
+  const navigate = useNavigate();
 
   const searchEvent = exampleEvents.filter((event) => {
     return event.label.toLowerCase().includes(text.toLowerCase());
@@ -34,7 +35,15 @@ const Home = () => {
           {searchEvent.map((event) => {
             return (
               <>
-                <ListItem alignItems="flex-start">
+                <ListItem
+                  className="listItem"
+                  alignItems="flex-start"
+                  onClick={() => {
+                    console.log(`hi im ${event.label}`);
+                    // TODO: Soft coded event name
+                    navigate("/Summer BBQ/booking");
+                  }}
+                >
                   <ListItemAvatar>
                     <Avatar
                       alt="Remy Sharp"
