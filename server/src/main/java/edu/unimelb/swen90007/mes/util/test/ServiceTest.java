@@ -98,7 +98,6 @@ public class ServiceTest {
 
         // View Test
         publicService.viewAllEvents();
-        publicService.viewNextSixMonthsEvents();
         publicService.searchEvents("Title");
 
         adminService.viewAllUsers();
@@ -127,7 +126,7 @@ public class ServiceTest {
         sections2.get(0).setCapacity(90);
         eventPlannerService.modifyEvent(ep1, event1);
         eventPlannerService.modifyEvent(ep2, event2);
-        EventMapper.updateExpiredEvent();
+        EventMapper.updateEndedEvent();
 
         ep1.setUserDetail("YYY@YYY.YYY", "abcdefg", "YYY", "YYY");
         publicService.modifyUser(ep1);

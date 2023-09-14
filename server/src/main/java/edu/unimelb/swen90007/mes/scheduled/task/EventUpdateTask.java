@@ -9,8 +9,7 @@ public class EventUpdateTask extends TimerTask {
     @Override
     public void run() {
         try {
-            EventMapper.updateComingEvent();
-            EventMapper.updateExpiredEvent();
+            EventMapper.updateEndedEvent();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

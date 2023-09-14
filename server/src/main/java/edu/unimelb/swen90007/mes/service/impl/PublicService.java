@@ -17,11 +17,6 @@ public class PublicService implements PublicServiceInterface {
     }
 
     @Override
-    public List<Event> viewNextSixMonthsEvents() throws SQLException {
-        return EventMapper.loadNextSixMonths();
-    }
-
-    @Override
     public List<Event> searchEvents(String pattern) throws SQLException {
         return EventMapper.loadByPattern(pattern);
     }

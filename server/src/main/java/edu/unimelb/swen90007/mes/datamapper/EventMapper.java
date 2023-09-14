@@ -42,52 +42,33 @@ public final class EventMapper {
         }
     }
 
-    public static List<Event> loadAll() throws SQLException {
-        String sql = "SELECT * FROM events WHERE status <> 3 ORDER BY start_time";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        return load(resultSet);
-    }
-
-    public static List<Event> loadNextSixMonths() throws SQLException {
-        String sql = "SELECT * FROM events WHERE status = 1 ORDER BY start_time";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        return load(resultSet);
-    }
-
-    public static void updateExpiredEvent() throws SQLException {
-        String sql = "UPDATE events SET status = 3 WHERE start_time <= ? AND status = ?";
+    public static void updateEndedEvent() throws SQLException {
+        String sql = "UPDATE events SET status = 2 WHERE end_time <= ? AND status = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setObject(1, OffsetDateTime.now());
         preparedStatement.setObject(2, 1);
         preparedStatement.executeUpdate();
 
-        logger.info("Update Events Status to Expired");
+        logger.info("Update Events Status to Ended");
     }
 
-    public static void updateComingEvent() throws SQLException {
-        String sql = "UPDATE events SET status = 1 WHERE start_time <= ? AND status = ?";
+    public static List<Event> loadAll() throws SQLException {
+        String sql = "SELECT * FROM events WHERE status <> 2 ORDER BY start_time";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setObject(1, OffsetDateTime.now().plusMonths(6));
-        preparedStatement.setObject(2, 2);
-        preparedStatement.executeUpdate();
-
-        logger.info("Update Events Status to Coming Soom");
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet);
     }
 
     public static List<Event> loadByPattern(String pattern) throws SQLException {
         pattern = "%" + pattern + "%";
-        String sql = "SELECT * FROM events WHERE title LIKE ?";
+        String sql = "SELECT * FROM events WHERE title LIKE ? ORDER BY start_time";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, pattern);
         ResultSet resultSet = preparedStatement.executeQuery();
-        return load(resultSet);
+        return loadPartial(resultSet);
     }
 
     public static Event loadById(int eventId) throws SQLException {
@@ -106,14 +87,14 @@ public final class EventMapper {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setObject(1, venueId);
         ResultSet resultSet = preparedStatement.executeQuery();
-        return load(resultSet);
+        return loadPartial(resultSet);
     }
 
     public static List<Event> loadByEventPlanner(EventPlanner e) throws SQLException {
         List<Event> events = new ArrayList<>();
         List<Integer> eventIds = PlannerEventMapper.loadEventIdsByPlanner(e);
         for(int eventId: eventIds)
-            events.add(loadById(eventId));
+            events.add(new Event(eventId));
         return events;
     }
 
@@ -139,6 +120,30 @@ public final class EventMapper {
                 section.setEvent(event);
 
             logger.info("Event Loaded [id=" + eventId + "]");
+
+            events.add(event);
+        }
+
+        return events;
+    }
+
+    private static List<Event> loadPartial(ResultSet resultSet) throws SQLException {
+        List<Event> events = new ArrayList<>();
+
+        while (resultSet.next()) {
+            int eventId = resultSet.getInt("id");
+            String title = resultSet.getString("title").trim();
+            String artist = resultSet.getString("artist").trim();
+            int venueId = resultSet.getInt("venue_id");
+            int status = resultSet.getInt("status");
+            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class);
+            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class);
+
+            Venue venue = new Venue(venueId);
+
+            Event event = new Event(eventId, title, artist, venue, status, startTime, endTime);
+
+            logger.info("Event Partial Loaded [id=" + eventId + "]");
 
             events.add(event);
         }

@@ -16,7 +16,7 @@ public class Event {
     private String title;
     private String artist;
     private Venue venue;
-    private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended
+    private Integer status; // 1 : Not Ended, 2 : Ended
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
 
@@ -36,6 +36,17 @@ public class Event {
         this.endTime = endTime;
     }
 
+    public Event(int id, String title, String artist,
+                 Venue venue, int status, OffsetDateTime startTime, OffsetDateTime endTime) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.venue = venue;
+        this.status = status;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public Event(String title, String artist,
                  Venue venue, OffsetDateTime startTime, OffsetDateTime endTime) {
         this.title = title;
@@ -43,13 +54,10 @@ public class Event {
         this.venue = venue;
         this.startTime = startTime;
         this.endTime = endTime;
-        OffsetDateTime now = OffsetDateTime.now();
-        if(startTime.isBefore(now))
-            this.status = 3;
-        else if (startTime.isBefore(now.plusMonths(6)))
-            this.status = 1;
-        else
+        if(endTime.isBefore(OffsetDateTime.now()))
             this.status = 2;
+        else
+            this.status = 1;
     }
 
     public int getFirstPlannerId() { return firstPlannerId; }
@@ -126,6 +134,10 @@ public class Event {
     }
 
     public void setEndTime(OffsetDateTime endTime) {
+        if(endTime.isBefore(OffsetDateTime.now()))
+            this.status = 2;
+        else
+            this.status = 1;
         this.endTime = endTime;
     }
 
@@ -137,6 +149,7 @@ public class Event {
         title = event.getTitle();
         artist = event.getArtist();
         venue = event.getVenue();
+        status = event.getStatus();
         startTime = event.getStartTime();
         endTime = event.getEndTime();
     }
