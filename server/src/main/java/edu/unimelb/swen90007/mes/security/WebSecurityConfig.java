@@ -72,10 +72,6 @@ public class WebSecurityConfig {
                         .failureHandler((request, response, exception) ->
                                 ResponseWriter.write(response, 401, "unauthenticated"))
                         .loginProcessingUrl(Constant.API_PREFIX + "/login"))
-                .logout(logout -> logout
-                        .logoutSuccessHandler((request, response, authentication) ->
-                                ResponseWriter.write(response, 200, "Successfully logged out"))
-                        .logoutUrl(Constant.API_PREFIX + "/logout"))
                 // Use default setting for JWT validation
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
