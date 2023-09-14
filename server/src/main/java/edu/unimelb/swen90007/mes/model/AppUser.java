@@ -26,6 +26,13 @@ public abstract class AppUser {
         this.lastName = lastName;
     }
 
+    public AppUser(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public int getId() {
         return id;
     }
@@ -62,7 +69,14 @@ public abstract class AppUser {
         return lastName;
     }
 
-    private void load() {
+    public void setUserDetail(String email, String password, String firstName, String lastName){
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    private void load() throws SQLException {
         logger.info("Loading User [id=" + id + "]");
         AppUser appUser;
         try {

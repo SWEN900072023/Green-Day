@@ -6,4 +6,9 @@
     <listener>
         <listener-class>edu.unimelb.swen90007.mes.servlet.ApplicationListener</listener-class>
     </listener>
+
+    <listener>
+        <listener-class>edu.unimelb.swen90007.mes.scheduled.listener.TaskListener</listener-class>
+    </listener>
+
 </web-app>
