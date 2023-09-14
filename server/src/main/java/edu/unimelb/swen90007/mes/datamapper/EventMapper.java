@@ -43,7 +43,7 @@ public final class EventMapper {
     }
 
     public static List<Event> loadAll() throws SQLException {
-        String sql = "SELECT * FROM events WHERE status <> 3";
+        String sql = "SELECT * FROM events WHERE status <> 3 ORDER BY start_time";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -51,7 +51,7 @@ public final class EventMapper {
     }
 
     public static List<Event> loadNextSixMonths() throws SQLException {
-        String sql = "SELECT * FROM events WHERE status = 1";
+        String sql = "SELECT * FROM events WHERE status = 1 ORDER BY start_time";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
