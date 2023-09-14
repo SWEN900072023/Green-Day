@@ -5,6 +5,7 @@ import Signin from "./components/routes/authentication/signin";
 import Navigation from "./components/routes/navigation/navigation";
 import Home from "./components/routes/home/home";
 import MyBookings from "./components/routes/myBookings/myBookings";
+import EventBooking from "./components/eventBooking/eventBooking";
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
         {/* <Route></Route> */}
         <Route path="home" element={<Home />}></Route>
         <Route path="mybookings" element={<MyBookings />}></Route>
+        {/* TODO: EVENT NAME SHOULD BE DISPLAYED ON THE NAVIGATION ROUTE */}
+        <Route path={`Summer BBQ/booking`} element={<EventBooking />}></Route>
       </Route>
     </Routes>
   );
