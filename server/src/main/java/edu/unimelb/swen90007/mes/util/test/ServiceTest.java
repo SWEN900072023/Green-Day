@@ -41,6 +41,9 @@ public class ServiceTest {
         publicService.register(ep1);
         publicService.register(ep2);
 
+        publicService.userAuthentication(c1);
+        publicService.userAuthentication(c2);
+
         // Create Test Cases
         Venue venue1 = new Venue("Name1", "Address1", 120);
         Venue venue2 = new Venue("Name2", "Address2", 120);

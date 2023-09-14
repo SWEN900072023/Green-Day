@@ -8,8 +8,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface PublicServiceInterface {
-    public List<Event> viewAllEvents() throws SQLException;
-    public List<Event> searchEvents(String pattern) throws SQLException;
-    public void register(AppUser user) throws SQLException, AppUserAlreadyExistsException;
-    public void modifyUser(AppUser user) throws SQLException, AppUserAlreadyExistsException;
+    List<Event> viewAllEvents() throws SQLException;
+    List<Event> searchEvents(String pattern) throws SQLException;
+    void register(AppUser user) throws SQLException, AppUserAlreadyExistsException;
+    void modifyUser(AppUser user) throws SQLException, AppUserAlreadyExistsException;
+    boolean userAuthentication(AppUser user) throws SQLException;
 }

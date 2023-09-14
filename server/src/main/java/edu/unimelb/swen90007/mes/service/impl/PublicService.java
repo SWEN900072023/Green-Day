@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
+import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.AppUser;
@@ -31,5 +32,10 @@ public class PublicService implements PublicServiceInterface {
     public void modifyUser(AppUser user) throws SQLException, AppUserAlreadyExistsException {
         UnitOfWork.getInstance().registerDirty(user);
         UnitOfWork.getInstance().commit();
+    }
+
+    @Override
+    public boolean userAuthentication(AppUser user) throws SQLException {
+        return AppUserMapper.userAuthentication(user);
     }
 }

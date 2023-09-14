@@ -12,12 +12,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface EventPlannerServiceInterface {
-    public void createEvent(Event event) throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, TimeConflictException;
-    public void modifyEvent(EventPlanner ep, Event event) throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, PermissionDeniedException, TimeConflictException;
-    public void deleteEvent(EventPlanner ep, Event event) throws SQLException, AppUserAlreadyExistsException, PermissionDeniedException;
-    public List<Event> viewHostedEvent(EventPlanner ep) throws SQLException;
-    public void inviteEventPlanner(EventPlanner inviter, EventPlanner invitee, Event event) throws SQLException, PermissionDeniedException;
-    public List<Order> viewOrders(EventPlanner ep, Event event) throws SQLException, PermissionDeniedException;
-    public void cancelOrder(EventPlanner ep, Order order) throws SQLException, PermissionDeniedException, AppUserAlreadyExistsException;
-    public void deleteOrder(EventPlanner ep, Order order) throws SQLException, PermissionDeniedException, AppUserAlreadyExistsException;
+    void createEvent(Event event) throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, TimeConflictException;
+    void modifyEvent(EventPlanner ep, Event event) throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, PermissionDeniedException, TimeConflictException;
+    void deleteEvent(EventPlanner ep, Event event) throws SQLException, AppUserAlreadyExistsException, PermissionDeniedException;
+    List<Event> viewHostedEvent(EventPlanner ep) throws SQLException;
+    void inviteEventPlanner(EventPlanner inviter, EventPlanner invitee, Event event) throws SQLException, PermissionDeniedException;
+    List<Order> viewOrders(EventPlanner ep, Event event) throws SQLException, PermissionDeniedException;
+    void cancelOrder(EventPlanner ep, Order order) throws SQLException, PermissionDeniedException, AppUserAlreadyExistsException;
+    void deleteOrder(EventPlanner ep, Order order) throws SQLException, PermissionDeniedException, AppUserAlreadyExistsException;
 }

@@ -70,6 +70,23 @@ public final class AppUserMapper {
     }
 
     /**
+     * Verify user's email and password.
+     *
+     * @param user an AppUser object
+     * @return a boolean indicating whether the user authentication was successful
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static boolean userAuthentication(AppUser user) throws SQLException {
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, user.getEmail());
+        preparedStatement.setString(2, user.getPassword());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return resultSet.isBeforeFirst();
+    }
+
+    /**
      * Load all event planners and customers.
      *
      * @return the list of all event planners and customers
