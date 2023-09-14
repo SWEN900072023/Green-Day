@@ -11,5 +11,4 @@ public interface CustomerServiceInterface {
     void placeOrder(Order order) throws SQLException, AppUserAlreadyExistsException;
     List<Order> viewOwnOrder(Customer customer) throws SQLException;
     void cancelOrder(Order order) throws SQLException, AppUserAlreadyExistsException;
-    void deleteOrder(Order order) throws SQLException, AppUserAlreadyExistsException;
 }

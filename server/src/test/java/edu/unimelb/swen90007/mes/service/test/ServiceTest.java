@@ -1,4 +1,4 @@
-package edu.unimelb.swen90007.mes.util.test;
+package edu.unimelb.swen90007.mes.service.test;
 
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
@@ -101,6 +101,7 @@ public class ServiceTest {
 
         // View Test
         publicService.viewAllEvents();
+        publicService.viewNextSixMothsEvents();
         publicService.searchEvents("Title");
 
         adminService.viewAllUsers();
@@ -138,8 +139,6 @@ public class ServiceTest {
 
         // Delete Test
         adminService.deleteAppUser(c1);
-        customerService.deleteOrder(order11);
-        eventPlannerService.deleteOrder(ep2, order22);
         eventPlannerService.deleteEvent(ep1, event1);
         adminService.deleteVenue(venue2);
     }

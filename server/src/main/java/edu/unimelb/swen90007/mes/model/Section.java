@@ -19,6 +19,11 @@ public class Section {
         this.id = id;
     }
 
+    public Section(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Section(int id, Event event, String name, Money money, int capacity, int remainingTickets) {
         this.id = id;
         this.event = event;

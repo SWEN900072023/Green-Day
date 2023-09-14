@@ -52,7 +52,7 @@ public final class SubOrderMapper {
             BigDecimal unitPrice = resultSet.getBigDecimal("unit_price");
             String currency = resultSet.getString("currency").trim();
 
-            Section section = new Section(sectionId);
+            Section section = SectionMapper.loadSectionOnlyName(sectionId);
             Money money = new Money(unitPrice, currency);
             SubOrder subOrder = new SubOrder(orderId, section, quantity, money);
 

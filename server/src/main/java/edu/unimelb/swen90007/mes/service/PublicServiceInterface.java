@@ -9,8 +9,9 @@ import java.util.List;
 
 public interface PublicServiceInterface {
     List<Event> viewAllEvents() throws SQLException;
+    List<Event> viewNextSixMothsEvents() throws SQLException;
     List<Event> searchEvents(String pattern) throws SQLException;
     void register(AppUser user) throws SQLException, AppUserAlreadyExistsException;
     void modifyUser(AppUser user) throws SQLException, AppUserAlreadyExistsException;
-    boolean userAuthentication(AppUser user) throws SQLException;
+    String userAuthentication(AppUser user) throws SQLException;
 }

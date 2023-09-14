@@ -58,6 +58,17 @@ public final class SectionMapper {
         return load(resultSet).get(0);
     }
 
+    public static Section loadSectionOnlyName(int id) throws SQLException {
+        String sql = "SELECT name FROM sections WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        String name = resultSet.getString("name").trim();
+        return new Section(id, name);
+    }
+
     private static List<Section> load(ResultSet resultSet) throws SQLException {
         List<Section> sections = new ArrayList<>();
 

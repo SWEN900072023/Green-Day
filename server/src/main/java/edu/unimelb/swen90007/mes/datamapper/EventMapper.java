@@ -43,18 +43,35 @@ public final class EventMapper {
     }
 
     public static void updateEndedEvent() throws SQLException {
-        String sql = "UPDATE events SET status = 2 WHERE end_time <= ? AND status = ?";
+        String sql = "UPDATE events SET status = 3 WHERE end_time <= ? AND status = 1";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setObject(1, OffsetDateTime.now());
-        preparedStatement.setObject(2, 1);
+        preparedStatement.executeUpdate();
+
+        logger.info("Update Events Status to Ended");
+    }
+
+    public static void updateComingEvent() throws SQLException {
+        String sql = "UPDATE events SET status = 1 WHERE start_time <= ? AND status = 2";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setObject(1, OffsetDateTime.now());
         preparedStatement.executeUpdate();
 
         logger.info("Update Events Status to Ended");
     }
 
     public static List<Event> loadAll() throws SQLException {
-        String sql = "SELECT * FROM events WHERE status <> 2 ORDER BY start_time";
+        String sql = "SELECT * FROM events WHERE status <> 3 ORDER BY start_time";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet);
+    }
+
+    public static List<Event> loadNextSixMonths() throws SQLException {
+        String sql = "SELECT * FROM events WHERE status = 1 ORDER BY start_time";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();

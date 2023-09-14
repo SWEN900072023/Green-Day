@@ -19,5 +19,4 @@ public interface EventPlannerServiceInterface {
     void inviteEventPlanner(EventPlanner inviter, EventPlanner invitee, Event event) throws SQLException, PermissionDeniedException;
     List<Order> viewOrders(EventPlanner ep, Event event) throws SQLException, PermissionDeniedException;
     void cancelOrder(EventPlanner ep, Order order) throws SQLException, PermissionDeniedException, AppUserAlreadyExistsException;
-    void deleteOrder(EventPlanner ep, Order order) throws SQLException, PermissionDeniedException, AppUserAlreadyExistsException;
 }

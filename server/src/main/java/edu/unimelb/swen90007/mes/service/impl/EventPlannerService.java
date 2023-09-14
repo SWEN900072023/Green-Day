@@ -93,15 +93,6 @@ public class EventPlannerService implements EventPlannerServiceInterface {
         UnitOfWork.getInstance().commit();
     }
 
-    @Override
-    public void deleteOrder(EventPlanner ep, Order order)
-            throws SQLException, PermissionDeniedException, AppUserAlreadyExistsException {
-        if(!PlannerEventMapper.checkRelation(ep, order.getEvent()))
-            throw new PermissionDeniedException();
-        UnitOfWork.getInstance().registerDeleted(order);
-        UnitOfWork.getInstance().commit();
-    }
-
     public boolean capacityCheck(Event event) throws SQLException {
         int eventCapacity = 0;
         for(Section s : event.getSections())

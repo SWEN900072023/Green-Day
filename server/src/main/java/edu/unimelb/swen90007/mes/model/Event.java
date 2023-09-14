@@ -16,7 +16,7 @@ public class Event {
     private String title;
     private String artist;
     private Venue venue;
-    private Integer status; // 1 : Not Ended, 2 : Ended
+    private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
 
@@ -54,10 +54,12 @@ public class Event {
         this.venue = venue;
         this.startTime = startTime;
         this.endTime = endTime;
-        if(endTime.isBefore(OffsetDateTime.now()))
-            this.status = 2;
-        else
+        if(startTime.isBefore(OffsetDateTime.now()))
+            this.status = 3;
+        else if (startTime.isBefore(OffsetDateTime.now().plusMonths(6)))
             this.status = 1;
+        else
+            this.status = 2;
     }
 
     public int getFirstPlannerId() { return firstPlannerId; }

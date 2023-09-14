@@ -27,10 +27,4 @@ public class CustomerService implements CustomerServiceInterface {
         UnitOfWork.getInstance().registerDirty(order);
         UnitOfWork.getInstance().commit();
     }
-
-    @Override
-    public void deleteOrder(Order order) throws SQLException, AppUserAlreadyExistsException {
-        UnitOfWork.getInstance().registerDeleted(order);
-        UnitOfWork.getInstance().commit();
-    }
 }

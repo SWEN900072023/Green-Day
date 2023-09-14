@@ -18,6 +18,11 @@ public class PublicService implements PublicServiceInterface {
     }
 
     @Override
+    public List<Event> viewNextSixMothsEvents() throws SQLException {
+        return EventMapper.loadNextSixMonths();
+    }
+
+    @Override
     public List<Event> searchEvents(String pattern) throws SQLException {
         return EventMapper.loadByPattern(pattern);
     }
@@ -35,7 +40,7 @@ public class PublicService implements PublicServiceInterface {
     }
 
     @Override
-    public boolean userAuthentication(AppUser user) throws SQLException {
+    public String userAuthentication(AppUser user) throws SQLException {
         return AppUserMapper.userAuthentication(user);
     }
 }
