@@ -1,6 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
 import edu.unimelb.swen90007.mes.model.Event;
+import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.model.Section;
 import edu.unimelb.swen90007.mes.model.Venue;
 import org.apache.logging.log4j.LogManager;
@@ -8,86 +9,208 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class EventMapper {
     private static final Logger logger = LogManager.getLogger(EventMapper.class);
 
-    public static void create(int eventPlannerID, Event event) throws SQLException {
-        String sql = "INSERT INTO events (title, artist, venue_id, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?)";
+    public static void create(Event event) throws SQLException {
+        String sql = "INSERT INTO events (title, artist, venue_id, status, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
-        preparedStatement.setInt(3, event.getVenue().getID());
-        preparedStatement.setObject(4, event.getStartTime());
-        preparedStatement.setObject(5, event.getEndTime());
-        preparedStatement.setString(6, "Active");
+        preparedStatement.setInt(3, event.getVenue().getId());
+        preparedStatement.setInt(4, event.getStatus());
+        preparedStatement.setObject(5, event.getStartTime());
+        preparedStatement.setObject(6, event.getEndTime());
         preparedStatement.executeUpdate();
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next())
-            event.setID(generatedKeys.getInt("id"));
-        logger.info("New Event Created [id=" + event.getID() + "]");
+            event.setId(generatedKeys.getInt("id"));
+        logger.info("New Event Created [id=" + event.getId() + "]");
 
-        sql = "INSERT INTO planner_events (event_id, planner_id) VALUES (?, ?)";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, event.getID());
-        preparedStatement.setInt(2, eventPlannerID);
-        preparedStatement.executeUpdate();
-        logger.info("New Association Created [event_id=" + event.getID() + "], [planner_id=" + eventPlannerID + "]");
+        PlannerEventMapper.create(event.getId(), event.getFirstPlannerId());
 
         List<Section> sections = event.getSections();
         for (Section section : sections) {
+            section.setEvent(event);
             SectionMapper.create(section);
             section.setEvent(event);
         }
     }
 
-    public static Event loadByID(int eventID) throws SQLException {
-        Event event = null;
+    public static void updateEndedEvent() throws SQLException {
+        String sql = "UPDATE events SET status = 3 WHERE end_time <= ? AND status = 1";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setObject(1, OffsetDateTime.now());
+        preparedStatement.executeUpdate();
 
+        logger.info("Update Events Status to Ended");
+    }
+
+    public static void updateComingEvent() throws SQLException {
+        String sql = "UPDATE events SET status = 1 WHERE start_time <= ? AND status = 2";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setObject(1, OffsetDateTime.now());
+        preparedStatement.executeUpdate();
+
+        logger.info("Update Events Status to Ended");
+    }
+
+    public static List<Event> loadAll() throws SQLException {
+        String sql = "SELECT * FROM events WHERE status <> 3 ORDER BY start_time";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet);
+    }
+
+    public static List<Event> loadNextSixMonths() throws SQLException {
+        String sql = "SELECT * FROM events WHERE status = 1 ORDER BY start_time";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet);
+    }
+
+    public static List<Event> loadByPattern(String pattern) throws SQLException {
+        pattern = "%" + pattern + "%";
+        String sql = "SELECT * FROM events WHERE title LIKE ? ORDER BY start_time";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, pattern);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet);
+    }
+
+    public static Event loadById(int eventId) throws SQLException {
         String sql = "SELECT * FROM events WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, eventID);
+        preparedStatement.setInt(1, eventId);
         ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet).get(0);
+    }
+
+    public static List<Event> loadByVenue(Venue venue) throws SQLException {
+        int venueId = venue.getId();
+        String sql = "SELECT * FROM events WHERE venue_id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setObject(1, venueId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet);
+    }
+
+    public static List<Event> loadByEventPlanner(EventPlanner e) throws SQLException {
+        List<Event> events = new ArrayList<>();
+        List<Integer> eventIds = PlannerEventMapper.loadEventIdsByPlanner(e);
+        for(int eventId: eventIds)
+            events.add(new Event(eventId));
+        return events;
+    }
+
+    private static List<Event> load(ResultSet resultSet) throws SQLException {
+        List<Event> events = new ArrayList<>();
 
         while (resultSet.next()) {
+            int eventId = resultSet.getInt("id");
             String title = resultSet.getString("title").trim();
             String artist = resultSet.getString("artist").trim();
-            int venueID = resultSet.getInt("venue_id");
+            int venueId = resultSet.getInt("venue_id");
+            int status = resultSet.getInt("status");
             OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class);
             OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class);
-            String status = resultSet.getString("status").trim();
 
-            List<Section> sections = SectionMapper.loadByEventID(eventID);
-            Venue venue = VenueMapper.loadByID(venueID);
+            List<Section> sections = SectionMapper.loadSectionsByEventId(eventId);
 
-            event = new Event(eventID, sections, title, artist, venue, startTime, endTime, status);
+            Venue venue = new Venue(venueId);
+
+            Event event = new Event(eventId, sections, title, artist, venue, status, startTime, endTime);
 
             for (Section section : sections)
                 section.setEvent(event);
 
-            logger.info("Event Loaded [id=" + eventID + "]");
+            logger.info("Event Loaded [id=" + eventId + "]");
+
+            events.add(event);
         }
 
-        return event;
+        return events;
     }
 
-    public static void delete(int eventID, int plannerID) throws SQLException {
-        String sql = "DELETE FROM planner_events WHERE event_id = ? AND planner_id = ?";
+    private static List<Event> loadPartial(ResultSet resultSet) throws SQLException {
+        List<Event> events = new ArrayList<>();
+
+        while (resultSet.next()) {
+            int eventId = resultSet.getInt("id");
+            String title = resultSet.getString("title").trim();
+            String artist = resultSet.getString("artist").trim();
+            int venueId = resultSet.getInt("venue_id");
+            int status = resultSet.getInt("status");
+            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class);
+            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class);
+
+            Venue venue = new Venue(venueId);
+
+            Event event = new Event(eventId, title, artist, venue, status, startTime, endTime);
+
+            logger.info("Event Partial Loaded [id=" + eventId + "]");
+
+            events.add(event);
+        }
+
+        return events;
+    }
+
+    public static boolean timeCheck(Event event) throws SQLException {
+        String sql = "SELECT * FROM events WHERE status = ? AND id <> ? AND" +
+                "(( start_time <= ? AND end_time <= ? ) OR ( start_time <= ? AND end_time <= ? )) AND venue_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, eventID);
-        preparedStatement.setInt(2, plannerID);
-        preparedStatement.executeUpdate();
-        logger.info("Association Deleted [event_id=" + eventID + "], [planner_id=" + plannerID + "]");
+        preparedStatement.setInt(1, event.getStatus());
+        preparedStatement.setInt(2, event.getId());
+        preparedStatement.setObject(3, event.getStartTime());
+        preparedStatement.setObject(4, event.getStartTime());
+        preparedStatement.setObject(5, event.getEndTime());
+        preparedStatement.setObject(6, event.getEndTime());
+        preparedStatement.setObject(7, event.getVenue().getId());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return resultSet.isBeforeFirst();
+    }
 
-        sql = "DELETE FROM events WHERE id = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, eventID);
+    public static void update(Event event) throws SQLException {
+        String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, event.getTitle());
+        preparedStatement.setString(2, event.getArtist());
+        preparedStatement.setInt(3, event.getVenue().getId());
+        preparedStatement.setInt(4, event.getStatus());
+        preparedStatement.setObject(5, event.getStartTime());
+        preparedStatement.setObject(6, event.getEndTime());
+        preparedStatement.setInt(7, event.getId());
         preparedStatement.executeUpdate();
-        logger.info("Existing Event Deleted [id=" + eventID + "]");
+
+        for (Section section : event.getSections())
+            SectionMapper.update(section);
+
+        logger.info("Event Updated [id=" + event.getId() + "]");
+    }
+
+    public static void delete(Event event) throws SQLException {
+        int eventId = event.getId();
+        PlannerEventMapper.delete(eventId);
+        String sql = "DELETE FROM events WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, eventId);
+        preparedStatement.executeUpdate();
+        logger.info("Existing Event Deleted [id=" + eventId + "]");
     }
 }

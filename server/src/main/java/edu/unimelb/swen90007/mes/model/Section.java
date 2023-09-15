@@ -1,12 +1,28 @@
 package edu.unimelb.swen90007.mes.model;
 
+import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.SQLException;
+
 public class Section {
-    private int id;
+    private static final Logger logger = LogManager.getLogger(Section.class);
+    private Integer id;
     private Event event;
     private String name;
     private Money money;
-    private int capacity;
-    private int remainingTickets;
+    private Integer capacity;
+    private Integer remainingTickets;
+
+    public Section(int id) {
+        this.id = id;
+    }
+
+    public Section(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Section(int id, Event event, String name, Money money, int capacity, int remainingTickets) {
         this.id = id;
@@ -17,15 +33,25 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
-    public int getID() {
+    public Section(Event event, String name, Money money, int capacity, int remainingTickets) {
+        this.event = event;
+        this.name = name;
+        this.money = money;
+        this.capacity = capacity;
+        this.remainingTickets = remainingTickets;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setID(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
     public Event getEvent() {
+        if (event == null)
+            load();
         return event;
     }
 
@@ -34,6 +60,8 @@ public class Section {
     }
 
     public String getName() {
+        if (name == null)
+            load();
         return name;
     }
 
@@ -42,6 +70,8 @@ public class Section {
     }
 
     public Money getMoney() {
+        if (money == null)
+            load();
         return money;
     }
 
@@ -50,6 +80,8 @@ public class Section {
     }
 
     public int getCapacity() {
+        if (capacity == null)
+            load();
         return capacity;
     }
 
@@ -58,10 +90,26 @@ public class Section {
     }
 
     public int getRemainingTickets() {
+        if (remainingTickets == null)
+            load();
         return remainingTickets;
     }
 
     public void setRemainingTickets(int remainingTickets) {
         this.remainingTickets = remainingTickets;
+    }
+
+    private void load() {
+        logger.info("Loading Section [id=" + id + "]");
+        try {
+            Section section = SectionMapper.loadById(id);
+            event = section.getEvent();
+            name = section.getName();
+            money = section.getMoney();
+            capacity = section.getCapacity();
+            remainingTickets = section.getRemainingTickets();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading Section [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }

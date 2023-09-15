@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
+import edu.unimelb.swen90007.mes.model.Event;
 import edu.unimelb.swen90007.mes.model.Money;
 import edu.unimelb.swen90007.mes.model.Section;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +18,7 @@ public final class SectionMapper {
         String sql = "INSERT INTO sections (event_id, name, unit_price, currency, capacity, remaining_tickets) VALUES (?, ?, ?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        preparedStatement.setInt(1, section.getEvent().getID());
+        preparedStatement.setInt(1, section.getEvent().getId());
         preparedStatement.setString(2, section.getName());
         preparedStatement.setBigDecimal(3, section.getMoney().getUnitPrice());
         preparedStatement.setString(4, section.getMoney().getCurrency());
@@ -27,20 +28,28 @@ public final class SectionMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next())
-            section.setID(generatedKeys.getInt("id"));
-        logger.info("New Section Created [id=" + section.getID() + "]");
+            section.setId(generatedKeys.getInt("id"));
+        logger.info("New Section Created [id=" + section.getId() + "]");
     }
 
-    public static List<Section> loadByEventID(int eventID) throws SQLException {
-        String sql = "SELECT * FROM sections WHERE event_id = ?";
+    public static List<Section> loadSectionsByEventId(int eventId) throws SQLException {
+        List<Section> sections = new ArrayList<>();
+
+        String sql = "SELECT id FROM sections WHERE event_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, eventID);
+        preparedStatement.setInt(1, eventId);
         ResultSet resultSet = preparedStatement.executeQuery();
-        return load(resultSet);
+
+        while (resultSet.next()) {
+            int sectionId = resultSet.getInt("id");
+            sections.add(new Section(sectionId));
+        }
+
+        return sections;
     }
 
-    public static Section loadByID(int id) throws SQLException {
+    public static Section loadById(int id) throws SQLException {
         String sql = "SELECT * FROM sections WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -49,22 +58,60 @@ public final class SectionMapper {
         return load(resultSet).get(0);
     }
 
+    public static Section loadSectionOnlyName(int id) throws SQLException {
+        String sql = "SELECT name FROM sections WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        String name = resultSet.getString("name").trim();
+        return new Section(id, name);
+    }
+
     private static List<Section> load(ResultSet resultSet) throws SQLException {
         List<Section> sections = new ArrayList<>();
 
         while (resultSet.next()) {
-            int id = resultSet.getInt("id");
+            int sectionId = resultSet.getInt("id");
+            int eventId = resultSet.getInt("event_id");
             String name = resultSet.getString("name").trim();
             BigDecimal unitPrice = resultSet.getBigDecimal("unit_price");
             String currency = resultSet.getString("currency").trim();
             int capacity = resultSet.getInt("capacity");
             int remainingTickets = resultSet.getInt("remaining_tickets");
 
-            sections.add(new Section(id, null, name, new Money(unitPrice, currency), capacity, remainingTickets));
-            logger.info("Section Loaded [id=" + id + "]");
+            Event event = new Event(eventId);
+
+            sections.add(new Section(sectionId, event, name, new Money(unitPrice, currency), capacity, remainingTickets));
+            logger.info("Section Loaded [id=" + sectionId + "]");
         }
 
         return sections;
+    }
+
+    public static void update(Section section) throws SQLException {
+        String sql = "UPDATE sections SET name = ?, unit_price = ?, currency = ?, capacity = ?, remaining_tickets = ? WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, section.getName());
+        preparedStatement.setBigDecimal(2, section.getMoney().getUnitPrice());
+        preparedStatement.setString(3, section.getMoney().getCurrency());
+        preparedStatement.setInt(4, section.getCapacity());
+        preparedStatement.setInt(5, section.getRemainingTickets());
+        preparedStatement.setInt(6, section.getId());
+        preparedStatement.executeUpdate();
+        logger.info("Section Updated [id=" + section.getId() + "]");
+    }
+
+    public static void increaseRemainingTickets(int id, int quantity) throws SQLException {
+        String sql = "UPDATE sections SET remaining_tickets = remaining_tickets + ? WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, quantity);
+        preparedStatement.setInt(2, id);
+        preparedStatement.executeUpdate();
+        logger.info("Remaining Tickets Increased By " + quantity + " [id=" + id + "]");
     }
 
     public static void decreaseRemainingTickets(int id, int quantity) throws SQLException {
@@ -77,7 +124,8 @@ public final class SectionMapper {
         logger.info("Remaining Tickets Decreased By " + quantity + " [id=" + id + "]");
     }
 
-    public static void delete(int id) throws SQLException {
+    public static void delete(Section section) throws SQLException {
+        int id = section.getId();
         String sql = "DELETE FROM sections WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
