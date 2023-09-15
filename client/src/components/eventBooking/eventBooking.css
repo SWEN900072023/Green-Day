@@ -1,0 +1,84 @@
+#app {
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  margin: auto;
+}
+
+.grid td {
+  width: 25px;
+  height: 35px;
+  border: 2px solid orange;
+  text-align: center;
+  float: left;
+  margin: 5px;
+}
+
+.grid td:hover {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.reserved {
+  background: silver;
+  color: #fff;
+  display: inline-block;
+}
+
+.selected {
+  background: red;
+  color: #fff;
+  display: inline-block;
+}
+
+.reserved::after {
+  content: "R";
+}
+
+.selected::after {
+  content: "S";
+}
+
+.available::after {
+  content: "A";
+}
+
+.available {
+  color: #333;
+}
+
+li {
+  list-style: none;
+}
+
+/* Define the styles for the button */
+button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3498db; /* Default background color */
+  color: #ffffff; /* Default text color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  max-width: 200px;
+  /* align-self: center; */
+}
+
+/* Hover effect: Change background color and add shadow */
+button:hover {
+  background-color: #2980b9; /* Hover background color */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Add a subtle shadow on hover */
+}
+
+/* Active effect: Shrink the button slightly when clicked */
+button:active {
+  transform: scale(0.95); /* Shrink the button by 5% on click */
+}

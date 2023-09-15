@@ -27,7 +27,7 @@ const Home = () => {
   });
 
   return (
-    <div className="container">
+    <div className="homeContainer">
       <div className="eventsList">
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
