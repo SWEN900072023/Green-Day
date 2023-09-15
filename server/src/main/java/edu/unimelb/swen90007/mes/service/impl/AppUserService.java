@@ -26,9 +26,14 @@ public class AppUserService implements IAppUserService {
             throw new UsernameNotFoundException(email);
         }
 
-        var userBuilder = User.withUsername(user.getEmail())
-                .password(user.getPassword())
-                .roles(user.getClass().getSimpleName());
+        User.UserBuilder userBuilder = null;
+        try {
+            userBuilder = User.withUsername(user.getEmail())
+                    .password(user.getPassword())
+                    .roles(user.getClass().getSimpleName());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         return userBuilder.build();
     }

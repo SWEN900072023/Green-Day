@@ -1,7 +1,7 @@
 package edu.unimelb.swen90007.mes.util;
 
 import edu.unimelb.swen90007.mes.datamapper.*;
-import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 
 import java.sql.SQLException;
@@ -59,7 +59,7 @@ public class UnitOfWork {
         }
     }
 
-    public void commit() throws SQLException, AppUserAlreadyExistsException {
+    public void commit() throws SQLException, UserAlreadyExistsException {
         for (Object object : newObjects) {
             if (object instanceof AppUser) {
                 AppUserMapper.create((AppUser) object);

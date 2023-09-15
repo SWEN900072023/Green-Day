@@ -1,10 +1,10 @@
 package edu.unimelb.swen90007.mes.service.test;
 
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
-import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
+import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.impl.AdminService;
 import edu.unimelb.swen90007.mes.service.impl.CustomerService;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ServiceTest {
     public static void main(String[] args)
-            throws SQLException, AppUserAlreadyExistsException, CapacityExceedsException, PermissionDeniedException, TimeConflictException {
+            throws SQLException, CapacityExceedsException, PermissionDeniedException, TimeConflictException, UserAlreadyExistsException {
 
         // Create Service
         PublicService publicService = new PublicService();

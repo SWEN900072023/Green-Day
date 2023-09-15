@@ -41,13 +41,13 @@ public abstract class AppUser {
         this.id = id;
     }
 
-    public String getEmail() {
+    public String getEmail() throws SQLException {
         if (email == null)
             load();
         return email;
     }
 
-    public String getPassword() {
+    public String getPassword() throws SQLException {
         if (password == null)
             load();
         return password;
@@ -57,13 +57,13 @@ public abstract class AppUser {
         this.password = password;
     }
 
-    public String getFirstName() {
+    public String getFirstName() throws SQLException {
         if (firstName == null)
             load();
         return firstName;
     }
 
-    public String getLastName() {
+    public String getLastName() throws SQLException {
         if (lastName == null)
             load();
         return lastName;

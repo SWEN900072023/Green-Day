@@ -73,13 +73,13 @@ public class Event {
         this.id = id;
     }
 
-    public List<Section> getSections() {
+    public List<Section> getSections() throws SQLException {
         if (sections == null)
             load();
         return sections;
     }
 
-    public void setSections(List<Section> sections) throws SQLException {
+    public void setSections(List<Section> sections) {
         this.sections = sections;
     }
 
@@ -93,7 +93,7 @@ public class Event {
         this.title = title;
     }
 
-    public String getArtist() {
+    public String getArtist() throws SQLException {
         if (artist == null)
             load();
         return artist;
@@ -103,7 +103,7 @@ public class Event {
         this.artist = artist;
     }
 
-    public Venue getVenue() {
+    public Venue getVenue() throws SQLException {
         if (venue == null)
             load();
         return venue;
@@ -129,7 +129,7 @@ public class Event {
         this.startTime = startTime;
     }
 
-    public OffsetDateTime getEndTime() {
+    public OffsetDateTime getEndTime() throws SQLException {
         if (endTime == null)
             load();
         return endTime;

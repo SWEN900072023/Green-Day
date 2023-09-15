@@ -1,6 +1,6 @@
 package edu.unimelb.swen90007.mes.service;
 
-import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.AppUser;
 import edu.unimelb.swen90007.mes.model.Event;
 
@@ -11,7 +11,7 @@ public interface PublicServiceInterface {
     List<Event> viewAllEvents() throws SQLException;
     List<Event> viewNextSixMothsEvents() throws SQLException;
     List<Event> searchEvents(String pattern) throws SQLException;
-    void register(AppUser user) throws SQLException, AppUserAlreadyExistsException;
-    void modifyUser(AppUser user) throws SQLException, AppUserAlreadyExistsException;
+    void register(AppUser user) throws SQLException, UserAlreadyExistsException;
+    void modifyUser(AppUser user) throws SQLException, UserAlreadyExistsException;
     String userAuthentication(AppUser user) throws SQLException;
 }

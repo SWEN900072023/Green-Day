@@ -53,7 +53,7 @@ public class Order {
         return customer;
     }
 
-    public List<SubOrder> getSubOrders() {
+    public List<SubOrder> getSubOrders() throws SQLException {
         if (subOrders == null)
             load();
         return subOrders;
@@ -67,7 +67,7 @@ public class Order {
         return createdAt;
     }
 
-    public String getStatus() {
+    public String getStatus() throws SQLException {
         if (status == null)
             load();
         return status;
@@ -77,7 +77,7 @@ public class Order {
         this.status = status;
     }
 
-    private void load() {
+    private void load() throws SQLException {
         logger.info("Loading Order [id=" + id + "]");
         Order order = OrderMapper.loadById(id);
         assert order != null;

@@ -4,8 +4,7 @@ import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
-import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
-import edu.unimelb.swen90007.mes.exceptions.AppUserNotFoundException;
+import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.AdminServiceInterface;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
@@ -31,13 +30,13 @@ public class AdminService implements AdminServiceInterface {
     }
 
     @Override
-    public void createVenue(Venue venue) throws SQLException, AppUserAlreadyExistsException {
+    public void createVenue(Venue venue) throws SQLException, UserAlreadyExistsException {
         UnitOfWork.getInstance().registerNew(venue);
         UnitOfWork.getInstance().commit();
     }
 
     @Override
-    public void deleteVenue(Venue venue) throws SQLException, AppUserAlreadyExistsException {
+    public void deleteVenue(Venue venue) throws SQLException, UserAlreadyExistsException {
         List<Event> events = EventMapper.loadByVenue(venue);
         List<Section> sections = new ArrayList<>();
         List<Order> orders = new ArrayList<>();
@@ -60,7 +59,7 @@ public class AdminService implements AdminServiceInterface {
     }
 
     @Override
-    public void deleteAppUser(AppUser user) throws SQLException, AppUserAlreadyExistsException {
+    public void deleteAppUser(AppUser user) throws SQLException, UserAlreadyExistsException {
         if (user instanceof Customer) {
             List<Order> orders = OrderMapper.loadByCustomerID(user.getId());
             for(Order o : orders)

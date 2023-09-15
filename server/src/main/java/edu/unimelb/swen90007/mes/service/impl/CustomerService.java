@@ -1,7 +1,7 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
-import edu.unimelb.swen90007.mes.exceptions.AppUserAlreadyExistsException;
+import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.model.Order;
 import edu.unimelb.swen90007.mes.service.CustomerServiceInterface;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CustomerService implements CustomerServiceInterface {
     @Override
-    public void placeOrder(Order order) throws SQLException, AppUserAlreadyExistsException {
+    public void placeOrder(Order order) throws SQLException, UserAlreadyExistsException {
         UnitOfWork.getInstance().registerNew(order);
         UnitOfWork.getInstance().commit();
     }
@@ -23,7 +23,7 @@ public class CustomerService implements CustomerServiceInterface {
     }
 
     @Override
-    public void cancelOrder(Order order) throws SQLException, AppUserAlreadyExistsException {
+    public void cancelOrder(Order order) throws SQLException, UserAlreadyExistsException {
         UnitOfWork.getInstance().registerDirty(order);
         UnitOfWork.getInstance().commit();
     }
