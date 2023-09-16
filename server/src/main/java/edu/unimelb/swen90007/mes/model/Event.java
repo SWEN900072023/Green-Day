@@ -10,8 +10,8 @@ import java.util.List;
 
 public class Event {
     private static final Logger logger = LogManager.getLogger(Event.class);
-    private int id;
-    private int firstPlannerId;
+    private Integer id;
+    private Integer firstPlannerId;
     private List<Section> sections;
     private String title;
     private String artist;
@@ -20,12 +20,12 @@ public class Event {
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
 
-    public Event(int id) {
+    public Event(Integer id) {
         this.id = id;
     }
 
-    public Event(int id, List<Section> sections, String title, String artist,
-                 Venue venue, int status, OffsetDateTime startTime, OffsetDateTime endTime) {
+    public Event(Integer id, List<Section> sections, String title, String artist,
+                 Venue venue, Integer status, OffsetDateTime startTime, OffsetDateTime endTime) {
         this.id = id;
         this.sections = sections;
         this.title = title;
@@ -36,8 +36,8 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public Event(int id, String title, String artist,
-                 Venue venue, int status, OffsetDateTime startTime, OffsetDateTime endTime) {
+    public Event(Integer id, String title, String artist,
+                 Venue venue, Integer status, OffsetDateTime startTime, OffsetDateTime endTime) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -62,14 +62,14 @@ public class Event {
             this.status = 2;
     }
 
-    public int getFirstPlannerId() { return firstPlannerId; }
-    public void setFirstPlannerId(int id) { this.firstPlannerId = id; }
+    public Integer getFirstPlannerId() { return firstPlannerId; }
+    public void setFirstPlannerId(Integer id) { this.firstPlannerId = id; }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -113,7 +113,7 @@ public class Event {
         this.venue = venue;
     }
 
-    public int getStatus() throws SQLException {
+    public Integer getStatus() throws SQLException {
         if (status == null)
             load();
         return status;

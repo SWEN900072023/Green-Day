@@ -13,28 +13,28 @@ public class Venue {
     private String address;
     private Integer capacity;
 
-    public Venue(int id) {
+    public Venue(Integer id) {
         this.id = id;
     }
 
-    public Venue(int id, String name, String address, int capacity) {
+    public Venue(Integer id, String name, String address, Integer capacity) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.capacity = capacity;
     }
 
-    public Venue(String name, String address, int capacity) {
+    public Venue(String name, String address, Integer capacity) {
         this.name = name;
         this.address = address;
         this.capacity = capacity;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -50,7 +50,7 @@ public class Venue {
         return address;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         if (capacity == null)
             load();
         return capacity;

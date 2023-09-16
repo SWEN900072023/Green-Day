@@ -1,29 +1,29 @@
 package edu.unimelb.swen90007.mes.model;
 
 public class SubOrder {
-    private int orderId;
+    private Integer orderId;
     private final Section section;
-    private final int quantity;
+    private final Integer quantity;
     private final Money money;
 
-    public SubOrder(int orderId, Section section, int quantity, Money money) {
+    public SubOrder(Integer orderId, Section section, Integer quantity, Money money) {
         this.orderId = orderId;
         this.section = section;
         this.quantity = quantity;
         this.money = money;
     }
 
-    public SubOrder(Section section, int quantity, Money money) {
+    public SubOrder(Section section, Integer quantity, Money money) {
         this.section = section;
         this.quantity = quantity;
         this.money = money;
     }
 
-    public int getOrderId() {
+    public Integer getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(int orderId) {
+    public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }
 
@@ -31,7 +31,7 @@ public class SubOrder {
         return section;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
