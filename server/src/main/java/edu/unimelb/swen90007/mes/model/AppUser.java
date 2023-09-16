@@ -26,6 +26,13 @@ public abstract class AppUser {
         this.lastName = lastName;
     }
 
+    public AppUser(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public int getId() {
         return id;
     }
@@ -34,13 +41,13 @@ public abstract class AppUser {
         this.id = id;
     }
 
-    public String getEmail() {
+    public String getEmail() throws SQLException {
         if (email == null)
             load();
         return email;
     }
 
-    public String getPassword() {
+    public String getPassword() throws SQLException {
         if (password == null)
             load();
         return password;
@@ -50,19 +57,26 @@ public abstract class AppUser {
         this.password = password;
     }
 
-    public String getFirstName() {
+    public String getFirstName() throws SQLException {
         if (firstName == null)
             load();
         return firstName;
     }
 
-    public String getLastName() {
+    public String getLastName() throws SQLException {
         if (lastName == null)
             load();
         return lastName;
     }
 
-    private void load() {
+    public void setUserDetail(String email, String password, String firstName, String lastName){
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    private void load() throws SQLException {
         logger.info("Loading User [id=" + id + "]");
         AppUser appUser;
         try {

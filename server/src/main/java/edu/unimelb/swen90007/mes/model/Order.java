@@ -11,17 +11,26 @@ import java.util.List;
 public class Order {
     private static final Logger logger = LogManager.getLogger(Order.class);
     private int id;
+    private Event event;
     private Customer customer;
     private List<SubOrder> subOrders;
     private OffsetDateTime createdAt;
     private String status;
 
-    public Order(int id, Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
+    public Order(int id, Event event,Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
         this.id = id;
+        this.event = event;
         this.customer = customer;
         this.subOrders = subOrders;
         this.createdAt = createdAt;
         this.status = status;
+    }
+
+    public Order(Event event,Customer customer) {
+        this.event = event;
+        this.customer = customer;
+        this.createdAt = OffsetDateTime.now();
+        this.status = "Ordered";
     }
 
     public int getId() {
@@ -32,23 +41,33 @@ public class Order {
         this.id = id;
     }
 
-    public Customer getCustomer() {
+    public Event getEvent() throws SQLException {
+        if (event == null)
+            load();
+        return event;
+    }
+
+    public Customer getCustomer() throws SQLException {
         if (customer == null)
             load();
         return customer;
     }
 
-    public List<SubOrder> getSubOrders() {
+    public List<SubOrder> getSubOrders() throws SQLException {
         if (subOrders == null)
             load();
         return subOrders;
+    }
+
+    public void setSubOrders(List<SubOrder> subOrders) {
+        this.subOrders = subOrders;
     }
 
     public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public String getStatus() {
+    public String getStatus() throws SQLException {
         if (status == null)
             load();
         return status;
@@ -58,17 +77,14 @@ public class Order {
         this.status = status;
     }
 
-    private void load() {
+    private void load() throws SQLException {
         logger.info("Loading Order [id=" + id + "]");
-        try {
-            Order order = OrderMapper.loadById(id);
-            assert order != null;
-            customer = order.getCustomer();
-            subOrders = order.getSubOrders();
-            createdAt = order.getCreatedAt();
-            status = order.getStatus();
-        } catch (SQLException e) {
-            logger.error(String.format("Error loading Order [id=%d]: %s", id, e.getMessage()));
-        }
+        Order order = OrderMapper.loadById(id);
+        assert order != null;
+        event = order.getEvent();
+        customer = order.getCustomer();
+        subOrders = order.getSubOrders();
+        createdAt = order.getCreatedAt();
+        status = order.getStatus();
     }
 }

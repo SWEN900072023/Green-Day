@@ -5,8 +5,7 @@ import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.model.AppUser;
 import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.model.EventPlanner;
-import edu.unimelb.swen90007.mes.service.IAppUserService;
-import edu.unimelb.swen90007.mes.service.impl.AppUserService;
+import edu.unimelb.swen90007.mes.service.impl.PublicService;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -37,9 +36,9 @@ public class UserRegisterServlet extends HttpServlet {
             }
         }
 
-        IAppUserService userService = new AppUserService();
+        PublicService publicService = new PublicService();
         try {
-            userService.register(user);
+            publicService.register(user);
             ResponseWriter.write(response, 201, "Success");
         } catch (Exception e) {
             logger.error(e.getMessage());

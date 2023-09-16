@@ -1,37 +1,47 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.model.Customer;
-import edu.unimelb.swen90007.mes.model.Order;
-import edu.unimelb.swen90007.mes.model.SubOrder;
+import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public final class OrderMapper {
     private static final Logger logger = LogManager.getLogger(OrderMapper.class);
 
-    public static void create(int customerID, Order order) throws SQLException {
-        String sql = "INSERT INTO orders (customer_id, created_at, status) VALUES (?, ?, ?)";
+    public static void create(Order order) throws SQLException {
+        String sql = "INSERT INTO orders (event_id, customer_id, created_at, status) VALUES (?, ?, ?, ?)";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        preparedStatement.setInt(1, customerID);
-        preparedStatement.setObject(2, order.getCreatedAt());
-        preparedStatement.setString(3, order.getStatus());
+        preparedStatement.setInt(1, order.getEvent().getId());
+        preparedStatement.setInt(2, order.getCustomer().getId());
+        preparedStatement.setObject(3, order.getCreatedAt());
+        preparedStatement.setString(4, order.getStatus());
         preparedStatement.executeUpdate();
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-        if (generatedKeys.next())
+        if (generatedKeys.next()) {
+            int orderId = generatedKeys.getInt("id");
             order.setId(generatedKeys.getInt("id"));
-        logger.info("New Order Created [id=" + order.getId() + "]");
-
-        List<SubOrder> subOrders = order.getSubOrders();
-        for (SubOrder subOrder : subOrders) {
-            SubOrderMapper.create(order.getId(), subOrder);
+            for (SubOrder subOrder : order.getSubOrders()) {
+                subOrder.setOrderId(orderId);
+                SubOrderMapper.create(subOrder);
+            }
         }
+        logger.info("New Order Created [id=" + order.getId() + "]");
+    }
+
+    public static List<Order> loadByEventId(int eventId) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE event_id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, eventId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return load(resultSet);
     }
 
     public static List<Order> loadByCustomerID(int customerID) throws SQLException {
@@ -57,14 +67,16 @@ public final class OrderMapper {
 
         while (resultSet.next()) {
             int orderID = resultSet.getInt("id");
+            int eventID = resultSet.getInt("event_id");
             int customerID = resultSet.getInt("customer_id");
             OffsetDateTime createdAt = resultSet.getObject("created_at", OffsetDateTime.class);
             String status = resultSet.getString("status").trim();
 
             Customer customer = new Customer(customerID);
+            Event event = new Event(eventID);
             List<SubOrder> subOrders = SubOrderMapper.loadByOrderId(orderID);
 
-            Order order = new Order(orderID, customer, subOrders, createdAt, status);
+            Order order = new Order(orderID, event, customer, subOrders, createdAt, status);
             orders.add(order);
             logger.info("Order Loaded [id=" + orderID + "]");
         }
@@ -85,9 +97,9 @@ public final class OrderMapper {
         logger.info("Existing Order Cancelled [id=" + order.getId() + "]");
     }
 
-    public static void delete(int id) throws SQLException {
+    public static void delete(Order order) throws SQLException {
+        int id = order.getId();
         SubOrderMapper.deleteByOrderId(id);
-
         String sql = "DELETE FROM orders WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -95,4 +107,5 @@ public final class OrderMapper {
         preparedStatement.executeUpdate();
         logger.info("Existing Order Deleted [id=" + id + "]");
     }
+
 }

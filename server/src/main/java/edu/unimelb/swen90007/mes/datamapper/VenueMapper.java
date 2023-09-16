@@ -95,7 +95,8 @@ public final class VenueMapper {
      * @param id the venue ID
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static void delete(int id) throws SQLException {
+    public static void delete(Venue venue) throws SQLException {
+        int id = venue.getId();
         String sql = "DELETE FROM venues WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

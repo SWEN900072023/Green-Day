@@ -32,8 +32,8 @@ public final class SectionMapper {
         logger.info("New Section Created [id=" + section.getId() + "]");
     }
 
-    public static List<Integer> loadSectionIdsByEventId(int eventId) throws SQLException {
-        List<Integer> sectionIds = new ArrayList<>();
+    public static List<Section> loadSectionsByEventId(int eventId) throws SQLException {
+        List<Section> sections = new ArrayList<>();
 
         String sql = "SELECT id FROM sections WHERE event_id = ?";
         Connection connection = DBConnection.getConnection();
@@ -42,11 +42,11 @@ public final class SectionMapper {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            sectionIds.add(id);
+            int sectionId = resultSet.getInt("id");
+            sections.add(new Section(sectionId));
         }
 
-        return sectionIds;
+        return sections;
     }
 
     public static Section loadById(int id) throws SQLException {
@@ -56,6 +56,17 @@ public final class SectionMapper {
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         return load(resultSet).get(0);
+    }
+
+    public static Section loadSectionOnlyName(int id) throws SQLException {
+        String sql = "SELECT name FROM sections WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        String name = resultSet.getString("name").trim();
+        return new Section(id, name);
     }
 
     private static List<Section> load(ResultSet resultSet) throws SQLException {
@@ -113,7 +124,8 @@ public final class SectionMapper {
         logger.info("Remaining Tickets Decreased By " + quantity + " [id=" + id + "]");
     }
 
-    public static void delete(int id) throws SQLException {
+    public static void delete(Section section) throws SQLException {
+        int id = section.getId();
         String sql = "DELETE FROM sections WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
