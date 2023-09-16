@@ -22,9 +22,9 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void createEvent(Event event)
             throws SQLException, CapacityExceedsException, TimeConflictException, UserAlreadyExistsException {
-        if(capacityCheck(event))
+        if(isCapacityExceeded(event))
             throw new CapacityExceedsException();
-        if(EventMapper.timeCheck(event))
+        if(EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
         UnitOfWork.getInstance().registerNew(event);
         UnitOfWork.getInstance().commit();
@@ -36,9 +36,9 @@ public class EventPlannerService implements IEventPlannerService {
             PermissionDeniedException, TimeConflictException, UserAlreadyExistsException {
         if(!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
-        if(capacityCheck(event))
+        if(isCapacityExceeded(event))
             throw new CapacityExceedsException();
-        if(EventMapper.timeCheck(event))
+        if(EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
         UnitOfWork.getInstance().registerDirty(event);
         UnitOfWork.getInstance().commit();
@@ -87,17 +87,17 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void cancelOrder(EventPlanner ep, Order order)
             throws SQLException, PermissionDeniedException, UserAlreadyExistsException {
-        if(!PlannerEventMapper.checkRelation(ep, order.getEvent()))
+        if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
         UnitOfWork.getInstance().registerDirty(order);
         UnitOfWork.getInstance().commit();
     }
 
-    public boolean capacityCheck(Event event) throws SQLException {
+    public boolean isCapacityExceeded(Event event) {
         int eventCapacity = 0;
-        for(Section s : event.getSections())
-            eventCapacity += s.getCapacity();
-        int venueCapacity = event.getVenue().getCapacity();
+        for(Section s : event.loadSections())
+            eventCapacity += s.loadCapacity();
+        int venueCapacity = event.loadVenue().loadCapacity();
         return (eventCapacity > venueCapacity);
     }
 }

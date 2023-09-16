@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -15,7 +16,7 @@ public class ResponseWriter {
         if (data != null) {
             responseData.put("data", data);
         }
-        response.getWriter().write(responseData.toJSONString());
+        response.getWriter().write(JSON.toJSONString(responseData));
     }
 
     public static void write(HttpServletResponse response,

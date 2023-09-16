@@ -5,5 +5,6 @@ public class Constant {
     // JWT
     public static final String JWT_ISSUER = "edu.unimelb.swen90007.mes";
     public static final long JWT_EXPIRY = 36000L;
-    public static final String JWT_AUTHORITIES_CLAIM_NAME = "role";
+    public static final String JWT_AUTHORITIES_CLAIM = "authority";
+    public static final String JWT_USER_ID_CLAIM = "userId";
 }

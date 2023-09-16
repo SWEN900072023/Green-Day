@@ -1,6 +1,8 @@
 package edu.unimelb.swen90007.mes.model;
 
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,6 +10,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+@Getter @Setter
 public class Order {
     private static final Logger logger = LogManager.getLogger(Order.class);
     private Integer id;
@@ -33,58 +36,49 @@ public class Order {
         this.status = "Ordered";
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Event getEvent() throws SQLException {
+    public Event loadEvent() {
         if (event == null)
             load();
         return event;
     }
 
-    public Customer getCustomer() throws SQLException {
+    public Customer loadCustomer() {
         if (customer == null)
             load();
         return customer;
     }
 
-    public List<SubOrder> getSubOrders() throws SQLException {
+    public List<SubOrder> loadSubOrders() {
         if (subOrders == null)
             load();
         return subOrders;
     }
 
-    public void setSubOrders(List<SubOrder> subOrders) {
-        this.subOrders = subOrders;
-    }
-
-    public OffsetDateTime getCreatedAt() {
+    public OffsetDateTime loadCreatedAt() {
+        if (createdAt == null)
+            load();
         return createdAt;
     }
 
-    public String getStatus() throws SQLException {
+    public String loadStatus() {
         if (status == null)
             load();
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading Order [id=" + id + "]");
-        Order order = OrderMapper.loadById(id);
-        assert order != null;
-        event = order.getEvent();
-        customer = order.getCustomer();
-        subOrders = order.getSubOrders();
-        createdAt = order.getCreatedAt();
-        status = order.getStatus();
+        Order order;
+        try {
+            order = OrderMapper.loadById(id);
+            assert order != null;
+            event = order.loadEvent();
+            customer = order.loadCustomer();
+            subOrders = order.loadSubOrders();
+            createdAt = order.loadCreatedAt();
+            status = order.loadStatus();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading Order [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }

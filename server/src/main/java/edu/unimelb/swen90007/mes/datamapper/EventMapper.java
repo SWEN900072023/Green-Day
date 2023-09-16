@@ -168,18 +168,20 @@ public final class EventMapper {
         return events;
     }
 
-    public static boolean timeCheck(Event event) throws SQLException {
-        String sql = "SELECT * FROM events WHERE status = ? AND id <> ? AND" +
-                "(( start_time <= ? AND end_time <= ? ) OR ( start_time <= ? AND end_time <= ? )) AND venue_id = ?";
+    public static boolean doesTimeConflict(Event event) throws SQLException {
+        String sql = "SELECT * FROM events WHERE status = ? AND id <> ? AND venue_id = ? AND" +
+                "((start_time BETWEEN ? AND ?) OR ( end_time BETWEEN ? AND ?))";
+        // event id is null if it is a create request
+        if (event.getId() == null) event.setId(0);
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, event.getStatus());
         preparedStatement.setInt(2, event.getId());
-        preparedStatement.setObject(3, event.getStartTime());
+        preparedStatement.setObject(3, event.getVenue().getId());
         preparedStatement.setObject(4, event.getStartTime());
         preparedStatement.setObject(5, event.getEndTime());
-        preparedStatement.setObject(6, event.getEndTime());
-        preparedStatement.setObject(7, event.getVenue().getId());
+        preparedStatement.setObject(6, event.getStartTime());
+        preparedStatement.setObject(7, event.getEndTime());
         ResultSet resultSet = preparedStatement.executeQuery();
         return resultSet.isBeforeFirst();
     }

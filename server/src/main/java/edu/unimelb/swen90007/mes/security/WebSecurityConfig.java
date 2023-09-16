@@ -1,20 +1,17 @@
 package edu.unimelb.swen90007.mes.security;
 
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.model.Administrator;
+import edu.unimelb.swen90007.mes.model.AppUser;
+import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.service.impl.AppUserService;
-import edu.unimelb.swen90007.mes.util.RSAKeyReader;
+import edu.unimelb.swen90007.mes.util.JwtUtil;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -33,8 +30,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -49,16 +44,23 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(registry -> registry
                         // public API
-                        .requestMatchers(
-                                "/index.jsp",
+                        .requestMatchers(HttpMethod.GET,
+                                "/index.jsp"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST,
                                 Constant.API_PREFIX + "/login",
                                 Constant.API_PREFIX + "/register/customer"
                         ).permitAll()
                         // Administrator permission
-                        .requestMatchers(
-                                "/hello-servlet",
+                        .requestMatchers(HttpMethod.GET,
+                                "/hello-servlet"
+                        ).hasAuthority(Administrator.class.getSimpleName())
+                        .requestMatchers(HttpMethod.POST,
                                 Constant.API_PREFIX + "/register/event-planner"
-                        ).hasRole(Administrator.class.getSimpleName())
+                        ).hasAuthority(Administrator.class.getSimpleName())
+                        // EventPlanner permission
+                        .requestMatchers(HttpMethod.POST, Constant.API_PREFIX + "/events")
+                        .hasAuthority(EventPlanner.class.getSimpleName())
                         // Any logged-in users
                         .anyRequest().authenticated())
                 .formLogin(login -> login
@@ -100,9 +102,10 @@ public class WebSecurityConfig {
     }
 
     private String createJwtToken(Authentication authentication) {
+        AppUser user = (AppUser) authentication.getPrincipal();
         Instant now = Instant.now();
         long expiry = Constant.JWT_EXPIRY;
-        String role = authentication.getAuthorities().stream()
+        String authority = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -110,41 +113,27 @@ public class WebSecurityConfig {
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiry))
                 .subject(authentication.getName())
-                .claim(Constant.JWT_AUTHORITIES_CLAIM_NAME, role)
+                .claim(Constant.JWT_AUTHORITIES_CLAIM, authority)
+                .claim(Constant.JWT_USER_ID_CLAIM, user.getId())
                 .build();
         return jwtEncoder().encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        try {
-            RSAPublicKey publicKey = RSAKeyReader.readPublicKey();
-            return NimbusJwtDecoder.withPublicKey(publicKey).build();
-        } catch (Exception e) {
-            logger.error("Error reading public key: " + e.getMessage());
-            return null;
-        }
+        return JwtUtil.getInstance().getDecoder();
     }
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        try {
-            RSAPublicKey publicKey = RSAKeyReader.readPublicKey();
-            RSAPrivateKey privateKey = RSAKeyReader.readPrivateKey();
-            JWK jwk = new RSAKey.Builder(publicKey).privateKey(privateKey).build();
-            JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-            return new NimbusJwtEncoder(jwks);
-        } catch (Exception e) {
-            logger.error("Error reading key pairs: " + e.getMessage());
-            return null;
-        }
+        return JwtUtil.getInstance().getEncoder();
     }
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthorityPrefix("");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName(Constant.JWT_AUTHORITIES_CLAIM_NAME);
+        grantedAuthoritiesConverter.setAuthoritiesClaimName(Constant.JWT_AUTHORITIES_CLAIM);
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
