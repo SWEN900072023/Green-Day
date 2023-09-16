@@ -174,7 +174,7 @@ public final class EventMapper {
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, event.getStatus());
-        preparedStatement.setInt(2, event.getId());
+        preparedStatement.setInt(2, event.getId()==null?-1: event.getId());
         preparedStatement.setObject(3, event.getStartTime());
         preparedStatement.setObject(4, event.getStartTime());
         preparedStatement.setObject(5, event.getEndTime());

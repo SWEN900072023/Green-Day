@@ -1,17 +1,11 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
-import edu.unimelb.swen90007.mes.datamapper.EventMapper;
-import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
-import edu.unimelb.swen90007.mes.datamapper.PlannerEventMapper;
-import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
+import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
-import edu.unimelb.swen90007.mes.model.Event;
-import edu.unimelb.swen90007.mes.model.EventPlanner;
-import edu.unimelb.swen90007.mes.model.Order;
-import edu.unimelb.swen90007.mes.model.Section;
+import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.EventPlannerServiceInterface;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
@@ -66,6 +60,11 @@ public class EventPlannerService implements EventPlannerServiceInterface {
     public List<Event> viewHostedEvent(EventPlanner ep)
             throws SQLException {
         return EventMapper.loadByEventPlanner(ep);
+    }
+
+    @Override
+    public List<AppUser> viewUninvitedEventPlanner(Event e) throws SQLException {
+        return AppUserMapper.loadUninvitedEventPlanners(e);
     }
 
     @Override
