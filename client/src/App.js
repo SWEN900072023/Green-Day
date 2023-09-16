@@ -6,6 +6,8 @@ import Navigation from "./components/routes/navigation/navigation";
 import Home from "./components/routes/home/home";
 import MyBookings from "./components/routes/myBookings/myBookings";
 import EventBooking from "./components/eventBooking/eventBooking";
+import EventCreation from "./components/routes/eventCreation-planner/eventCreation";
+import EventManage from "./components/eventManage-planner/EventManage";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="mybookings" element={<MyBookings />}></Route>
         {/* TODO: EVENT NAME SHOULD BE DISPLAYED ON THE NAVIGATION ROUTE */}
         <Route path={`Summer BBQ/booking`} element={<EventBooking />}></Route>
+        <Route path="eventCreation" element={<EventCreation />}></Route>
+        <Route path="eventName/eventManage" element={<EventManage />}></Route>
       </Route>
     </Routes>
   );

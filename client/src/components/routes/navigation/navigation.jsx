@@ -5,6 +5,7 @@ const Navigation = () => {
   return (
     <Fragment>
       <div className="navigation">
+        {/* TODO:When user login, we display home icon for user back to home page */}
         <h2>Welcome To Music Events System</h2>
         <div className="nav-links-container">
           <Link className="nav-link" to={"/"}>
@@ -16,8 +17,12 @@ const Navigation = () => {
           <Link className="nav-link" to={"/"}>
             Sign out
           </Link>
+          {/* TODO: Check user role. If role is user, then display myBooking. If role is event planner, then display create event*/}
           <Link className="nav-link" to={"/mybookings"}>
             Bookings
+          </Link>
+          <Link className="nav-link" to={"/eventCreation"}>
+            Create Event
           </Link>
         </div>
       </div>

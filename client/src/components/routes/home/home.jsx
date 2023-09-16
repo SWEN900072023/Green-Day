@@ -29,6 +29,7 @@ const Home = () => {
   return (
     <div className="homeContainer">
       <div className="eventsList">
+        {/* TODO: For event planner, it should display the event that they hosted */}
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
