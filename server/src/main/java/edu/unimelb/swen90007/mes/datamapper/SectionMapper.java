@@ -91,14 +91,15 @@ public final class SectionMapper {
     }
 
     public static void update(Section section) throws SQLException {
-        String sql = "UPDATE sections SET name = ?, unit_price = ?, currency = ?, capacity = ?, remaining_tickets = ? WHERE id = ?";
+        String sql = "UPDATE sections SET name = ?, unit_price = ?, currency = ?, capacity = ?," +
+                "remaining_tickets = remaining_tickets - capacity + ? WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, section.getName());
         preparedStatement.setBigDecimal(2, section.getMoney().getUnitPrice());
         preparedStatement.setString(3, section.getMoney().getCurrency());
         preparedStatement.setInt(4, section.getCapacity());
-        preparedStatement.setInt(5, section.getRemainingTickets());
+        preparedStatement.setInt(5, section.getCapacity());
         preparedStatement.setInt(6, section.getId());
         preparedStatement.executeUpdate();
         logger.info("Section Updated [id=" + section.getId() + "]");
