@@ -7,9 +7,9 @@ import edu.unimelb.swen90007.mes.model.Event;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface PublicServiceInterface {
+public interface IPublicService {
     List<Event> viewAllEvents() throws SQLException;
-    List<Event> viewNextSixMothsEvents() throws SQLException;
+    List<Event> viewNextSixMonthsEvents() throws SQLException;
     List<Event> searchEvents(String pattern) throws SQLException;
     void modifyUser(AppUser user) throws SQLException, UserAlreadyExistsException;
 }

@@ -11,7 +11,7 @@ import edu.unimelb.swen90007.mes.model.Order;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface EventPlannerServiceInterface {
+public interface IEventPlannerService {
     void createEvent(Event event) throws SQLException, CapacityExceedsException, TimeConflictException, UserAlreadyExistsException;
     void modifyEvent(EventPlanner ep, Event event) throws SQLException, CapacityExceedsException, PermissionDeniedException, TimeConflictException, UserAlreadyExistsException;
     void deleteEvent(EventPlanner ep, Event event) throws SQLException, PermissionDeniedException, UserAlreadyExistsException;

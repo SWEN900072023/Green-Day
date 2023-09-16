@@ -12,13 +12,13 @@ import edu.unimelb.swen90007.mes.model.Event;
 import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.model.Order;
 import edu.unimelb.swen90007.mes.model.Section;
-import edu.unimelb.swen90007.mes.service.EventPlannerServiceInterface;
+import edu.unimelb.swen90007.mes.service.IEventPlannerService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class EventPlannerService implements EventPlannerServiceInterface {
+public class EventPlannerService implements IEventPlannerService {
     @Override
     public void createEvent(Event event)
             throws SQLException, CapacityExceedsException, TimeConflictException, UserAlreadyExistsException {
