@@ -1,6 +1,7 @@
 package edu.unimelb.swen90007.mes.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,11 +62,11 @@ public class Event {
         this.startTime = startTime;
         this.endTime = endTime;
         if(startTime.isBefore(OffsetDateTime.now()))
-            this.status = 3;
+            this.status = Constant.EVENT_PAST;
         else if (startTime.isBefore(OffsetDateTime.now().plusMonths(6)))
-            this.status = 1;
+            this.status = Constant.EVENT_IN_SIX;
         else
-            this.status = 2;
+            this.status = Constant.EVENT_OUT_SIX;
     }
 
     public Integer getFirstPlannerId() { return firstPlannerId; }

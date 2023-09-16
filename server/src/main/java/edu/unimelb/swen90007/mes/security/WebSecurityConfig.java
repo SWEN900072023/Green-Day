@@ -7,8 +7,6 @@ import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.service.impl.AppUserService;
 import edu.unimelb.swen90007.mes.util.JwtUtil;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,9 +35,6 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-
-    private static final Logger logger = LogManager.getLogger(WebSecurityConfig.class);
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(registry -> registry
@@ -51,6 +46,7 @@ public class WebSecurityConfig {
                                 Constant.API_PREFIX + "/login",
                                 Constant.API_PREFIX + "/register/customer"
                         ).permitAll()
+
                         // Administrator permission
                         .requestMatchers(HttpMethod.GET,
                                 "/hello-servlet"
@@ -58,11 +54,18 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST,
                                 Constant.API_PREFIX + "/register/event-planner"
                         ).hasAuthority(Administrator.class.getSimpleName())
+
                         // EventPlanner permission
-                        .requestMatchers(HttpMethod.POST, Constant.API_PREFIX + "/events")
-                        .hasAuthority(EventPlanner.class.getSimpleName())
+                        .requestMatchers(HttpMethod.POST,
+                                Constant.API_PREFIX + "/events"
+                        ).hasAuthority(EventPlanner.class.getSimpleName())
+                        .requestMatchers(HttpMethod.PUT,
+                                Constant.API_PREFIX + "/events"
+                        ).hasAuthority(EventPlanner.class.getSimpleName())
+
                         // Any logged-in users
                         .anyRequest().authenticated())
+
                 .formLogin(login -> login
                         .usernameParameter("email")
                         .passwordParameter("password")

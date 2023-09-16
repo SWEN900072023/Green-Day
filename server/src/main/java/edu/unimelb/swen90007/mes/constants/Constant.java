@@ -7,4 +7,8 @@ public class Constant {
     public static final long JWT_EXPIRY = 36000L;
     public static final String JWT_AUTHORITIES_CLAIM = "authority";
     public static final String JWT_USER_ID_CLAIM = "userId";
+    // Event status
+    public static final Integer EVENT_IN_SIX = 1;
+    public static final Integer EVENT_OUT_SIX = 2;
+    public static final Integer EVENT_PAST = 3;
 }
