@@ -1,11 +1,11 @@
 package edu.unimelb.swen90007.mes.model;
 
 public class Customer extends AppUser {
-    public Customer(int id) {
+    public Customer(Integer id) {
         super(id);
     }
 
-    public Customer(int id, String email, String password, String firstName, String lastName) {
+    public Customer(Integer id, String email, String password, String firstName, String lastName) {
         super(id, email, password, firstName, lastName);
     }
 

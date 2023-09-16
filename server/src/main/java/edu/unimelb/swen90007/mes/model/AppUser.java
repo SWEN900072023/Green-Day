@@ -14,11 +14,11 @@ public abstract class AppUser {
     private String firstName;
     private String lastName;
 
-    public AppUser(int id) {
+    public AppUser(Integer id) {
         this.id = id;
     }
 
-    public AppUser(int id, String email, String password, String firstName, String lastName) {
+    public AppUser(Integer id, String email, String password, String firstName, String lastName) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -33,21 +33,21 @@ public abstract class AppUser {
         this.lastName = lastName;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getEmail() throws SQLException {
+    public String getEmail() {
         if (email == null)
             load();
         return email;
     }
 
-    public String getPassword() throws SQLException {
+    public String getPassword() {
         if (password == null)
             load();
         return password;
@@ -57,13 +57,13 @@ public abstract class AppUser {
         this.password = password;
     }
 
-    public String getFirstName() throws SQLException {
+    public String getFirstName() {
         if (firstName == null)
             load();
         return firstName;
     }
 
-    public String getLastName() throws SQLException {
+    public String getLastName() {
         if (lastName == null)
             load();
         return lastName;
@@ -76,7 +76,7 @@ public abstract class AppUser {
         this.lastName = lastName;
     }
 
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading User [id=" + id + "]");
         AppUser appUser;
         try {

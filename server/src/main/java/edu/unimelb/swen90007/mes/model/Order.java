@@ -10,14 +10,14 @@ import java.util.List;
 
 public class Order {
     private static final Logger logger = LogManager.getLogger(Order.class);
-    private int id;
+    private Integer id;
     private Event event;
     private Customer customer;
     private List<SubOrder> subOrders;
     private OffsetDateTime createdAt;
     private String status;
 
-    public Order(int id, Event event,Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
+    public Order(Integer id, Event event,Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
         this.id = id;
         this.event = event;
         this.customer = customer;
@@ -33,11 +33,11 @@ public class Order {
         this.status = "Ordered";
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

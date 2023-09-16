@@ -15,7 +15,7 @@ public class ResponseWriter {
         if (data != null) {
             responseData.put("data", data);
         }
-        response.getWriter().write(responseData.toString());
+        response.getWriter().write(responseData.toJSONString());
     }
 
     public static void write(HttpServletResponse response,

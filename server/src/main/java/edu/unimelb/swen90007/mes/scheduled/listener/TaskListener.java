@@ -3,10 +3,10 @@ package edu.unimelb.swen90007.mes.scheduled.listener;
 import java.sql.SQLException;
 import java.util.Date;
 
+import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.Administrator;
 import edu.unimelb.swen90007.mes.scheduled.task.EventUpdateTask;
-import edu.unimelb.swen90007.mes.service.impl.PublicService;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import org.apache.logging.log4j.LogManager;
@@ -19,11 +19,10 @@ public class TaskListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        PublicService publicService = new PublicService();
         Administrator admin = new Administrator(
                 0, "root@test.io", "123456", "Root", "Admin");
         try {
-            publicService.register(admin);
+            AppUserMapper.create(admin);
         } catch (UserAlreadyExistsException e) {
             logger.info("Root admin initialization: root admin already exists.");
         } catch (SQLException e) {

@@ -3,6 +3,8 @@ package edu.unimelb.swen90007.mes.util;
 import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,8 +24,9 @@ public class UnitOfWork {
     private final List<Object> dirtyObjects = new ArrayList<>();
     private final ArrayList<Object> deletedObjects = new ArrayList<>();
 
-    private UnitOfWork() {
+    private static final Logger logger = LogManager.getLogger(AppUserMapper.class);
 
+    private UnitOfWork() {
     }
 
     public static void setCurrent(UnitOfWork uow) {
@@ -49,56 +52,71 @@ public class UnitOfWork {
     }
 
     public void registerDeleted(Object o) {
-        if(newObjects.remove(o)) {
+        if (newObjects.remove(o)) {
             dirtyObjects.remove(o);
             return;
         }
         dirtyObjects.remove(o);
-        if(!deletedObjects.contains(o)) {
+        if (!deletedObjects.contains(o)) {
             deletedObjects.add(o);
         }
     }
 
     public void commit() throws SQLException, UserAlreadyExistsException {
         for (Object object : newObjects) {
-            if (object instanceof AppUser) {
-                AppUserMapper.create((AppUser) object);
-            } else if (object instanceof Event) {
-                EventMapper.create((Event) object);
-            } else if (object instanceof Order) {
-                OrderMapper.create((Order) object);
-            } else if (object instanceof SubOrder) {
-                SubOrderMapper.create((SubOrder) object);
-            } else if (object instanceof Section) {
-                SectionMapper.create((Section) object);
-            } else if (object instanceof Venue) {
-                VenueMapper.create((Venue) object);
+            try {
+                if (object instanceof AppUser) {
+                    AppUserMapper.create((AppUser) object);
+                } else if (object instanceof Event) {
+                    EventMapper.create((Event) object);
+                } else if (object instanceof Order) {
+                    OrderMapper.create((Order) object);
+                } else if (object instanceof SubOrder) {
+                    SubOrderMapper.create((SubOrder) object);
+                } else if (object instanceof Section) {
+                    SectionMapper.create((Section) object);
+                } else if (object instanceof Venue) {
+                    VenueMapper.create((Venue) object);
+                }
+            } catch (SQLException | UserAlreadyExistsException e) {
+                logger.error("UoW commit error: " + e.getMessage());
+                throw e;
             }
         }
         newObjects.clear();
 
         for (Object object : dirtyObjects) {
-            if (object instanceof AppUser) {
-                AppUserMapper.update((AppUser) object);
-            } else if (object instanceof Event) {
-                EventMapper.update((Event) object);
-            } else if (object instanceof Order) {
-                OrderMapper.cancel((Order) object);
+            try {
+                if (object instanceof AppUser) {
+                    AppUserMapper.update((AppUser) object);
+                } else if (object instanceof Event) {
+                    EventMapper.update((Event) object);
+                } else if (object instanceof Order) {
+                    OrderMapper.cancel((Order) object);
+                }
+            } catch (SQLException e) {
+                logger.error("UoW commit error: " + e.getMessage());
+                throw e;
             }
         }
         dirtyObjects.clear();
 
         for (Object object : deletedObjects) {
-            if (object instanceof AppUser) {
-                AppUserMapper.delete((AppUser) object);
-            } else if (object instanceof Event) {
-                EventMapper.delete((Event) object);
-            } else if (object instanceof Order) {
-                OrderMapper.delete((Order) object);
-            } else if (object instanceof Section) {
-                SectionMapper.delete((Section) object);
-            } else if (object instanceof Venue) {
-                VenueMapper.delete((Venue) object);
+            try {
+                if (object instanceof AppUser) {
+                    AppUserMapper.delete((AppUser) object);
+                } else if (object instanceof Event) {
+                    EventMapper.delete((Event) object);
+                } else if (object instanceof Order) {
+                    OrderMapper.delete((Order) object);
+                } else if (object instanceof Section) {
+                    SectionMapper.delete((Section) object);
+                } else if (object instanceof Venue) {
+                    VenueMapper.delete((Venue) object);
+                }
+            } catch (SQLException e) {
+                logger.error("UoW commit error: " + e.getMessage());
+                throw e;
             }
         }
         deletedObjects.clear();

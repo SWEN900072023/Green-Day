@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ServiceTest {
@@ -34,15 +33,6 @@ public class ServiceTest {
 
         EventPlanner ep1 = new EventPlanner("EEE1@XXX.XXX", "785699", "XXX", "XXX");
         EventPlanner ep2 = new EventPlanner("EEE2@XXX.XXX", "443215", "DDD", "DDD");
-
-        // Register
-        publicService.register(c1);
-        publicService.register(c2);
-        publicService.register(ep1);
-        publicService.register(ep2);
-
-        publicService.userAuthentication(c1);
-        publicService.userAuthentication(c2);
 
         // Create Test Cases
         Venue venue1 = new Venue("Name1", "Address1", 120);

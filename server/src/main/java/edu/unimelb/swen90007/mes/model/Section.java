@@ -15,16 +15,16 @@ public class Section {
     private Integer capacity;
     private Integer remainingTickets;
 
-    public Section(int id) {
+    public Section(Integer id) {
         this.id = id;
     }
 
-    public Section(int id, String name) {
+    public Section(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Section(int id, Event event, String name, Money money, int capacity, int remainingTickets) {
+    public Section(Integer id, Event event, String name, Money money, Integer capacity, Integer remainingTickets) {
         this.id = id;
         this.event = event;
         this.name = name;
@@ -33,7 +33,7 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
-    public Section(Event event, String name, Money money, int capacity, int remainingTickets) {
+    public Section(Event event, String name, Money money, Integer capacity, Integer remainingTickets) {
         this.event = event;
         this.name = name;
         this.money = money;
@@ -41,11 +41,11 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -79,23 +79,23 @@ public class Section {
         this.money = money;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         if (capacity == null)
             load();
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
 
-    public int getRemainingTickets() {
+    public Integer getRemainingTickets() {
         if (remainingTickets == null)
             load();
         return remainingTickets;
     }
 
-    public void setRemainingTickets(int remainingTickets) {
+    public void setRemainingTickets(Integer remainingTickets) {
         this.remainingTickets = remainingTickets;
     }
 

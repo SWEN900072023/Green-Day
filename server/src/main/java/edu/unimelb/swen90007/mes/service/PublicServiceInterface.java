@@ -11,7 +11,5 @@ public interface PublicServiceInterface {
     List<Event> viewAllEvents() throws SQLException;
     List<Event> viewNextSixMothsEvents() throws SQLException;
     List<Event> searchEvents(String pattern) throws SQLException;
-    void register(AppUser user) throws SQLException, UserAlreadyExistsException;
     void modifyUser(AppUser user) throws SQLException, UserAlreadyExistsException;
-    String userAuthentication(AppUser user) throws SQLException;
 }
