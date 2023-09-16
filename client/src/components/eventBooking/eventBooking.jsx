@@ -106,13 +106,18 @@ const EventBooking = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <h3>
-        Total fee:{" "}
-        {counts.reduce(
-          (accumulator, counter) => accumulator + counter.count * counter.price,
-          0
-        )}
-      </h3>
+      <div className="casher">
+        <h3>
+          Total fee:{" "}
+          {counts.reduce(
+            (accumulator, counter) =>
+              accumulator + counter.count * counter.price,
+            0
+          )}
+          $
+        </h3>
+        <button>Buy</button>
+      </div>
     </>
   );
 };
