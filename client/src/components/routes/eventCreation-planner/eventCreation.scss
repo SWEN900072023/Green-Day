@@ -1,0 +1,51 @@
+.Contain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.event-creation-container {
+  display: flex;
+}
+.creation-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-end;
+  padding: 0.25rem 1rem 1rem 1rem;
+  //   justify-content: center;
+  h2 {
+    margin: 10px 0;
+  }
+}
+.section-creation-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-start;
+  padding: 0.25rem 1rem 1rem 1rem;
+  //   justify-content: center;
+  h2 {
+    margin: 10px 0;
+  }
+}
+.section-setting {
+  display: flex;
+  width: 100%;
+}
+#section-setting-button {
+  height: 50px;
+  align-self: flex-end;
+}
+// .icon-button {
+//   :hover {
+//     background-color: #2980b9; /* Hover background color */
+//     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Add a subtle shadow on hover */
+//   }
+
+//   /* Active effect: Shrink the button slightly when clicked */
+//   :active {
+//     transform: scale(0.95); /* Shrink the button by 5% on click */
+//   }
+// }
+#accordion {
+}
