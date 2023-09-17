@@ -1,6 +1,7 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
+import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.model.Order;
@@ -9,6 +10,7 @@ import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class CustomerService implements ICustomerService {
     @Override
@@ -23,7 +25,10 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public void cancelOrder(Order order) throws SQLException, UserAlreadyExistsException {
+    public void cancelOrder(Customer customer, Order order)
+            throws SQLException, UserAlreadyExistsException, PermissionDeniedException {
+        if (!Objects.equals(customer.getId(), order.getCustomer().getId()))
+            throw new PermissionDeniedException();
         UnitOfWork.getInstance().registerDirty(order);
         UnitOfWork.getInstance().commit();
     }

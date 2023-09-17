@@ -1,15 +1,12 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.model.Event;
-import edu.unimelb.swen90007.mes.model.EventPlanner;
-import edu.unimelb.swen90007.mes.model.Section;
-import edu.unimelb.swen90007.mes.model.Venue;
+import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class EventMapper {
@@ -63,7 +60,7 @@ public final class EventMapper {
     }
 
     public static List<Event> loadAll() throws SQLException {
-        String sql = "SELECT * FROM events WHERE status <> 3 ORDER BY start_time";
+        String sql = "SELECT * FROM events WHERE status < 3 ORDER BY start_time";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -80,7 +77,7 @@ public final class EventMapper {
 
     public static List<Event> loadByPattern(String pattern) throws SQLException {
         pattern = "%" + pattern + "%";
-        String sql = "SELECT * FROM events WHERE title LIKE ? ORDER BY start_time";
+        String sql = "SELECT * FROM events WHERE title LIKE ? AND status < 3 ORDER BY start_time";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, pattern);
@@ -88,13 +85,22 @@ public final class EventMapper {
         return loadPartial(resultSet);
     }
 
-    public static Event loadById(int eventId) throws SQLException {
+    public static Event loadByIdAll(int eventId) throws SQLException {
         String sql = "SELECT * FROM events WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, eventId);
         ResultSet resultSet = preparedStatement.executeQuery();
         return load(resultSet).get(0);
+    }
+
+    public static Event loadByIdPartial(int eventId) throws SQLException {
+        String sql = "SELECT * FROM events WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, eventId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet).get(0);
     }
 
     public static List<Event> loadByVenue(Venue venue) throws SQLException {
@@ -107,16 +113,17 @@ public final class EventMapper {
         return loadPartial(resultSet);
     }
 
-    public static List<Event> loadByEventPlanner(EventPlanner e) throws SQLException {
-        List<Event> events = new ArrayList<>();
-        List<Integer> eventIds = PlannerEventMapper.loadEventIdsByPlanner(e);
-        for(int eventId: eventIds)
-            events.add(new Event(eventId));
-        return events;
+    public static List<Event> loadByEventPlanner(EventPlanner ep) throws SQLException {
+        String sql = "SELECT * FROM events e, planner_events pe WHERE e.id = pe.event_id AND pe.planner_id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setObject(1, ep.getId());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet);
     }
 
     private static List<Event> load(ResultSet resultSet) throws SQLException {
-        List<Event> events = new ArrayList<>();
+        List<Event> events = new LinkedList<>();
 
         while (resultSet.next()) {
             int eventId = resultSet.getInt("id");
@@ -145,7 +152,7 @@ public final class EventMapper {
     }
 
     private static List<Event> loadPartial(ResultSet resultSet) throws SQLException {
-        List<Event> events = new ArrayList<>();
+        List<Event> events = new LinkedList<>();
 
         while (resultSet.next()) {
             int eventId = resultSet.getInt("id");
@@ -186,6 +193,13 @@ public final class EventMapper {
         return resultSet.isBeforeFirst();
     }
 
+    public static void cancel(Event event) throws SQLException {
+        List<Order> orders = OrderMapper.loadByEventId(event.getId());
+        for(Order order : orders) {
+            OrderMapper.cancel(order);
+        }
+    }
+
     public static void update(Event event) throws SQLException {
         String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
         Connection connection = DBConnection.getConnection();
@@ -201,6 +215,9 @@ public final class EventMapper {
 
         for (Section section : event.getSections())
             SectionMapper.update(section);
+
+        if (event.getStatus() == 4)
+            EventMapper.cancel(event);
 
         logger.info("Event Updated [id=" + event.getId() + "]");
     }

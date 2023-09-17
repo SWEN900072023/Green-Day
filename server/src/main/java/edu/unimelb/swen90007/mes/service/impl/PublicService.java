@@ -1,9 +1,12 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
+import edu.unimelb.swen90007.mes.datamapper.PlannerEventMapper;
+import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.AppUser;
 import edu.unimelb.swen90007.mes.model.Event;
+import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.service.IPublicService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
@@ -24,6 +27,11 @@ public class PublicService implements IPublicService {
     @Override
     public List<Event> searchEvents(String pattern) throws SQLException {
         return EventMapper.loadByPattern(pattern);
+    }
+
+    @Override
+    public Event viewEventDetail(Event event) throws SQLException {
+        return EventMapper.loadByIdAll(event.getId());
     }
 
     @Override

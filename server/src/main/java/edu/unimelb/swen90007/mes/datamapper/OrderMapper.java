@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public final class OrderMapper {
@@ -73,7 +72,7 @@ public final class OrderMapper {
             String status = resultSet.getString("status").trim();
 
             Customer customer = new Customer(customerID);
-            Event event = new Event(eventID);
+            Event event = EventMapper.loadByIdPartial(eventID);
             List<SubOrder> subOrders = SubOrderMapper.loadByOrderId(orderID);
 
             Order order = new Order(orderID, event, customer, subOrders, createdAt, status);
