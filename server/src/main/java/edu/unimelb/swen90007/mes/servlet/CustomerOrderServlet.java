@@ -29,7 +29,7 @@ public class CustomerOrderServlet extends HttpServlet {
 
     /**
      * GET
-     * [/customer/orders] view all orders
+     * [/customer/orders] view all my orders
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

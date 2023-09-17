@@ -4,7 +4,9 @@ import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.model.Event;
 import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.model.Order;
+import edu.unimelb.swen90007.mes.service.ICustomerService;
 import edu.unimelb.swen90007.mes.service.IEventPlannerService;
+import edu.unimelb.swen90007.mes.service.impl.CustomerService;
 import edu.unimelb.swen90007.mes.service.impl.EventPlannerService;
 import edu.unimelb.swen90007.mes.util.JwtUtil;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
@@ -50,6 +52,36 @@ public class PlannerOrderServlet extends HttpServlet {
                 }
                 logger.error(e.getMessage());
             }
+        } else {
+            ResponseWriter.write(response, 400, "Bad request");
+        }
+    }
+
+    /**
+     * POST
+     * [/planner/orders/cancel/{id}] cancel an order
+     */
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String requestPath = request.getPathInfo();
+        String[] pathStrings = requestPath.split("/");
+
+        if (pathStrings[1].equalsIgnoreCase("cancel")) {
+            int orderId;
+            try {
+                orderId = Integer.parseInt(pathStrings[2]);
+                ICustomerService customerService = new CustomerService();
+                try {
+                    Order order = new Order(orderId);
+                    customerService.cancelOrder(order);
+                    ResponseWriter.write(response, 200, "Success");
+                } catch (Exception e) {
+                    ResponseWriter.write(response, 500, "Unexpected system error");
+                }
+            } catch (NumberFormatException e) {
+                logger.error("Invalid orderId format");
+            }
+
         } else {
             ResponseWriter.write(response, 400, "Bad request");
         }
