@@ -24,6 +24,12 @@ const Navigation = () => {
           <Link className="nav-link" to={"/eventCreation"}>
             Create Event
           </Link>
+          <Link className="nav-link" to={"/User"}>
+            User Info
+          </Link>
+          <Link className="nav-link" to={"/venueCreation"}>
+            Create Venue
+          </Link>
         </div>
       </div>
       <Outlet />

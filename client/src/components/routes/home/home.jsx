@@ -30,6 +30,7 @@ const Home = () => {
     <div className="homeContainer">
       <div className="eventsList">
         {/* TODO: For event planner, it should display the event that they hosted */}
+        {/* TODO: For admin, it should display the same thing as user except for search bar and calendar*/}
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >

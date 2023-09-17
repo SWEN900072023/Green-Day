@@ -8,6 +8,9 @@ import MyBookings from "./components/routes/myBookings/myBookings";
 import EventBooking from "./components/eventBooking/eventBooking";
 import EventCreation from "./components/routes/eventCreation-planner/eventCreation";
 import EventManage from "./components/eventManage-planner/EventManage";
+import User from "./components/routes/userInfo-admin/userInfo-admin";
+import CustomerPage from "./components/customerPage-admin/customerPage-admin";
+import PlannerPage from "./components/plannerPage-admin/plannerPage-admin";
 
 function App() {
   return (
@@ -22,6 +25,12 @@ function App() {
         <Route path={`Summer BBQ/booking`} element={<EventBooking />}></Route>
         <Route path="eventCreation" element={<EventCreation />}></Route>
         <Route path="eventName/eventManage" element={<EventManage />}></Route>
+        <Route path="user" element={<User />}></Route>
+        <Route
+          path="user/customer-name/info"
+          element={<CustomerPage />}
+        ></Route>
+        <Route path="user/planner-name/info" element={<PlannerPage />}></Route>
       </Route>
     </Routes>
   );
