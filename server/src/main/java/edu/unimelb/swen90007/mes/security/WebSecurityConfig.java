@@ -9,7 +9,6 @@ import edu.unimelb.swen90007.mes.util.JwtUtil;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,31 +37,20 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(registry -> registry
-                        // public API
-                        .requestMatchers(HttpMethod.GET,
-                                "/index.jsp"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.POST,
+                        // unauthenticated access API
+                        .requestMatchers(
+                                "/index.jsp",
                                 Constant.API_PREFIX + "/login",
                                 Constant.API_PREFIX + "/register/customer"
                         ).permitAll()
-
                         // Administrator permission
-                        .requestMatchers(HttpMethod.GET,
-                                "/hello-servlet"
-                        ).hasAuthority(Administrator.class.getSimpleName())
-                        .requestMatchers(HttpMethod.POST,
-                                Constant.API_PREFIX + "/register/event-planner"
-                        ).hasAuthority(Administrator.class.getSimpleName())
-
+                        .requestMatchers(
+                                Constant.API_PREFIX + "/admin/**",
+                                Constant.API_PREFIX + "/register/event-planner")
+                        .hasAuthority(Administrator.class.getSimpleName())
                         // EventPlanner permission
-                        .requestMatchers(HttpMethod.POST,
-                                Constant.API_PREFIX + "/events"
-                        ).hasAuthority(EventPlanner.class.getSimpleName())
-                        .requestMatchers(HttpMethod.PUT,
-                                Constant.API_PREFIX + "/events"
-                        ).hasAuthority(EventPlanner.class.getSimpleName())
-
+                        .requestMatchers(Constant.API_PREFIX + "/planner/**")
+                        .hasAuthority(EventPlanner.class.getSimpleName())
                         // Any logged-in users
                         .anyRequest().authenticated())
 
