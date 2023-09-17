@@ -11,4 +11,5 @@ public class Constant {
     public static final Integer EVENT_IN_SIX = 1;
     public static final Integer EVENT_OUT_SIX = 2;
     public static final Integer EVENT_PAST = 3;
+    public static final Integer EVENT_CANCELLED = 4;
 }
