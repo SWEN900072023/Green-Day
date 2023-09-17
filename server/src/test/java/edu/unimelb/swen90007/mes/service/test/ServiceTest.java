@@ -66,8 +66,8 @@ public class ServiceTest {
         eventPlannerService.createEvent(event2);
 
         // Create Test Cases
-        Order order11 = new Order(event1, c1);
-        Order order12 = new Order(event1, c1);
+        Order order11 = new Order(event1, c1, new ArrayList<>());
+        Order order12 = new Order(event1, c1, new ArrayList<>());
         List<SubOrder> subOrders1 = new ArrayList<>();
         List<SubOrder> subOrders2 = new ArrayList<>();
         subOrders1.add(new SubOrder(sections1.get(0), 20, money));
@@ -77,8 +77,8 @@ public class ServiceTest {
         order11.setSubOrders(subOrders1);
         order12.setSubOrders(subOrders2);
 
-        Order order21 = new Order(event2, c2);
-        Order order22 = new Order(event2, c2);
+        Order order21 = new Order(event2, c2, new ArrayList<>());
+        Order order22 = new Order(event2, c2, new ArrayList<>());
         List<SubOrder> subOrders21 = new ArrayList<>();
         List<SubOrder> subOrders22 = new ArrayList<>();
         subOrders21.add(new SubOrder(sections2.get(0), 20, money));

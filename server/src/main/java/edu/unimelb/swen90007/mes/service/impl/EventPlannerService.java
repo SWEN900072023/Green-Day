@@ -92,7 +92,7 @@ public class EventPlannerService implements IEventPlannerService {
         UnitOfWork.getInstance().commit();
     }
 
-    public boolean isCapacityExceeded(Event event) {
+    private boolean isCapacityExceeded(Event event) {
         int eventCapacity = 0;
         for(Section s : event.loadSections())
             eventCapacity += s.loadCapacity();
