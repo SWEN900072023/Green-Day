@@ -13,15 +13,39 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectorCurrentUser } from "../../store/user/user.selector";
+import Axiosapi from "../../axiosAPI/api";
 const Home = () => {
   const exampleEvents = [
     { label: "Brunch this weekend?", year: 1994 },
     { label: "Summer BBQ", year: 1972 },
     { label: "Oui Oui", year: 1974 },
   ];
+  const currentUser = useSelector(selectorCurrentUser);
   const [text, setText] = useState("");
   const navigate = useNavigate();
-
+  useEffect(() => {
+    async function getAllHostedEvent() {
+      await Axiosapi.get("/planner/events", {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }).then((res) => console.log(res));
+    }
+    async function getAllEvents() {
+      await Axiosapi.get("/public/events", {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }).then((res) => console.log(res));
+    }
+    if (currentUser.userType === "EventPlanner") {
+      getAllHostedEvent();
+    } else {
+      getAllEvents();
+    }
+  }, []);
   const searchEvent = exampleEvents.filter((event) => {
     return event.label.toLowerCase().includes(text.toLowerCase());
   });
