@@ -3,19 +3,25 @@ import Form from "../../form-input/form-input";
 import Button from "../../button/button";
 import { useState } from "react";
 import Axiosapi from "../../axiosAPI/api";
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const signUp = async (e) => {
     e.preventDefault();
-    await Axiosapi.post("/register", {
+    await Axiosapi.post("/register/customer", {
       email,
       lastName,
       firstName,
       password,
-    }).then((res) => console.log(res));
+    }).then((res) => {
+      console.log(res);
+      alert("sign up successfully!");
+      navigate("login");
+    });
   };
   return (
     // <div className="container">
