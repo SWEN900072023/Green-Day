@@ -150,6 +150,38 @@ public final class AppUserMapper {
     }
 
     /**
+     * Load all uninvited event planners.
+     *
+     * @return the list of all uninvited event planners
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    public static List<AppUser> loadUninvitedEventPlanners(Event event) throws SQLException {
+        String sql = "SELECT planner_id FROM planner_events WHERE event_id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, event.getId());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Integer> invitedPlannerIds = new ArrayList<>();
+        while (resultSet.next()) {
+            int pid = resultSet.getInt("planner_id");
+            invitedPlannerIds.add(pid);
+        }
+        sql = "SELECT * FROM users WHERE type = ? AND id <> ?";
+        for(int i=1; i<invitedPlannerIds.size(); i++) {
+            sql += " AND id <> ?";
+        }
+
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, EventPlanner.class.getSimpleName());
+        for(int i=0; i<invitedPlannerIds.size(); i++) {
+            preparedStatement.setInt(i+2, invitedPlannerIds.get(i));
+        }
+        resultSet = preparedStatement.executeQuery();
+
+        return load(resultSet);
+    }
+
+    /**
      * Load a user that may be the administrator, an event planner, or a customer.
      *
      * @param email the email received from the client request

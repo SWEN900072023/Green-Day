@@ -6,10 +6,7 @@ import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
-import edu.unimelb.swen90007.mes.service.impl.AdminService;
-import edu.unimelb.swen90007.mes.service.impl.CustomerService;
-import edu.unimelb.swen90007.mes.service.impl.EventPlannerService;
-import edu.unimelb.swen90007.mes.service.impl.PublicService;
+import edu.unimelb.swen90007.mes.service.impl.*;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -22,6 +19,7 @@ public class ServiceTest {
             throws SQLException, CapacityExceedsException, PermissionDeniedException, TimeConflictException, UserAlreadyExistsException {
 
         // Create Service
+        AppUserService appUserService = new AppUserService();
         PublicService publicService = new PublicService();
         AdminService adminService = new AdminService();
         EventPlannerService eventPlannerService = new EventPlannerService();
@@ -33,6 +31,13 @@ public class ServiceTest {
 
         EventPlanner ep1 = new EventPlanner("EEE1@XXX.XXX", "785699", "XXX", "XXX");
         EventPlanner ep2 = new EventPlanner("EEE2@XXX.XXX", "443215", "DDD", "DDD");
+
+        //register
+        appUserService.register(c1);
+        appUserService.register(c2);
+        appUserService.register(ep1);
+        appUserService.register(ep2);
+
 
         // Create Test Cases
         Venue venue1 = new Venue("Name1", "Address1", 120);
@@ -104,6 +109,8 @@ public class ServiceTest {
         eventPlannerService.viewOrders(ep1, event1);
         eventPlannerService.viewOrders(ep2, event2);
 
+        eventPlannerService.viewUninvitedEventPlanner(event1);
+
         eventPlannerService.viewHostedEvent(ep1);
         eventPlannerService.viewHostedEvent(ep2);
 
@@ -126,6 +133,8 @@ public class ServiceTest {
         publicService.modifyUser(ep1);
 
         eventPlannerService.inviteEventPlanner(ep1, ep2, event1);
+
+        eventPlannerService.viewUninvitedEventPlanner(event1);
 
         // Delete Test
         adminService.deleteAppUser(c1);
