@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import "./EventManage.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Divider from "@mui/material/Divider";
@@ -18,6 +19,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 
 const EventManage = () => {
+  const [v, setV] = useState("name");
   const currencies = [
     {
       value: "USD",
@@ -107,6 +109,7 @@ const EventManage = () => {
                     }
                   />
                 </ListItem>
+                <button>cancel booking</button>
                 <Divider variant="inset" component="li" />
               </>
             );
@@ -154,14 +157,14 @@ const EventManage = () => {
           <div className="section-creation-container">
             <div className="section-setting">
               <p style={{ marginTop: "3.5rem" }}>Section Settings</p>
-              <button
+              {/* <button
                 id="section-setting-button"
                 onClick={() => {
                   console.log("hit me");
                 }}
               >
                 <AddIcon />
-              </button>
+              </button> */}
             </div>
             {accordions == [] ? (
               <></>
@@ -183,7 +186,8 @@ const EventManage = () => {
                         required
                         //   onChange={(e) => setSectionName(e.target.value)}
                         name="Section Name"
-                        value={accordion.name}
+                        value={v}
+                        onChange={(e) => setV(e.target.value)}
                       ></Form>
                       <Form
                         label="Price"
@@ -222,9 +226,12 @@ const EventManage = () => {
             </TextField>
           </div>
         </div>
-        <Button type="submit" buttonType="google">
-          Create event
-        </Button>
+        <div className="button-group">
+          <Button type="submit" buttonType="google">
+            Modify event
+          </Button>
+          <Button>Cancel event</Button>
+        </div>
       </div>
     </div>
   );
