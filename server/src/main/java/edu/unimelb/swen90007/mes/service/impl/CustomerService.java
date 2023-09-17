@@ -26,7 +26,7 @@ public class CustomerService implements ICustomerService {
     @Override
     public void cancelOrder(Customer customer, Order order)
             throws PermissionDeniedException {
-        if (!Objects.equals(customer.getId(), order.getCustomer().getId()))
+        if (!Objects.equals(customer.getId(), order.loadCustomer().getId()))
             throw new PermissionDeniedException();
         UnitOfWork.getInstance().registerDirty(order);
         UnitOfWork.getInstance().commit();

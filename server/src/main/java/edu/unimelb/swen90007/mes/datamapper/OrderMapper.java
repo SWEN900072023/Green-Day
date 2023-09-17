@@ -85,11 +85,12 @@ public final class OrderMapper {
     }
 
     public static void cancel(Order order) throws SQLException {
-        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        String sql = "UPDATE orders SET status = ? WHERE status <> ? AND id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, Constant.ORDER_CANCELLED);
-        preparedStatement.setInt(2, order.getId());
+        preparedStatement.setString(2, Constant.ORDER_CANCELLED);
+        preparedStatement.setInt(3, order.getId());
         preparedStatement.executeUpdate();
 
         // use loader as some fields might be null

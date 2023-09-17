@@ -3,6 +3,7 @@ package edu.unimelb.swen90007.mes.servlet;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import edu.unimelb.swen90007.mes.constants.Constant;
+import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.ICustomerService;
 import edu.unimelb.swen90007.mes.service.impl.CustomerService;
@@ -61,7 +62,7 @@ public class CustomerOrderServlet extends HttpServlet {
                 int orderId;
                 try {
                     orderId = Integer.parseInt(pathStrings[2]);
-                    cancelOrder(response, orderId);
+                    cancelOrder(request, response, orderId);
                 } catch (NumberFormatException e) {
                     logger.error("Invalid orderId format");
                 }
@@ -104,14 +105,18 @@ public class CustomerOrderServlet extends HttpServlet {
         }
     }
 
-    private void cancelOrder(HttpServletResponse response, Integer orderId) throws IOException {
+    private void cancelOrder(HttpServletRequest request, HttpServletResponse response, Integer orderId)
+            throws IOException {
         ICustomerService customerService = new CustomerService();
         try {
-            Order order = new Order(orderId);
-            customerService.cancelOrder(order);
+            Integer customerId = JwtUtil.getInstance().getUserId(request);
+            customerService.cancelOrder(new Customer(customerId), new Order(orderId));
             ResponseWriter.write(response, 200, "Success");
-        } catch (Exception e) {
+        } catch (PermissionDeniedException e) {
+            ResponseWriter.write(response, 403, e.getMessage());
+        } catch (SQLException e) {
             ResponseWriter.write(response, 500, "Unexpected system error");
+            logger.error(e.getMessage());
         }
     }
 
