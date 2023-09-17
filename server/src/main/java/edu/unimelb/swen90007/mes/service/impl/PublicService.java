@@ -4,20 +4,20 @@ import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.AppUser;
 import edu.unimelb.swen90007.mes.model.Event;
-import edu.unimelb.swen90007.mes.service.PublicServiceInterface;
+import edu.unimelb.swen90007.mes.service.IPublicService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class PublicService implements PublicServiceInterface {
+public class PublicService implements IPublicService {
     @Override
     public List<Event> viewAllEvents() throws SQLException {
         return EventMapper.loadAll();
     }
 
     @Override
-    public List<Event> viewNextSixMothsEvents() throws SQLException {
+    public List<Event> viewNextSixMonthsEvents() throws SQLException {
         return EventMapper.loadNextSixMonths();
     }
 

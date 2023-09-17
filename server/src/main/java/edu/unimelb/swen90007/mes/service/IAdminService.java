@@ -7,7 +7,7 @@ import edu.unimelb.swen90007.mes.model.Venue;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface AdminServiceInterface {
+public interface IAdminService {
     ArrayList<AppUser> viewAllEventPlanners() throws SQLException;
     ArrayList<AppUser> viewAllCustomers() throws SQLException;
     ArrayList<AppUser> viewAllUsers() throws SQLException;

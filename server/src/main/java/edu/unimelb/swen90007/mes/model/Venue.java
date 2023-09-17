@@ -1,11 +1,14 @@
 package edu.unimelb.swen90007.mes.model;
 
 import edu.unimelb.swen90007.mes.datamapper.VenueMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 
+@Getter @Setter
 public class Venue {
     private static final Logger logger = LogManager.getLogger(Venue.class);
     private Integer id;
@@ -30,27 +33,19 @@ public class Venue {
         this.capacity = capacity;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
+    public String loadName() {
         if (name == null)
             load();
         return name;
     }
 
-    public String getAddress() {
+    public String loadAddress() {
         if (address == null)
             load();
         return address;
     }
 
-    public Integer getCapacity() {
+    public Integer loadCapacity() {
         if (capacity == null)
             load();
         return capacity;
@@ -61,9 +56,9 @@ public class Venue {
         try {
             Venue venue = VenueMapper.loadById(id);
             assert venue != null;
-            name = venue.getName();
-            address = venue.getAddress();
-            capacity = venue.getCapacity();
+            name = venue.loadName();
+            address = venue.loadAddress();
+            capacity = venue.loadCapacity();
         } catch (SQLException e) {
             logger.error(String.format("Error loading Venue [id=%d]: %s", id, e.getMessage()));
         }

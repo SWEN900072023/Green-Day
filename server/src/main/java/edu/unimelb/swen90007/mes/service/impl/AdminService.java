@@ -6,14 +6,14 @@ import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
-import edu.unimelb.swen90007.mes.service.AdminServiceInterface;
+import edu.unimelb.swen90007.mes.service.IAdminService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminService implements AdminServiceInterface {
+public class AdminService implements IAdminService {
     @Override
     public ArrayList<AppUser> viewAllEventPlanners() throws SQLException {
         return (ArrayList<AppUser>) AppUserMapper.loadAllEventPlanners();

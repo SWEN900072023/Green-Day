@@ -3,9 +3,9 @@ package edu.unimelb.swen90007.mes.service.impl;
 import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.AppUser;
+import edu.unimelb.swen90007.mes.model.UserType;
 import edu.unimelb.swen90007.mes.service.IAppUserService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,11 +27,8 @@ public class AppUserService implements IAppUserService {
             throw new UsernameNotFoundException(email);
         }
 
-        User.UserBuilder userBuilder = User.withUsername(user.getEmail())
-                .password(user.getPassword())
-                .roles(user.getClass().getSimpleName());
-
-        return userBuilder.build();
+        user.getAuthorities().add(new UserType(user.getClass().getSimpleName()));
+        return user;
     }
 
     public void register(AppUser user) throws SQLException, UserAlreadyExistsException {

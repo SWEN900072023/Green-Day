@@ -1,18 +1,27 @@
 package edu.unimelb.swen90007.mes.model;
 
 import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-public abstract class AppUser {
+@Getter @Setter
+public abstract class AppUser implements UserDetails {
     private static final Logger logger = LogManager.getLogger(AppUser.class);
     private Integer id;
     private String email;
     private String password;
     private String firstName;
     private String lastName;
+
+    private final Set<UserType> authorities = new HashSet<>();
 
     public AppUser(Integer id) {
         this.id = id;
@@ -33,37 +42,30 @@ public abstract class AppUser {
         this.lastName = lastName;
     }
 
-    public Integer getId() {
-        return id;
+    @Override
+    public String getUsername() {
+        return email;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
+    public String loadEmail() {
         if (email == null)
             load();
         return email;
     }
 
-    public String getPassword() {
+    public String loadPassword() {
         if (password == null)
             load();
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFirstName() {
+    public String loadFirstName() {
         if (firstName == null)
             load();
         return firstName;
     }
 
-    public String getLastName() {
+    public String loadLastName() {
         if (lastName == null)
             load();
         return lastName;
@@ -76,16 +78,41 @@ public abstract class AppUser {
         this.lastName = lastName;
     }
 
+    @Override
+    public Collection<UserType> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     private void load() {
         logger.info("Loading User [id=" + id + "]");
         AppUser appUser;
         try {
             appUser = AppUserMapper.loadById(id);
             assert appUser != null;
-            email = appUser.getEmail();
-            password = appUser.getPassword();
-            firstName = appUser.getFirstName();
-            lastName = appUser.getLastName();
+            email = appUser.loadEmail();
+            password = appUser.loadPassword();
+            firstName = appUser.loadFirstName();
+            lastName = appUser.loadLastName();
         } catch (SQLException e) {
             logger.error(String.format("Error loading User [id=%d]: %s", id, e.getMessage()));
         }

@@ -1,11 +1,14 @@
 package edu.unimelb.swen90007.mes.model;
 
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 
+@Getter @Setter
 public class Section {
     private static final Logger logger = LogManager.getLogger(Section.class);
     private Integer id;
@@ -41,73 +44,45 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Event getEvent() {
+    public Event loadEvent() {
         if (event == null)
             load();
         return event;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    public String getName() {
+    public String loadName() {
         if (name == null)
             load();
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Money getMoney() {
+    public Money loadMoney() {
         if (money == null)
             load();
         return money;
     }
 
-    public void setMoney(Money money) {
-        this.money = money;
-    }
-
-    public Integer getCapacity() {
+    public Integer loadCapacity() {
         if (capacity == null)
             load();
         return capacity;
     }
 
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
-
-    public Integer getRemainingTickets() {
+    public Integer loadRemainingTickets() {
         if (remainingTickets == null)
             load();
         return remainingTickets;
-    }
-
-    public void setRemainingTickets(Integer remainingTickets) {
-        this.remainingTickets = remainingTickets;
     }
 
     private void load() {
         logger.info("Loading Section [id=" + id + "]");
         try {
             Section section = SectionMapper.loadById(id);
-            event = section.getEvent();
-            name = section.getName();
-            money = section.getMoney();
-            capacity = section.getCapacity();
-            remainingTickets = section.getRemainingTickets();
+            event = section.loadEvent();
+            name = section.loadName();
+            money = section.loadMoney();
+            capacity = section.loadCapacity();
+            remainingTickets = section.loadRemainingTickets();
         } catch (SQLException e) {
             logger.error(String.format("Error loading Section [id=%d]: %s", id, e.getMessage()));
         }

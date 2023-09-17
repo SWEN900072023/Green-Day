@@ -96,7 +96,7 @@ public class ServiceTest {
 
         // View Test
         publicService.viewAllEvents();
-        publicService.viewNextSixMothsEvents();
+        publicService.viewNextSixMonthsEvents();
         publicService.searchEvents("Title");
 
         adminService.viewAllUsers();

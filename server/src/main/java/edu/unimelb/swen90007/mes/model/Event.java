@@ -1,6 +1,10 @@
 package edu.unimelb.swen90007.mes.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,6 +12,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+@Getter @Setter
 public class Event {
     private static final Logger logger = LogManager.getLogger(Event.class);
     private Integer id;
@@ -17,7 +22,9 @@ public class Event {
     private String artist;
     private Venue venue;
     private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended
+    @JSONField(format = "yyyy-MM-dd'T'HH:mm:ss")
     private OffsetDateTime startTime;
+    @JSONField(format = "yyyy-MM-dd'T'HH:mm:ss")
     private OffsetDateTime endTime;
 
     public Event(Integer id) {
@@ -55,81 +62,50 @@ public class Event {
         this.startTime = startTime;
         this.endTime = endTime;
         if(startTime.isBefore(OffsetDateTime.now()))
-            this.status = 3;
+            this.status = Constant.EVENT_PAST;
         else if (startTime.isBefore(OffsetDateTime.now().plusMonths(6)))
-            this.status = 1;
+            this.status = Constant.EVENT_IN_SIX;
         else
-            this.status = 2;
+            this.status = Constant.EVENT_OUT_SIX;
     }
 
-    public Integer getFirstPlannerId() { return firstPlannerId; }
-    public void setFirstPlannerId(Integer id) { this.firstPlannerId = id; }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public List<Section> getSections() throws SQLException {
+    public List<Section> loadSections() {
         if (sections == null)
             load();
         return sections;
     }
 
-    public void setSections(List<Section> sections) {
-        this.sections = sections;
-    }
-
-    public String getTitle() throws SQLException {
+    public String loadTitle() {
         if (title == null)
             load();
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getArtist() throws SQLException {
+    public String loadArtist() {
         if (artist == null)
             load();
         return artist;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public Venue getVenue() throws SQLException {
+    public Venue loadVenue() {
         if (venue == null)
             load();
         return venue;
     }
 
-    public void setVenue(Venue venue) {
-        this.venue = venue;
-    }
-
-    public Integer getStatus() throws SQLException {
+    public Integer loadStatus() {
         if (status == null)
             load();
         return status;
     }
 
-    public OffsetDateTime getStartTime() throws SQLException {
+    public OffsetDateTime loadStartTime() {
         if (startTime == null)
             load();
         return startTime;
     }
 
-    public void setStartTime(OffsetDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public OffsetDateTime getEndTime() throws SQLException {
+    public OffsetDateTime loadEndTime() {
         if (endTime == null)
             load();
         return endTime;
@@ -143,16 +119,20 @@ public class Event {
         this.endTime = endTime;
     }
 
-    private void load() throws SQLException {
+    private void load() {
         logger.info("Loading Event [id=" + id + "]");
-        Event event = EventMapper.loadById(id);
-        assert event != null;
-        sections = event.getSections();
-        title = event.getTitle();
-        artist = event.getArtist();
-        venue = event.getVenue();
-        status = event.getStatus();
-        startTime = event.getStartTime();
-        endTime = event.getEndTime();
+        try {
+            Event event = EventMapper.loadById(id);
+            assert event != null;
+            sections = event.loadSections();
+            title = event.loadTitle();
+            artist = event.loadArtist();
+            venue = event.loadVenue();
+            status = event.loadStatus();
+            startTime = event.loadStartTime();
+            endTime = event.loadEndTime();
+        } catch (SQLException e) {
+            logger.error(String.format("Error loading Event [id=%d]: %s", id, e.getMessage()));
+        }
     }
 }

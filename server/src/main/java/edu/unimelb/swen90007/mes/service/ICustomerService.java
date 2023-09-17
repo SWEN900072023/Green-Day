@@ -7,7 +7,7 @@ import edu.unimelb.swen90007.mes.model.Order;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface CustomerServiceInterface {
+public interface ICustomerService {
     void placeOrder(Order order) throws SQLException, UserAlreadyExistsException;
     List<Order> viewOwnOrder(Customer customer) throws SQLException;
     void cancelOrder(Order order) throws SQLException, UserAlreadyExistsException;
