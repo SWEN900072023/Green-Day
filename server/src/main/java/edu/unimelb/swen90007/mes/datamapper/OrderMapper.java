@@ -73,7 +73,7 @@ public final class OrderMapper {
             String status = resultSet.getString("status").trim();
 
             Customer customer = new Customer(customerID);
-            Event event = new Event(eventID);
+            Event event = EventMapper.loadByIdPartial(eventID);
             List<SubOrder> subOrders = SubOrderMapper.loadByOrderId(orderID);
 
             Order order = new Order(orderID, event, customer, subOrders, createdAt, status);

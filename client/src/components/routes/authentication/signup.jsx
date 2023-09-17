@@ -1,8 +1,8 @@
 import "./signup.scss";
-import Form from "../form-input/form-input";
-import Button from "../button/button";
+import Form from "../../form-input/form-input";
+import Button from "../../button/button";
 import { useState } from "react";
-import Axiosapi from "./../axiosAPI/api";
+import Axiosapi from "../../axiosAPI/api";
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");

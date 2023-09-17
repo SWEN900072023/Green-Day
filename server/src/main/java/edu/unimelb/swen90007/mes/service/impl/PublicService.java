@@ -26,6 +26,11 @@ public class PublicService implements IPublicService {
     }
 
     @Override
+    public Event viewEventDetail(Event event) throws SQLException {
+        return EventMapper.loadByIdAll(event.getId());
+    }
+
+    @Override
     public void modifyUser(AppUser user) throws SQLException {
         AppUserMapper.update(user);
     }

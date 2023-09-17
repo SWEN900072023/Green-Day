@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PlannerEventMapper {
@@ -35,8 +35,8 @@ public class PlannerEventMapper {
         logger.info("Invite EventPlanner [id=" + planner_id + "]");
     }
 
-    public static List<Integer> loadEventIdsByPlanner(EventPlanner e) throws SQLException {
-        List<Integer> eventIds = new ArrayList<>();
+    public static List<Integer> loadEventsByPlanner(EventPlanner e) throws SQLException {
+        List<Integer> eventIds = new LinkedList<>();
         String sql = "SELECT event_id FROM planner_events WHERE planner_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

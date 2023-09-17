@@ -21,7 +21,7 @@ public class Event {
     private String title;
     private String artist;
     private Venue venue;
-    private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended
+    private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended, 4 : Cancelled
     @JSONField(format = "yyyy-MM-dd'T'HH:mm:ss")
     private OffsetDateTime startTime;
     @JSONField(format = "yyyy-MM-dd'T'HH:mm:ss")
@@ -111,18 +111,20 @@ public class Event {
         return endTime;
     }
 
-    public void setEndTime(OffsetDateTime endTime) {
-        if(endTime.isBefore(OffsetDateTime.now()))
-            this.status = 2;
-        else
+    public void setStartTime(OffsetDateTime startTime) {
+        if(startTime.isBefore(OffsetDateTime.now()))
+            this.status = 3;
+        else if (startTime.isBefore(OffsetDateTime.now().plusMonths(6)))
             this.status = 1;
-        this.endTime = endTime;
+        else
+            this.status = 2;
+        this.startTime = startTime;
     }
 
     private void load() {
         logger.info("Loading Event [id=" + id + "]");
         try {
-            Event event = EventMapper.loadById(id);
+            Event event = EventMapper.loadByIdAll(id);
             assert event != null;
             sections = event.loadSections();
             title = event.loadTitle();
