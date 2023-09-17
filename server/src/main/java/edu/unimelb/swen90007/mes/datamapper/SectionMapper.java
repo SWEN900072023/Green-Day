@@ -33,20 +33,12 @@ public final class SectionMapper {
     }
 
     public static List<Section> loadSectionsByEventId(int eventId) throws SQLException {
-        List<Section> sections = new ArrayList<>();
-
-        String sql = "SELECT id FROM sections WHERE event_id = ?";
+        String sql = "SELECT * FROM sections WHERE event_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, eventId);
         ResultSet resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next()) {
-            int sectionId = resultSet.getInt("id");
-            sections.add(new Section(sectionId));
-        }
-
-        return sections;
+        return load(resultSet);
     }
 
     public static Section loadById(int id) throws SQLException {

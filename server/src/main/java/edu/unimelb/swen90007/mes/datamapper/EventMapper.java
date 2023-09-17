@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -136,12 +137,9 @@ public final class EventMapper {
 
             List<Section> sections = SectionMapper.loadSectionsByEventId(eventId);
 
-            Venue venue = new Venue(venueId);
+            Venue venue = VenueMapper.loadById(venueId);
 
             Event event = new Event(eventId, sections, title, artist, venue, status, startTime, endTime);
-
-            for (Section section : sections)
-                section.setEvent(event);
 
             logger.info("Event Loaded [id=" + eventId + "]");
 
@@ -216,7 +214,7 @@ public final class EventMapper {
         for (Section section : event.getSections())
             SectionMapper.update(section);
 
-        if (event.getStatus() == 4)
+        if (event.getStatus().equals(Constant.EVENT_CANCELLED))
             EventMapper.cancel(event);
 
         logger.info("Event Updated [id=" + event.getId() + "]");
