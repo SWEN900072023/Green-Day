@@ -1,6 +1,5 @@
 package edu.unimelb.swen90007.mes.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import lombok.Getter;
@@ -22,9 +21,7 @@ public class Event {
     private String artist;
     private Venue venue;
     private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended, 4 : Cancelled
-    @JSONField(format = "yyyy-MM-dd'T'HH:mm:ss")
     private OffsetDateTime startTime;
-    @JSONField(format = "yyyy-MM-dd'T'HH:mm:ss")
     private OffsetDateTime endTime;
 
     public Event(Integer id) {

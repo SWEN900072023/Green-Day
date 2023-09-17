@@ -92,7 +92,7 @@ public final class VenueMapper {
     /**
      * Delete a venue by ID.
      *
-     * @param id the venue ID
+     * @param venue the venue
      * @throws SQLException if some error occurs while interacting with the database
      */
     public static void delete(Venue venue) throws SQLException {
