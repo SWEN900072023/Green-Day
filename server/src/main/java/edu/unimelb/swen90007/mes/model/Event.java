@@ -69,13 +69,6 @@ public class Event {
             this.status = Constant.EVENT_OUT_SIX;
     }
 
-    public Integer getFirstPlannerId() { return firstPlannerId; }
-    public void setFirstPlannerId(Integer id) { this.firstPlannerId = id; }
-
-    public Integer getId() {
-        return id;
-    }
-
     public List<Section> loadSections() {
         if (sections == null)
             load();
