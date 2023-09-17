@@ -66,8 +66,8 @@ public class ServiceTest {
         eventPlannerService.createEvent(event2);
 
         // Create Test Cases
-        Order order11 = new Order(event1, c1);
-        Order order12 = new Order(event1, c1);
+        Order order11 = new Order(event1, c1, new ArrayList<>());
+        Order order12 = new Order(event1, c1, new ArrayList<>());
         List<SubOrder> subOrders1 = new ArrayList<>();
         List<SubOrder> subOrders2 = new ArrayList<>();
         subOrders1.add(new SubOrder(sections1.get(0), 20, money));
@@ -77,8 +77,8 @@ public class ServiceTest {
         order11.setSubOrders(subOrders1);
         order12.setSubOrders(subOrders2);
 
-        Order order21 = new Order(event2, c2);
-        Order order22 = new Order(event2, c2);
+        Order order21 = new Order(event2, c2, new ArrayList<>());
+        Order order22 = new Order(event2, c2, new ArrayList<>());
         List<SubOrder> subOrders21 = new ArrayList<>();
         List<SubOrder> subOrders22 = new ArrayList<>();
         subOrders21.add(new SubOrder(sections2.get(0), 20, money));
@@ -113,18 +113,20 @@ public class ServiceTest {
 
         eventPlannerService.viewHostedEvent(ep1);
         eventPlannerService.viewHostedEvent(ep2);
+        publicService.viewEventDetail(event1);
 
         // Update Test
-        customerService.cancelOrder(order11);
+        customerService.cancelOrder(c1, order11);
         eventPlannerService.cancelOrder(ep1, order12);
 
-        customerService.cancelOrder(order21);
+        customerService.cancelOrder(c2, order21);
         eventPlannerService.cancelOrder(ep2, order22);
 
         event1.setArtist("Tom");
         event1.setStartTime(OffsetDateTime.now().minusDays(2));
         event1.setEndTime(OffsetDateTime.now().minusDays(1));
         sections2.get(0).setCapacity(90);
+        event2.setStatus(4);
         eventPlannerService.modifyEvent(ep1, event1);
         eventPlannerService.modifyEvent(ep2, event2);
         EventMapper.updateEndedEvent();

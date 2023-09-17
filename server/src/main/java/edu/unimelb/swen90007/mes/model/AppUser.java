@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,27 +79,27 @@ public abstract class AppUser implements UserDetails {
         this.lastName = lastName;
     }
 
-    @Override
+    @Override @JSONField(serialize = false)
     public Collection<UserType> getAuthorities() {
         return authorities;
     }
 
-    @Override
+    @Override @JSONField(serialize = false)
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
+    @Override @JSONField(serialize = false)
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override
+    @Override @JSONField(serialize = false)
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
+    @Override @JSONField(serialize = false)
     public boolean isEnabled() {
         return true;
     }

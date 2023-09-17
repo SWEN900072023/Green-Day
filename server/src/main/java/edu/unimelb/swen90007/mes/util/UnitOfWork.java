@@ -1,7 +1,6 @@
 package edu.unimelb.swen90007.mes.util;
 
 import edu.unimelb.swen90007.mes.datamapper.*;
-import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,12 +61,10 @@ public class UnitOfWork {
         }
     }
 
-    public void commit() throws SQLException, UserAlreadyExistsException {
+    public void commit() {
         for (Object object : newObjects) {
             try {
-                if (object instanceof AppUser) {
-                    AppUserMapper.create((AppUser) object);
-                } else if (object instanceof Event) {
+                if (object instanceof Event) {
                     EventMapper.create((Event) object);
                 } else if (object instanceof Order) {
                     OrderMapper.create((Order) object);
@@ -78,34 +75,28 @@ public class UnitOfWork {
                 } else if (object instanceof Venue) {
                     VenueMapper.create((Venue) object);
                 }
-            } catch (SQLException | UserAlreadyExistsException e) {
+            } catch (SQLException e) {
                 logger.error("UoW commit error: " + e.getMessage());
-                throw e;
             }
         }
         newObjects.clear();
 
         for (Object object : dirtyObjects) {
             try {
-                if (object instanceof AppUser) {
-                    AppUserMapper.update((AppUser) object);
-                } else if (object instanceof Event) {
+                if (object instanceof Event) {
                     EventMapper.update((Event) object);
                 } else if (object instanceof Order) {
                     OrderMapper.cancel((Order) object);
                 }
             } catch (SQLException e) {
                 logger.error("UoW commit error: " + e.getMessage());
-                throw e;
             }
         }
         dirtyObjects.clear();
 
         for (Object object : deletedObjects) {
             try {
-                if (object instanceof AppUser) {
-                    AppUserMapper.delete((AppUser) object);
-                } else if (object instanceof Event) {
+                if (object instanceof Event) {
                     EventMapper.delete((Event) object);
                 } else if (object instanceof Order) {
                     OrderMapper.delete((Order) object);
@@ -116,7 +107,6 @@ public class UnitOfWork {
                 }
             } catch (SQLException e) {
                 logger.error("UoW commit error: " + e.getMessage());
-                throw e;
             }
         }
         deletedObjects.clear();

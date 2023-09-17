@@ -31,13 +31,14 @@ public class AppUserService implements IAppUserService {
         return user;
     }
 
-    public void register(AppUser user) throws SQLException, UserAlreadyExistsException {
+    @Override
+    public void register(AppUser user) throws UserAlreadyExistsException, SQLException {
         UnitOfWork.getInstance().registerNew(user);
         // encode password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        // create user
-        UnitOfWork.getInstance().commit();
+        // create user; do not use uow
+        AppUserMapper.create(user);
     }
 }

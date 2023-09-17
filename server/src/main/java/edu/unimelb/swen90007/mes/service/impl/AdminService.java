@@ -4,7 +4,6 @@ import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
-import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.IAdminService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
@@ -30,13 +29,13 @@ public class AdminService implements IAdminService {
     }
 
     @Override
-    public void createVenue(Venue venue) throws SQLException, UserAlreadyExistsException {
+    public void createVenue(Venue venue) {
         UnitOfWork.getInstance().registerNew(venue);
         UnitOfWork.getInstance().commit();
     }
 
     @Override
-    public void deleteVenue(Venue venue) throws SQLException, UserAlreadyExistsException {
+    public void deleteVenue(Venue venue) throws SQLException {
         List<Event> events = EventMapper.loadByVenue(venue);
         List<Section> sections = new ArrayList<>();
         List<Order> orders = new ArrayList<>();
@@ -59,13 +58,12 @@ public class AdminService implements IAdminService {
     }
 
     @Override
-    public void deleteAppUser(AppUser user) throws SQLException, UserAlreadyExistsException {
+    public void deleteAppUser(AppUser user) throws SQLException {
         if (user instanceof Customer) {
             List<Order> orders = OrderMapper.loadByCustomerID(user.getId());
             for(Order o : orders)
                 UnitOfWork.getInstance().registerDeleted(o);
         }
-        UnitOfWork.getInstance().registerDeleted(user);
-        UnitOfWork.getInstance().commit();
+        AppUserMapper.delete(user);
     }
 }

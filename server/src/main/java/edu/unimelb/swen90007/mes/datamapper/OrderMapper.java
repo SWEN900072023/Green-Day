@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public final class OrderMapper {
@@ -73,7 +73,7 @@ public final class OrderMapper {
             String status = resultSet.getString("status").trim();
 
             Customer customer = new Customer(customerID);
-            Event event = new Event(eventID);
+            Event event = EventMapper.loadByIdPartial(eventID);
             List<SubOrder> subOrders = SubOrderMapper.loadByOrderId(orderID);
 
             Order order = new Order(orderID, event, customer, subOrders, createdAt, status);
@@ -85,13 +85,16 @@ public final class OrderMapper {
     }
 
     public static void cancel(Order order) throws SQLException {
-        String sql = "UPDATE orders SET status = 'Cancelled' WHERE id = ?";
+        String sql = "UPDATE orders SET status = ? WHERE status <> ? AND id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, order.getId());
+        preparedStatement.setString(1, Constant.ORDER_CANCELLED);
+        preparedStatement.setString(2, Constant.ORDER_CANCELLED);
+        preparedStatement.setInt(3, order.getId());
         preparedStatement.executeUpdate();
 
-        for (SubOrder subOrder : order.getSubOrders())
+        // use loader as some fields might be null
+        for (SubOrder subOrder : order.loadSubOrders())
             SectionMapper.increaseRemainingTickets(subOrder.getSection().getId(), subOrder.getQuantity());
 
         logger.info("Existing Order Cancelled [id=" + order.getId() + "]");
