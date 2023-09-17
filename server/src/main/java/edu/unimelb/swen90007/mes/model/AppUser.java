@@ -9,9 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 public abstract class AppUser implements UserDetails {
@@ -22,7 +21,7 @@ public abstract class AppUser implements UserDetails {
     private String firstName;
     private String lastName;
 
-    private final Set<UserType> authorities = new HashSet<>();
+    private final List<UserType> authorities = new ArrayList<>();
 
     public AppUser(Integer id) {
         this.id = id;
@@ -80,7 +79,7 @@ public abstract class AppUser implements UserDetails {
     }
 
     @Override @JSONField(serialize = false)
-    public Collection<UserType> getAuthorities() {
+    public List<UserType> getAuthorities() {
         return authorities;
     }
 
