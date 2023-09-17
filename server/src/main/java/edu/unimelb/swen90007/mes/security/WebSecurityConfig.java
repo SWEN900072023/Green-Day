@@ -100,9 +100,12 @@ public class WebSecurityConfig {
             throws IOException {
         String jwtToken = createJwtToken(authentication);
         AppUser user = (AppUser) authentication.getPrincipal();
+        String userType = user.getAuthorities().get(0).getAuthority();
+
         JSONObject data = new JSONObject();
         data.put("token", jwtToken);
         data.put("userId", user.getId());
+        data.put("userType", userType);
         data.put("email", user.getEmail());
         data.put("firstName", user.getFirstName());
         data.put("lastName", user.getLastName());
