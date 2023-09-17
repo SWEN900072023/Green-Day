@@ -1,10 +1,30 @@
 import Form from "../../form-input/form-input";
 import Button from "../../button/button";
 import { useState } from "react";
+import Axiosapi from "../../axiosAPI/api";
+import { useNavigate } from "react-router-dom";
 const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const signin = () => {};
+  const navigate = useNavigate();
+  const signin = async (e) => {
+    e.preventDefault();
+    const data = new URLSearchParams();
+    data.append("email", email);
+    data.append("password", password);
+
+    const encodedData = data.toString();
+    console.log(encodedData);
+    await Axiosapi.post("/login", encodedData, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }).then((res) => {
+      console.log(res);
+      alert(res.data.message);
+      navigate("/home");
+    });
+  };
   return (
     <div className="sign-up-container">
       {/* <h1>Don't have any account?</h1> */}
