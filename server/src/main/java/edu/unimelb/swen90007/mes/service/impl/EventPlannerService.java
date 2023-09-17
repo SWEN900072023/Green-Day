@@ -4,7 +4,6 @@ import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
-import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.IEventPlannerService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
@@ -15,7 +14,7 @@ import java.util.List;
 public class EventPlannerService implements IEventPlannerService {
     @Override
     public void createEvent(Event event)
-            throws SQLException, CapacityExceedsException, TimeConflictException, UserAlreadyExistsException {
+            throws SQLException, CapacityExceedsException, TimeConflictException {
         if(isCapacityExceeded(event))
             throw new CapacityExceedsException();
         if(EventMapper.doesTimeConflict(event))
@@ -27,7 +26,7 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void modifyEvent(EventPlanner ep, Event event)
             throws SQLException, CapacityExceedsException,
-            PermissionDeniedException, TimeConflictException, UserAlreadyExistsException {
+            PermissionDeniedException, TimeConflictException {
         if(!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
         if(isCapacityExceeded(event))
@@ -40,7 +39,7 @@ public class EventPlannerService implements IEventPlannerService {
 
     @Override
     public void deleteEvent(EventPlanner ep, Event event)
-            throws SQLException, PermissionDeniedException, UserAlreadyExistsException {
+            throws SQLException, PermissionDeniedException {
         if(!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
         List<Section> sections = SectionMapper.loadSectionsByEventId(event.getId());
@@ -85,7 +84,7 @@ public class EventPlannerService implements IEventPlannerService {
 
     @Override
     public void cancelOrder(EventPlanner ep, Order order)
-            throws SQLException, PermissionDeniedException, UserAlreadyExistsException {
+            throws SQLException, PermissionDeniedException {
         if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
         UnitOfWork.getInstance().registerDirty(order);
