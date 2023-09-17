@@ -12,4 +12,7 @@ public class Constant {
     public static final Integer EVENT_OUT_SIX = 2;
     public static final Integer EVENT_PAST = 3;
     public static final Integer EVENT_CANCELLED = 4;
+    // Order status
+    public static final String ORDER_SUCCESS = "Success";
+    public static final String ORDER_CANCELLED = "Cancelled";
 }

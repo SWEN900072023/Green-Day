@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +21,7 @@ public class Order {
     private OffsetDateTime createdAt;
     private String status;
 
-    public Order(Integer id, Event event,Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
+    public Order(Integer id, Event event, Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
         this.id = id;
         this.event = event;
         this.customer = customer;
@@ -29,11 +30,17 @@ public class Order {
         this.status = status;
     }
 
-    public Order(Event event,Customer customer) {
+    // for creating new order
+    public Order(Event event, Customer customer, List<SubOrder> subOrders) {
         this.event = event;
         this.customer = customer;
+        this.subOrders = subOrders;
         this.createdAt = OffsetDateTime.now();
-        this.status = "Ordered";
+        this.status = Constant.ORDER_SUCCESS;
+    }
+
+    public Order(Integer id) {
+        this.id = id;
     }
 
     public Event loadEvent() {

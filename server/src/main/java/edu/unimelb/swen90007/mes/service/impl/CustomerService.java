@@ -2,7 +2,6 @@ package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
-import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.model.Order;
 import edu.unimelb.swen90007.mes.service.ICustomerService;
@@ -14,7 +13,7 @@ import java.util.Objects;
 
 public class CustomerService implements ICustomerService {
     @Override
-    public void placeOrder(Order order) throws SQLException, UserAlreadyExistsException {
+    public void placeOrder(Order order) {
         UnitOfWork.getInstance().registerNew(order);
         UnitOfWork.getInstance().commit();
     }
@@ -26,8 +25,8 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void cancelOrder(Customer customer, Order order)
-            throws SQLException, UserAlreadyExistsException, PermissionDeniedException {
-        if (!Objects.equals(customer.getId(), order.getCustomer().getId()))
+            throws PermissionDeniedException {
+        if (!Objects.equals(customer.getId(), order.loadCustomer().getId()))
             throw new PermissionDeniedException();
         UnitOfWork.getInstance().registerDirty(order);
         UnitOfWork.getInstance().commit();

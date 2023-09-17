@@ -1,12 +1,15 @@
 package edu.unimelb.swen90007.mes.security;
 
+import com.alibaba.fastjson.JSONObject;
 import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.model.Administrator;
 import edu.unimelb.swen90007.mes.model.AppUser;
+import edu.unimelb.swen90007.mes.model.Customer;
 import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.service.impl.AppUserService;
 import edu.unimelb.swen90007.mes.util.JwtUtil;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +30,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -43,25 +47,25 @@ public class WebSecurityConfig {
                                 Constant.API_PREFIX + "/login",
                                 Constant.API_PREFIX + "/register/customer"
                         ).permitAll()
-                        // Administrator permission
+                        // Administrator authority
                         .requestMatchers(
                                 Constant.API_PREFIX + "/admin/**",
                                 Constant.API_PREFIX + "/register/event-planner")
                         .hasAuthority(Administrator.class.getSimpleName())
-                        // EventPlanner permission
+                        // EventPlanner authority
                         .requestMatchers(Constant.API_PREFIX + "/planner/**")
                         .hasAuthority(EventPlanner.class.getSimpleName())
+                        // Customer authority
+                        .requestMatchers(Constant.API_PREFIX + "/customer/**")
+                        .hasAuthority(Customer.class.getSimpleName())
                         // Any logged-in users
                         .anyRequest().authenticated())
 
                 .formLogin(login -> login
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .successHandler((request, response, authentication) -> {
-                            String jwtToken = createJwtToken(authentication);
-                            String msg = "Successfully logged in";
-                            ResponseWriter.write(response, 200, msg, jwtToken);
-                        })
+                        .successHandler((request, response, authentication) ->
+                                handleLoginSuccess(response, authentication))
                         .failureHandler((request, response, exception) ->
                                 ResponseWriter.write(response, 401, "unauthenticated"))
                         .loginProcessingUrl(Constant.API_PREFIX + "/login"))
@@ -90,6 +94,21 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(Customizer.withDefaults());
         return http.build();
+    }
+
+    private void handleLoginSuccess(HttpServletResponse response, Authentication authentication)
+            throws IOException {
+        String jwtToken = createJwtToken(authentication);
+        AppUser user = (AppUser) authentication.getPrincipal();
+        JSONObject data = new JSONObject();
+        data.put("token", jwtToken);
+        data.put("userId", user.getId());
+        data.put("email", user.getEmail());
+        data.put("firstName", user.getFirstName());
+        data.put("lastName", user.getLastName());
+
+        String msg = "Successfully logged in";
+        ResponseWriter.write(response, 200, msg, data);
     }
 
     private String createJwtToken(Authentication authentication) {
