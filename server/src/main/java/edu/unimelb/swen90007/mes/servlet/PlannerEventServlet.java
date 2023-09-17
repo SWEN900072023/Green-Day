@@ -6,9 +6,7 @@ import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.IEventPlannerService;
-import edu.unimelb.swen90007.mes.service.IPublicService;
 import edu.unimelb.swen90007.mes.service.impl.EventPlannerService;
-import edu.unimelb.swen90007.mes.service.impl.PublicService;
 import edu.unimelb.swen90007.mes.util.JwtUtil;
 import edu.unimelb.swen90007.mes.util.ResponseWriter;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,32 +22,22 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(name = "EventServlet", urlPatterns = Constant.API_PREFIX + "/events/*")
-public class EventServlet extends HttpServlet {
+@WebServlet(name = "PlannerEventServlet", urlPatterns = Constant.API_PREFIX + "/planner/events")
+public class PlannerEventServlet extends HttpServlet {
 
-    private static final Logger logger = LogManager.getLogger(EventServlet.class);
+    private static final Logger logger = LogManager.getLogger(PlannerEventServlet.class);
 
     /**
      * GET
-     * [/events] view all events
-     * [/events?upcoming=true] view upcoming events in six months
-     * [/events?title=green%20day] search by title
+     * [/planner/events] get all hosted events
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String upcoming = request.getParameter("upcoming");
-        String title = request.getParameter("title");
-        IPublicService publicService = new PublicService();
-
-        List<Event> events;
+        IEventPlannerService eventPlannerService = new EventPlannerService();
         try {
-            if (upcoming != null) {
-                events = publicService.viewNextSixMonthsEvents();
-            } else if (title != null) {
-                events = publicService.searchEvents(title);
-            } else {
-                events = publicService.viewAllEvents();
-            }
+            // get user id
+            Integer userId = JwtUtil.getInstance().getUserId(request);
+            List<Event> events = eventPlannerService.viewHostedEvent(new EventPlanner(userId));
             ResponseWriter.write(response, 200, "Success", events);
         } catch (SQLException e) {
             ResponseWriter.write(response, 500, "Unexpected system error");
@@ -59,7 +47,7 @@ public class EventServlet extends HttpServlet {
 
     /**
      * POST
-     * [/events] create a new event
+     * [/planner/events] create a new event
      */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -84,7 +72,7 @@ public class EventServlet extends HttpServlet {
 
     /**
      * PUT
-     * [/events] update an event
+     * [/planner/events] An event planner updates a hosted event
      */
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
