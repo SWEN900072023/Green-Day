@@ -1,9 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
-import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
-import edu.unimelb.swen90007.mes.datamapper.EventMapper;
-import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
-import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
+import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.IAdminService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
@@ -64,6 +61,10 @@ public class AdminService implements IAdminService {
             for(Order o : orders)
                 UnitOfWork.getInstance().registerDeleted(o);
         }
+        else if (user instanceof EventPlanner) {
+            PlannerEventMapper.deleteByEventPlanner(user.getId());
+        }
+        UnitOfWork.getInstance().commit();
         AppUserMapper.delete(user);
     }
 }

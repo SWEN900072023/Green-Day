@@ -2,8 +2,10 @@ package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
+import edu.unimelb.swen90007.mes.datamapper.VenueMapper;
 import edu.unimelb.swen90007.mes.model.AppUser;
 import edu.unimelb.swen90007.mes.model.Event;
+import edu.unimelb.swen90007.mes.model.Venue;
 import edu.unimelb.swen90007.mes.service.IPublicService;
 
 import java.sql.SQLException;
@@ -28,6 +30,11 @@ public class PublicService implements IPublicService {
     @Override
     public Event viewEventDetail(Event event) throws SQLException {
         return EventMapper.loadByIdAll(event.getId());
+    }
+
+    @Override
+    public List<Venue> viewAllVenues() throws SQLException {
+        return VenueMapper.loadAll();
     }
 
     @Override

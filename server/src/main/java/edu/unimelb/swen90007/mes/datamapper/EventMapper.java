@@ -222,7 +222,7 @@ public final class EventMapper {
 
     public static void delete(Event event) throws SQLException {
         int eventId = event.getId();
-        PlannerEventMapper.delete(eventId);
+        PlannerEventMapper.deleteByEvent(eventId);
         String sql = "DELETE FROM events WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

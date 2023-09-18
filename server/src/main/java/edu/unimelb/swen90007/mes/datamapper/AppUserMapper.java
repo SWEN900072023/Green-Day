@@ -218,6 +218,15 @@ public final class AppUserMapper {
         return load(resultSet).get(0);
     }
 
+    public static AppUser loadByIdPartial(int id) throws SQLException {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return loadPartial(resultSet).get(0);
+    }
+
     /**
      * Load a list of users given the ResultSet object.
      *
@@ -243,6 +252,42 @@ public final class AppUserMapper {
                 users.add(new EventPlanner(id, email, password, firstName, lastName));
             else if (type.equals(Customer.class.getSimpleName()))
                 users.add(new Customer(id, email, password, firstName, lastName));
+
+            logger.info("User Loaded [id=" + id + "]");
+        }
+
+        return users;
+    }
+
+    /**
+     * Load a list of users(with partial information) given the ResultSet object.
+     *
+     * @param resultSet a ResultSet object
+     * @return a list of users
+     * @throws SQLException if some error occurs while interacting with the database
+     */
+    private static List<AppUser> loadPartial(ResultSet resultSet) throws SQLException {
+        List<AppUser> users = new ArrayList<>();
+
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            String firstName = resultSet.getString("first_name");
+            String lastName = resultSet.getString("last_name");
+            String type = resultSet.getString("type");
+            type = type.trim();
+
+            AppUser user;
+            if (type.equals(Administrator.class.getSimpleName()))
+                user = new Administrator(id);
+            else if (type.equals(EventPlanner.class.getSimpleName()))
+                user = new EventPlanner(id);
+            else
+                user = new Customer(id);
+
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+
+            users.add(user);
 
             logger.info("User Loaded [id=" + id + "]");
         }
