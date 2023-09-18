@@ -22,9 +22,9 @@ function App() {
         <Route path="home" element={<Home />}></Route>
         <Route path="mybookings" element={<MyBookings />}></Route>
         {/* TODO: EVENT NAME SHOULD BE DISPLAYED ON THE NAVIGATION ROUTE */}
-        <Route path={`Summer BBQ/booking`} element={<EventBooking />}></Route>
+        <Route path="/:eventName/booking" element={<EventBooking />}></Route>
         <Route path="eventCreation" element={<EventCreation />}></Route>
-        <Route path="eventName/eventManage" element={<EventManage />}></Route>
+        <Route path="/:eventName/eventManage" element={<EventManage />}></Route>
         <Route path="user" element={<User />}></Route>
         <Route
           path="user/customer-name/info"

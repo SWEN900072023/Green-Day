@@ -17,13 +17,16 @@ import { useSelector } from "react-redux";
 import { selectorCurrentUser } from "../../store/user/user.selector";
 import Axiosapi from "../../axiosAPI/api";
 const Home = () => {
-  const exampleEvents = [
-    { label: "Brunch this weekend?", year: 1994 },
-    { label: "Summer BBQ", year: 1972 },
-    { label: "Oui Oui", year: 1974 },
-  ];
+  // const exampleEvents = [
+  //   { label: "Brunch this weekend?", year: 1994 },
+  //   { label: "Summer BBQ", year: 1972 },
+  //   { label: "Oui Oui", year: 1974 },
+  // ];
   const currentUser = useSelector(selectorCurrentUser);
   const [text, setText] = useState("");
+  const [hostedEvent, setHostedEvent] = useState(null);
+  const [allEvents, setAllEvents] = useState(null);
+  const [searchEvent, setSearchEvent] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
     async function getAllHostedEvent() {
@@ -31,14 +34,20 @@ const Home = () => {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
         },
-      }).then((res) => console.log(res));
+      }).then((res) => {
+        console.log(res);
+        setHostedEvent(res.data.data);
+      });
     }
     async function getAllEvents() {
       await Axiosapi.get("/public/events", {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
         },
-      }).then((res) => console.log(res));
+      }).then((res) => {
+        console.log(res);
+        setAllEvents(res.data.data);
+      });
     }
     if (currentUser.userType === "EventPlanner") {
       getAllHostedEvent();
@@ -46,86 +55,145 @@ const Home = () => {
       getAllEvents();
     }
   }, []);
-  const searchEvent = exampleEvents.filter((event) => {
-    return event.label.toLowerCase().includes(text.toLowerCase());
-  });
-
+  // console.log(allEvents);
+  useEffect(() => {
+    if (allEvents !== null) {
+      const filter = allEvents.filter((event) => {
+        return event.title.toLowerCase().includes(text.toLowerCase());
+      });
+      setSearchEvent(filter);
+    }
+  }, [allEvents, text]);
+  // console.log(searchEvent);
   return (
     <div className="homeContainer">
       <div className="eventsList">
-        {/* TODO: For event planner, it should display the event that they hosted */}
-        {/* TODO: For admin, it should display the same thing as user except for search bar and calendar*/}
+        {currentUser.userType === "EventPlanner" ? (
+          <h1>Hi EventPlanner, {currentUser.firstName}</h1>
+        ) : currentUser.userType === "Customer" ? (
+          <h1>Hi Customer, {currentUser.firstName}</h1>
+        ) : (
+          <h1>Hi Admin, {currentUser.firstName}</h1>
+        )}
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          {searchEvent.map((event) => {
-            return (
-              <>
-                <ListItem
-                  className="listItem"
-                  alignItems="flex-start"
-                  onClick={() => {
-                    console.log(`hi im ${event.label}`);
-                    // TODO: Soft coded event name
-                    navigate("/Summer BBQ/booking");
-                  }}
-                >
-                  <ListItemAvatar>
-                    <Avatar
+          {currentUser.userType === "EventPlanner" && hostedEvent !== null ? (
+            hostedEvent.map((hostedevent) => {
+              return (
+                <>
+                  <ListItem
+                    className="listItem"
+                    alignItems="flex-start"
+                    onClick={() => {
+                      console.log(`hi im ${hostedevent.title}`);
+                      // TODO: Soft coded event name
+                      navigate(`/${hostedevent.title}/eventManage`);
+                    }}
+                  >
+                    <ListItemAvatar>
+                      {/* <Avatar
                       alt="Remy Sharp"
                       src="/static/images/avatar/1.jpg"
+                    /> */}
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={`${hostedevent.title}`}
+                      secondary={
+                        <Fragment>
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            Artist: {hostedevent.artist}
+                          </Typography>
+                          {`${hostedevent.startTime} - ${hostedevent.endTime}`}
+                        </Fragment>
+                      }
                     />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={`${event.label}`}
-                    secondary={
-                      <Fragment>
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          Ali Connors
-                        </Typography>
-                        {" — I'll be in your neighborhood doing errands this…"}
-                      </Fragment>
-                    }
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-              </>
-            );
-          })}
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </>
+              );
+            })
+          ) : searchEvent === null ? (
+            <></>
+          ) : (
+            searchEvent.map((event) => {
+              return (
+                <>
+                  <ListItem
+                    className="listItem"
+                    alignItems="flex-start"
+                    onClick={() => {
+                      console.log(`hi im ${event.title}`);
+                      // TODO: Soft coded event name
+                      navigate(`/${event.title}/booking`);
+                    }}
+                  >
+                    <ListItemAvatar>
+                      {/* <Avatar
+                    alt="Remy Sharp"
+                    src="/static/images/avatar/1.jpg"
+                  /> */}
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={`${event.title}`}
+                      secondary={
+                        <Fragment>
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            Artist: {event.artist}
+                          </Typography>
+                          {`${event.startTime} - ${event.endTime}`}
+                        </Fragment>
+                      }
+                    />
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </>
+              );
+            })
+          )}
         </List>
       </div>
-      <div className="searchBar-calendar">
-        <Autocomplete
-          inputValue={text}
-          onInputChange={(e, newValue) => {
-            console.log(newValue);
-            setText(newValue);
-          }}
-          disablePortal
-          id="controllable-states-demo"
-          options={exampleEvents}
-          sx={{ width: 500 }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Type Music Events"
-              //   onChange={(e) => {
-              //     console.log(e.target.value);
-              //     setText(e.target.value);
-              //   }
-              // }
-            />
-          )}
-        />
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateCalendar sx={{ marginTop: "5rem" }} />
-        </LocalizationProvider>
-      </div>
+      {searchEvent === null ? (
+        <></>
+      ) : (
+        <div className="searchBar-calendar">
+          <Autocomplete
+            inputValue={text}
+            onInputChange={(e, newValue) => {
+              console.log(newValue);
+              setText(newValue);
+            }}
+            disablePortal
+            id="controllable-states-demo"
+            options={searchEvent.map((event) => event.title)}
+            sx={{ width: 500 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Type Music Events"
+                //   onChange={(e) => {
+                //     console.log(e.target.value);
+                //     setText(e.target.value);
+                //   }
+                // }
+              />
+            )}
+          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateCalendar sx={{ marginTop: "5rem" }} />
+          </LocalizationProvider>
+        </div>
+      )}
     </div>
   );
 };
