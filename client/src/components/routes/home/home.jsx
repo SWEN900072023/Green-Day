@@ -87,7 +87,7 @@ const Home = () => {
                     alignItems="flex-start"
                     onClick={() => {
                       console.log(`hi im ${hostedevent.title}`);
-                      // TODO: Soft coded event name
+
                       navigate(`/${hostedevent.title}/eventManage`);
                     }}
                   >
@@ -129,7 +129,7 @@ const Home = () => {
                     alignItems="flex-start"
                     onClick={() => {
                       console.log(`hi im ${event.title}`);
-                      // TODO: Soft coded event name
+
                       navigate(`/booking?eventId=${event.id}`);
                     }}
                   >

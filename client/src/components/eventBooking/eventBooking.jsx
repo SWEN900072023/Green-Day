@@ -8,11 +8,12 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import "./eventBooking.css";
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Axiosapi from "../axiosAPI/api";
 import { useSelector } from "react-redux";
 import { selectorCurrentUser } from "../store/user/user.selector";
 const EventBooking = () => {
+  const navigate = useNavigate();
   const [counts, setCounts] = useState([{ id: 0, count: 0 }]);
   const [sections, setSections] = useState(null);
   const currentUser = useSelector(selectorCurrentUser);
@@ -26,7 +27,7 @@ const EventBooking = () => {
           Authorization: `Bearer ${currentUser.token}`,
         },
       }).then((res) => {
-        console.log(res);
+        // console.log(res);
         setSections(res.data.data.sections);
       });
     }
@@ -36,44 +37,54 @@ const EventBooking = () => {
 
   useEffect(() => {
     if (sections !== null) {
-      const newCounts = sections.map((row, index) => ({
-        id: index,
-        count: 0,
-        price: row.unitPrice,
+      const newCounts = sections.map((row) => ({
+        sectionId: row.id,
+        quantity: 0,
+        unitPrice: row.unitPrice,
+        currency: row.currency,
       }));
       setCounts(newCounts);
     }
-  }, []);
-  const increment = (index) => {
+  }, [sections]);
+  // console.log(counts);
+  const increment = (id) => {
     setCounts((prevCounts) =>
       prevCounts.map((counter) =>
-        counter.id === index
-          ? { ...counter, count: counter.count + 1 }
+        counter.sectionId === id
+          ? { ...counter, quantity: counter.quantity + 1 }
           : counter
       )
     );
   };
-  const decrement = (index) => {
+  // console.log(counts);
+  const decrement = (id) => {
     setCounts((prevCounts) =>
       prevCounts.map((counter) =>
-        counter.id === index && counter.count > 0
-          ? { ...counter, count: counter.count - 1 }
+        counter.sectionId === id && counter.quantity > 0
+          ? { ...counter, quantity: counter.quantity - 1 }
           : counter
       )
     );
   };
   const placeOrder = async () => {
+    const order = counts.filter((counter) => counter.quantity !== 0);
+    // console.log(order);
     await Axiosapi.post(
       "/customer/orders",
       {
         eventId,
+        subOrders: order,
       },
       {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
         },
       }
-    );
+    ).then((res) => {
+      // console.log(res);
+      alert("transaction success!");
+      navigate("/home");
+    });
   };
   return (
     <>
@@ -99,9 +110,9 @@ const EventBooking = () => {
             {sections == null ? (
               <></>
             ) : (
-              sections.map((row, index) => (
+              sections.map((row) => (
                 <TableRow
-                  key={row.name}
+                  key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
@@ -117,12 +128,16 @@ const EventBooking = () => {
                       <></>
                     ) : (
                       <div class="counter">
-                        <button onClick={() => decrement(index)}>-</button>
+                        <button onClick={() => decrement(row.id)}>-</button>
                         <span>
-                          {counts[index].count}
+                          {
+                            counts.filter(
+                              (counter) => counter.sectionId === row.id
+                            )[0].quantity
+                          }
                           {/* {index} */}
                         </span>
-                        <button onClick={() => increment(index)}>+</button>
+                        <button onClick={() => increment(row.id)}>+</button>
                       </div>
                     )}
                   </TableCell>
@@ -141,7 +156,7 @@ const EventBooking = () => {
           Total fee:{" "}
           {counts.reduce(
             (accumulator, counter) =>
-              accumulator + counter.count * counter.price,
+              accumulator + counter.quantity * counter.unitPrice,
             0
           )}
           $
