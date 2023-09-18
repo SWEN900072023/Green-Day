@@ -85,19 +85,26 @@ public final class OrderMapper {
     }
 
     public static void cancel(Order order) throws SQLException {
-        String sql = "UPDATE orders SET status = ? WHERE status <> ? AND id = ?";
+        String sqlSelect = "SELECT status FROM orders WHERE id = ?";
         Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, Constant.ORDER_CANCELLED);
-        preparedStatement.setString(2, Constant.ORDER_CANCELLED);
-        preparedStatement.setInt(3, order.getId());
-        preparedStatement.executeUpdate();
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlSelect);
+        preparedStatement.setInt(1, order.getId());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        String status = resultSet.getString("status").trim();
+        if (status.equals(Constant.ORDER_SUCCESS)) {
+            String sqlUpdate = "UPDATE orders SET status = ? WHERE id = ?";
+            preparedStatement = connection.prepareStatement(sqlUpdate);
+            preparedStatement.setString(1, Constant.ORDER_CANCELLED);
+            preparedStatement.setInt(2, order.getId());
+            preparedStatement.executeUpdate();
 
-        // use loader as some fields might be null
-        for (SubOrder subOrder : order.loadSubOrders())
-            SectionMapper.increaseRemainingTickets(subOrder.getSection().getId(), subOrder.getQuantity());
+            // use loader as some fields might be null
+            for (SubOrder subOrder : order.loadSubOrders())
+                SectionMapper.increaseRemainingTickets(subOrder.getSection().getId(), subOrder.getQuantity());
 
-        logger.info("Existing Order Cancelled [id=" + order.getId() + "]");
+            logger.info("Existing Order Cancelled [id=" + order.getId() + "]");
+        }
     }
 
     public static void delete(Order order) throws SQLException {
