@@ -49,13 +49,22 @@ public class PlannerEventMapper {
         return eventIds;
     }
 
-    public static void delete(int eventId) throws SQLException {
+    public static void deleteByEvent(int eventId) throws SQLException {
         String sql = "DELETE FROM planner_events WHERE event_id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, eventId);
         preparedStatement.executeUpdate();
         logger.info("Association Deleted [event_id=" + eventId + "]");
+    }
+
+    public static void deleteByEventPlanner(int plannerId) throws SQLException {
+        String sql = "DELETE FROM planner_events WHERE planner_id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, plannerId);
+        preparedStatement.executeUpdate();
+        logger.info("Association Deleted [event_id=" + plannerId + "]");
     }
 
     public static boolean checkRelation(EventPlanner ep, Event event) throws SQLException {

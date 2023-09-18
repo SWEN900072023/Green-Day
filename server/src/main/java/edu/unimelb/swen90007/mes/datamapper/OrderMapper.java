@@ -72,7 +72,7 @@ public final class OrderMapper {
             OffsetDateTime createdAt = resultSet.getObject("created_at", OffsetDateTime.class);
             String status = resultSet.getString("status").trim();
 
-            Customer customer = new Customer(customerID);
+            Customer customer = (Customer) AppUserMapper.loadByIdPartial(customerID);
             Event event = EventMapper.loadByIdPartial(eventID);
             List<SubOrder> subOrders = SubOrderMapper.loadByOrderId(orderID);
 
