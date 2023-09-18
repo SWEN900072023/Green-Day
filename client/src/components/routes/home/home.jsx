@@ -130,7 +130,7 @@ const Home = () => {
                     onClick={() => {
                       console.log(`hi im ${event.title}`);
                       // TODO: Soft coded event name
-                      navigate(`/${event.title}/booking`);
+                      navigate(`/booking?eventId=${event.id}`);
                     }}
                   >
                     <ListItemAvatar>
