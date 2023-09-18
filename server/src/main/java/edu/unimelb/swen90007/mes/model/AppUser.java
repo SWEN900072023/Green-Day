@@ -17,6 +17,7 @@ public abstract class AppUser implements UserDetails {
     private static final Logger logger = LogManager.getLogger(AppUser.class);
     private Integer id;
     private String email;
+    @JSONField(serialize = false)
     private String password;
     private String firstName;
     private String lastName;
@@ -42,7 +43,7 @@ public abstract class AppUser implements UserDetails {
         this.lastName = lastName;
     }
 
-    @Override
+    @Override @JSONField(serialize = false)
     public String getUsername() {
         return email;
     }
