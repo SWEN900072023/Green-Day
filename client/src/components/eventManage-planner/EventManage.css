@@ -1,3 +1,11 @@
 .button-group {
   display: flex;
 }
+
+#modify-event-button {
+  height: 50px;
+  margin-right: 2rem;
+}
+#cancel-event-button {
+  margin-left: 2rem;
+}
