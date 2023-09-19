@@ -102,7 +102,6 @@ const User = () => {
                       className="listItem"
                       alignItems="flex-start"
                       // onClick={() => {
-                      //   console.log(`hi im ${event.label}`);
                       //   // TODO: Soft coded event name
                       //   navigate("/Summer BBQ/booking");
                       // }}
@@ -145,9 +144,7 @@ const User = () => {
                       className="listItem"
                       alignItems="flex-start"
                       // onClick={() => {
-                      //   console.log(`hi im ${event.label}`);
-                      //   // TODO: Soft coded event name
-                      //   navigate("/Summer BBQ/booking");
+                      //   navigate(`planner/info`);
                       // }}
                     >
                       <ListItemAvatar></ListItemAvatar>
@@ -188,9 +185,7 @@ const User = () => {
                       className="listItem"
                       alignItems="flex-start"
                       // onClick={() => {
-                      //   console.log(`hi im ${event.label}`);
-                      //   // TODO: Soft coded event name
-                      //   navigate("/Summer BBQ/booking");
+                      //   navigate(`customer/info`);
                       // }}
                     >
                       <ListItemAvatar></ListItemAvatar>
