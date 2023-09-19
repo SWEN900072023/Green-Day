@@ -27,7 +27,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MultiInputDateTimeRangeField } from "@mui/x-date-pickers-pro/MultiInputDateTimeRangeField";
 const EventManage = () => {
   const [v, setV] = useState("name");
-  const [hostedOrders, setHostedOrders] = useState(null);
+  const [hostedOrders, setHostedOrders] = useState([]);
   const [planners, setPlanners] = useState([]);
   const [planner, setPlanner] = useState("");
   const [sections, setSections] = useState(null);
@@ -42,16 +42,16 @@ const EventManage = () => {
 
   useEffect(() => {
     // TODO:Need to be fixed for backend
-    // async function viewOrdersOfhostedEvent() {
-    //   await AxiosApi.get(`planner/orders?eventId=${eventId}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${currentUser.token}`,
-    //     },
-    //   }).then((res) => {
-    //     console.log(res);
-    //     setHostedOrders(res.data.data);
-    //   });
-    // }
+    async function viewOrdersOfhostedEvent() {
+      await AxiosApi.get(`/planner/orders?eventId=${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }).then((res) => {
+        console.log(res);
+        setHostedOrders(res.data.data);
+      });
+    }
     async function getEventDetails() {
       await AxiosApi.get(`/public/events/${eventId}`, {
         headers: {
@@ -85,7 +85,7 @@ const EventManage = () => {
         setVenues(res.data.data);
       });
     }
-    // viewOrdersOfhostedEvent();
+    viewOrdersOfhostedEvent();
     getEventDetails();
     getOtherPlanner();
     getVenues();
@@ -186,6 +186,7 @@ const EventManage = () => {
       }
     ).then((res) => {
       console.log(res);
+      alert("cancel successfully");
     });
   };
   // console.log(eventDetails);
@@ -198,8 +199,8 @@ const EventManage = () => {
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          {hostedOrders == null ? (
-            <></>
+          {hostedOrders.length === 0 ? (
+            <h2>No Order</h2>
           ) : (
             hostedOrders.map((order) => {
               const start = new Date(order.event.startTime);
