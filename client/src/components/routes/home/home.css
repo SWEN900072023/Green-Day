@@ -1,6 +1,6 @@
 .homeContainer {
   display: flex;
-  flex-direction: row;
+  /* flex-direction: column; */
 }
 .eventsList {
   width: 360px;
