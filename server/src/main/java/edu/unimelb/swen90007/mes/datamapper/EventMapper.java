@@ -133,8 +133,8 @@ public final class EventMapper {
             String artist = resultSet.getString("artist").trim();
             int venueId = resultSet.getInt("venue_id");
             int status = resultSet.getInt("status");
-            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(10);
-            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(10);
+            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(11);
+            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(11);
 
             List<Section> sections = SectionMapper.loadSectionsByEventId(eventId);
 
@@ -159,8 +159,8 @@ public final class EventMapper {
             String artist = resultSet.getString("artist").trim();
             int venueId = resultSet.getInt("venue_id");
             int status = resultSet.getInt("status");
-            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(10);
-            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(10);
+            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(11);
+            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(11);
 
             Venue venue = new Venue(venueId);
 
