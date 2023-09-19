@@ -19,11 +19,8 @@ const User = () => {
   const navigate = useNavigate();
   const currentUser = useSelector(selectorCurrentUser);
   const [users, setUsers] = useState([]);
-  const exampleEvents = [
-    { label: "Brunch this weekend?", year: 1994 },
-    { label: "Summer BBQ", year: 1972 },
-    { label: "Oui Oui", year: 1974 },
-  ];
+  const [planners, setPlanners] = useState([]);
+
   useEffect(() => {
     async function getUsersInfo() {
       await AxiosApi.get(`/admin/users`, {
@@ -35,7 +32,18 @@ const User = () => {
         setUsers(res.data.data);
       });
     }
+    async function getPlannerInfo() {
+      await AxiosApi.get(`/admin/users?type=eventplanner`, {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }).then((res) => {
+        console.log(res);
+        setPlanners(res.data.data);
+      });
+    }
     getUsersInfo();
+    getPlannerInfo();
   }, []);
   const createPlanner = () => {};
   return (
@@ -76,6 +84,49 @@ const User = () => {
                               color="text.primary"
                             >
                               Email: {user.email}
+                            </Typography>
+                          </Fragment>
+                        }
+                      />
+                    </ListItem>
+                    {/* <button>cancel booking</button> */}
+                    <Divider variant="inset" component="li" />
+                  </>
+                );
+              })
+            )}
+          </List>
+          <h1>All planner info</h1>
+          <List
+            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+          >
+            {planners.length === 0 ? (
+              <></>
+            ) : (
+              planners.map((planner) => {
+                return (
+                  <>
+                    <ListItem
+                      className="listItem"
+                      alignItems="flex-start"
+                      // onClick={() => {
+                      //   console.log(`hi im ${event.label}`);
+                      //   // TODO: Soft coded event name
+                      //   navigate("/Summer BBQ/booking");
+                      // }}
+                    >
+                      <ListItemAvatar></ListItemAvatar>
+                      <ListItemText
+                        primary={`${planner.firstName} ${planner.lastName}`}
+                        secondary={
+                          <Fragment>
+                            <Typography
+                              sx={{ display: "inline" }}
+                              component="span"
+                              variant="body2"
+                              color="text.primary"
+                            >
+                              Email: {planner.email}
                             </Typography>
                           </Fragment>
                         }
