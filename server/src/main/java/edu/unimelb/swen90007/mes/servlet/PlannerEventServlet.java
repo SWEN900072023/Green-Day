@@ -3,7 +3,9 @@ package edu.unimelb.swen90007.mes.servlet;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import edu.unimelb.swen90007.mes.constants.Constant;
+import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
+import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.IEventPlannerService;
 import edu.unimelb.swen90007.mes.service.impl.EventPlannerService;
@@ -60,12 +62,10 @@ public class PlannerEventServlet extends HttpServlet {
         try {
             eventPlannerService.createEvent(event);
             ResponseWriter.write(response, 201, "Success");
-        } catch (Exception e) {
-            if (e instanceof SQLException) {
-                ResponseWriter.write(response, 500, "Unexpected system error");
-            } else {
-                ResponseWriter.write(response, 400, e.getMessage());
-            }
+        } catch (CapacityExceedsException | TimeConflictException e) {
+            ResponseWriter.write(response, 400, e.getMessage());
+        } catch (SQLException e) {
+            ResponseWriter.write(response, 500, "Unexpected system error");
             logger.error(e.getMessage());
         }
     }
@@ -84,14 +84,12 @@ public class PlannerEventServlet extends HttpServlet {
         try {
             eventPlannerService.modifyEvent(eventPlanner, event);
             ResponseWriter.write(response, 200, "Success");
-        } catch (Exception e) {
-            if (e instanceof PermissionDeniedException) {
-                ResponseWriter.write(response, 403, e.getMessage());
-            } else if (e instanceof SQLException) {
-                ResponseWriter.write(response, 500, "Unexpected system error");
-            } else {
-                ResponseWriter.write(response, 400, e.getMessage());
-            }
+        } catch (PermissionDeniedException e) {
+            ResponseWriter.write(response, 403, e.getMessage());
+        } catch (CapacityExceedsException | TimeConflictException e) {
+            ResponseWriter.write(response, 400, e.getMessage());
+        } catch (SQLException e) {
+            ResponseWriter.write(response, 500, "Unexpected system error");
             logger.error(e.getMessage());
         }
     }

@@ -44,17 +44,18 @@ public class PlannerOrderServlet extends HttpServlet {
                 List<Order> orders = eventPlannerService.viewOrders(eventPlanner, event);
                 ResponseWriter.write(response, 200, "Success", orders);
 
-            } catch (Exception e) {
-                if (e instanceof NumberFormatException) {
-                    ResponseWriter.write(response, 400, "Invalid eventId format");
-                } else {
-                    ResponseWriter.write(response, 500, "Unexpected system error");
-                }
+            } catch (NumberFormatException e) {
+                ResponseWriter.write(response, 400, "Invalid eventId format");
+            } catch (PermissionDeniedException e) {
+                ResponseWriter.write(response, 403, e.getMessage());
+            } catch (SQLException e) {
+                ResponseWriter.write(response, 500, "Unexpected system error");
                 logger.error(e.getMessage());
             }
         } else {
             ResponseWriter.write(response, 400, "Bad request");
         }
+
     }
 
     /**
