@@ -10,15 +10,33 @@ import TextField from "@mui/material/TextField";
 import Form from "../../form-input/form-input";
 import Button from "../../button/button";
 import { useNavigate } from "react-router-dom";
+import AxiosApi from "../../axiosAPI/api";
 import "./../home/home.css";
+import { useSelector } from "react-redux";
+import { selectorCurrentUser } from "../../store/user/user.selector";
 
 const User = () => {
   const navigate = useNavigate();
+  const currentUser = useSelector(selectorCurrentUser);
+  const [users, setUsers] = useState([]);
   const exampleEvents = [
     { label: "Brunch this weekend?", year: 1994 },
     { label: "Summer BBQ", year: 1972 },
     { label: "Oui Oui", year: 1974 },
   ];
+  useEffect(() => {
+    async function getUsersInfo() {
+      await AxiosApi.get(`/admin/users`, {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }).then((res) => {
+        console.log(res);
+        setUsers(res.data.data);
+      });
+    }
+    getUsersInfo();
+  }, []);
   const createPlanner = () => {};
   return (
     <>
@@ -31,48 +49,44 @@ const User = () => {
           <List
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           >
-            {exampleEvents.map((event) => {
-              return (
-                <>
-                  <ListItem
-                    className="listItem"
-                    alignItems="flex-start"
-                    onClick={() => {
-                      console.log(`hi im ${event.label}`);
-                      // TODO: Soft coded event name
-                      navigate("/Summer BBQ/booking");
-                    }}
-                  >
-                    <ListItemAvatar>
-                      <Avatar
-                        alt="Remy Sharp"
-                        src="/static/images/avatar/1.jpg"
+            {users.length === 0 ? (
+              <></>
+            ) : (
+              users.map((user) => {
+                return (
+                  <>
+                    <ListItem
+                      className="listItem"
+                      alignItems="flex-start"
+                      // onClick={() => {
+                      //   console.log(`hi im ${event.label}`);
+                      //   // TODO: Soft coded event name
+                      //   navigate("/Summer BBQ/booking");
+                      // }}
+                    >
+                      <ListItemAvatar></ListItemAvatar>
+                      <ListItemText
+                        primary={`${user.firstName} ${user.lastName}`}
+                        secondary={
+                          <Fragment>
+                            <Typography
+                              sx={{ display: "inline" }}
+                              component="span"
+                              variant="body2"
+                              color="text.primary"
+                            >
+                              Email: {user.email}
+                            </Typography>
+                          </Fragment>
+                        }
                       />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={`${event.label}`}
-                      secondary={
-                        <Fragment>
-                          <Typography
-                            sx={{ display: "inline" }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                          >
-                            Ali Connors
-                          </Typography>
-                          {
-                            " — I'll be in your neighborhood doing errands this…"
-                          }
-                        </Fragment>
-                      }
-                    />
-                  </ListItem>
-                  {/* <button>cancel booking</button> */}
-                  <Divider variant="inset" component="li" />
-                </>
-              );
-            })}
+                    </ListItem>
+                    {/* <button>cancel booking</button> */}
+                    <Divider variant="inset" component="li" />
+                  </>
+                );
+              })
+            )}
           </List>
         </div>
         <div className="searchBar-calendar">
