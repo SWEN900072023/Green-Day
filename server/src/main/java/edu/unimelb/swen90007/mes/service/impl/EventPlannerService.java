@@ -2,6 +2,7 @@ package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
+import edu.unimelb.swen90007.mes.exceptions.InvalidTimeRangeException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.model.*;
@@ -14,7 +15,9 @@ import java.util.List;
 public class EventPlannerService implements IEventPlannerService {
     @Override
     public void createEvent(Event event)
-            throws SQLException, CapacityExceedsException, TimeConflictException {
+            throws SQLException, CapacityExceedsException, TimeConflictException, InvalidTimeRangeException {
+        if(invalidTimeRange(event))
+            throw new InvalidTimeRangeException();
         if(isCapacityExceeded(event))
             throw new CapacityExceedsException();
         if(EventMapper.doesTimeConflict(event))
@@ -26,7 +29,9 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void modifyEvent(EventPlanner ep, Event event)
             throws SQLException, CapacityExceedsException,
-            PermissionDeniedException, TimeConflictException {
+            PermissionDeniedException, TimeConflictException, InvalidTimeRangeException {
+        if(invalidTimeRange(event))
+            throw new InvalidTimeRangeException();
         if(!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
         if(isCapacityExceeded(event))
@@ -97,5 +102,9 @@ public class EventPlannerService implements IEventPlannerService {
             eventCapacity += s.loadCapacity();
         int venueCapacity = event.loadVenue().loadCapacity();
         return (eventCapacity > venueCapacity);
+    }
+
+    public boolean invalidTimeRange(Event event){
+        return event.getStartTime().isAfter(event.getEndTime());
     }
 }
