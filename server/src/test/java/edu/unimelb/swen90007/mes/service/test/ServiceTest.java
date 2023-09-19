@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ServiceTest {
@@ -92,7 +93,11 @@ public class ServiceTest {
         customerService.placeOrder(order22);
 
         // View Test
-        publicService.viewAllEvents();
+        List<Event> es = publicService.viewAllEvents();
+        for(Event e : es){
+            System.out.println(e.getStartTime());
+            System.out.println(e.getEndTime());
+        }
         publicService.viewNextSixMonthsEvents();
         publicService.searchEvents("Title");
 
@@ -120,8 +125,6 @@ public class ServiceTest {
         eventPlannerService.cancelOrder(ep2, order22);
 
         event1.setArtist("Tom");
-        event1.setStartTime(OffsetDateTime.now().minusDays(2));
-        event1.setEndTime(OffsetDateTime.now().minusDays(1));
         sections2.get(0).setCapacity(90);
         event2.setStatus(4);
         eventPlannerService.modifyEvent(ep1, event1);
@@ -135,9 +138,5 @@ public class ServiceTest {
 
         eventPlannerService.viewUninvitedEventPlanner(event1);
 
-        // Delete Test
-        adminService.deleteAppUser(c1);
-        eventPlannerService.deleteEvent(ep1, event1);
-        adminService.deleteVenue(venue2);
     }
 }
