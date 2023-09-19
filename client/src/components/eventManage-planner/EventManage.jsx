@@ -175,6 +175,16 @@ const EventManage = () => {
     }
   };
   const cancelEvent = () => {};
+  const inviteOhterPlanner = async () => {
+    await AxiosApi.get(`/planner/invite/${planner}/${eventId}`, {
+      headers: {
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    }).then((res) => {
+      console.log(res);
+      alert("invite successfully");
+    });
+  };
   const cancelOrder = async (orderId) => {
     await AxiosApi.post(
       `/planner/orders/cancel/${orderId}`,
@@ -189,6 +199,7 @@ const EventManage = () => {
       alert("cancel successfully");
     });
   };
+  console.log(planner);
   // console.log(eventDetails);
   // console.log(sections);
   // console.log(venue);
@@ -486,6 +497,12 @@ const EventManage = () => {
                 ))
               )}
             </Select>
+            <button
+              id="cancel-event-button"
+              onClick={() => inviteOhterPlanner()}
+            >
+              Invite
+            </button>
           </div>
         </div>
         <div className="button-group">
