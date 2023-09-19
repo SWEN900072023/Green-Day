@@ -55,6 +55,7 @@ const Home = () => {
       getAllEvents();
     }
   }, []);
+  // const inviteOtherPlanner = () => {};
   // console.log(allEvents);
   useEffect(() => {
     if (allEvents !== null) {
@@ -79,7 +80,20 @@ const Home = () => {
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
           {currentUser.userType === "EventPlanner" && hostedEvent !== null ? (
-            hostedEvent.map((hostedevent) => {
+            hostedEvent.map((hostedevent, index) => {
+              const start = new Date(hostedevent.startTime);
+              const end = new Date(hostedevent.endTime);
+              const options = {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                timeZone: "UTC",
+                hour: "numeric",
+                minute: "numeric",
+              };
+              const formattedstartTime = start.toLocaleString("en-AU", options);
+              // console.log(formattedDate);
+              const formattedendTime = end.toLocaleString("en-AU", options);
               return (
                 <>
                   <ListItem
@@ -88,7 +102,9 @@ const Home = () => {
                     onClick={() => {
                       console.log(`hi im ${hostedevent.title}`);
 
-                      navigate(`/${hostedevent.title}/eventManage`);
+                      navigate(
+                        `/${hostedevent.title}/eventManage?eventId=${hostedevent.id}`
+                      );
                     }}
                   >
                     <ListItemAvatar>
@@ -108,12 +124,24 @@ const Home = () => {
                             color="text.primary"
                           >
                             Artist: {hostedevent.artist}
+                            <br />
                           </Typography>
-                          {`${hostedevent.startTime} - ${hostedevent.endTime}`}
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            Duration:{" "}
+                            {`${formattedstartTime} - ${formattedendTime}`}
+                          </Typography>
                         </Fragment>
                       }
                     />
                   </ListItem>
+                  {/* <button onClick={() => inviteOtherPlanner()}>
+                    invite other planner
+                  </button> */}
                   <Divider variant="inset" component="li" />
                 </>
               );
