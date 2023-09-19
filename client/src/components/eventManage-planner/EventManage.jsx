@@ -115,7 +115,7 @@ const EventManage = () => {
         timeRange.value[0].$d === "Invalid Date" ||
         timeRange.value[1].$d === "Invalid Date"
       ) {
-        await AxiosApi.post(
+        await AxiosApi.put(
           "/planner/events",
           {
             id: eventId,
@@ -134,7 +134,7 @@ const EventManage = () => {
           }
         ).then((res) => console.log(res));
       } else {
-        await AxiosApi.post(
+        await AxiosApi.put(
           "/planner/events",
           {
             id: eventId,
@@ -154,7 +154,7 @@ const EventManage = () => {
         ).then((res) => console.log(res));
       }
     } else {
-      await AxiosApi.post(
+      await AxiosApi.put(
         "/planner/events",
         {
           id: eventId,
@@ -174,7 +174,28 @@ const EventManage = () => {
       ).then((res) => console.log(res));
     }
   };
-  const cancelEvent = () => {};
+  const cancelEvent = async (e) => {
+    e.preventDefault();
+    const selectedVenue = venues.filter((v) => v.name === venue);
+    await AxiosApi.put(
+      "/planner/events",
+      {
+        id: eventId,
+        title: eventDetails.title,
+        artist: eventDetails.artist,
+        startTime: eventDetails.startTime,
+        endTime: eventDetails.endTime,
+        venueId: selectedVenue[0].id,
+        status: 4,
+        sections,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }
+    ).then((res) => console.log(res));
+  };
   const inviteOhterPlanner = async () => {
     await AxiosApi.get(`/planner/invite/${planner}/${eventId}`, {
       headers: {
@@ -509,7 +530,7 @@ const EventManage = () => {
           <button id="modify-event-button" onClick={(e) => modifyEvent(e)}>
             Modify event
           </button>
-          <button id="cancel-event-button" onClick={() => cancelEvent()}>
+          <button id="cancel-event-button" onClick={(e) => cancelEvent(e)}>
             cancel event
           </button>
         </div>
