@@ -21,6 +21,10 @@ const User = () => {
   const [users, setUsers] = useState([]);
   const [planners, setPlanners] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
   useEffect(() => {
     async function getUsersInfo() {
       await AxiosApi.get(`/admin/users`, {
@@ -56,7 +60,27 @@ const User = () => {
     getPlannerInfo();
     getCustomerInfo();
   }, []);
-  const createPlanner = () => {};
+  // console.log(email);
+  const createPlanner = async (e) => {
+    e.preventDefault();
+    await AxiosApi.post(
+      `/register/event-planner`,
+      {
+        email,
+        password,
+        firstName,
+        lastName,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }
+    ).then((res) => {
+      console.log(res);
+      alert("create planner successfully");
+    });
+  };
   return (
     <>
       <h1>hi, user info page</h1>
@@ -203,43 +227,42 @@ const User = () => {
                   type="email"
                   required
                   name="Email"
-                  value=""
-                  //   onChange={(e) => setTitle(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 ></Form>
                 <Form
                   label="Password"
                   type="password"
                   required
-                  //   onChange={(e) => setArtist(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   name="Password"
-                  value=""
+                  value={password}
                 ></Form>
                 <Form
                   label="First Name"
                   type="text"
                   required
-                  //   onChange={(e) => setStartTime(e.target.value)}
+                  onChange={(e) => setFirstName(e.target.value)}
                   name="First Name"
-                  value=""
+                  value={firstName}
                 ></Form>
                 <Form
                   label="Last Name"
                   type="text"
                   required
-                  //   onChange={(e) => setEndTime(e.target.value)}
+                  onChange={(e) => setLastName(e.target.value)}
                   name="Last Name"
-                  value=""
+                  value={lastName}
                 ></Form>
+                <Button type="submit" buttonType="google">
+                  Create Planner
+                </Button>
               </form>
             </div>
             {/* <div className="section-creation-container"></div> */}
           </div>
-          <div className="button-group">
-            <Button type="submit" buttonType="google">
-              Create Planner
-            </Button>
-            {/* <Button>Cancel event</Button> */}
-          </div>
+
+          {/* <Button>Cancel event</Button> */}
         </div>
       </div>
     </>
