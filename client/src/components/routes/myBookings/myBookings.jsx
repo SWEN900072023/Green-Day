@@ -22,7 +22,7 @@ const MyBookings = () => {
   //     return formattedDate;
   //   };
   useEffect(() => {
-    async function getReviews() {
+    async function getBookings() {
       await AxiosApi.get(`/customer/orders`, {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
@@ -33,7 +33,7 @@ const MyBookings = () => {
         // setReviews(res.data.data.reviews);
       });
     }
-    getReviews();
+    getBookings();
   }, []);
 
   return (

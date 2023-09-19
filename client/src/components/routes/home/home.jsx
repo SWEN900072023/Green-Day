@@ -202,7 +202,6 @@ const Home = () => {
                     className="listItem"
                     alignItems="flex-start"
                     // onClick={() => {
-                    //   console.log(`hi im ${event.title}`);
 
                     //   navigate(`/booking?eventId=${event.id}`);
                     // }}

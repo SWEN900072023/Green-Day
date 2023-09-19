@@ -6,12 +6,30 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-
+import AxiosApi from "../axiosAPI/api";
 import "./../routes/home/home.css";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectorCurrentUser } from "../store/user/user.selector";
 
 const CustomerPage = () => {
   const navigate = useNavigate();
+  const currentUser = useSelector(selectorCurrentUser);
+  const [bookings, setBookings] = useState([]);
+  useEffect(() => {
+    async function getBookings() {
+      await AxiosApi.get(`/customer/orders`, {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }).then((res) => {
+        console.log(res);
+        setBookings(res.data.data);
+        // setReviews(res.data.data.reviews);
+      });
+    }
+    getBookings();
+  }, []);
   const exampleEvents = [
     { label: "Brunch this weekend?", year: 1994 },
     { label: "Summer BBQ", year: 1972 },
@@ -27,46 +45,52 @@ const CustomerPage = () => {
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          {exampleEvents.map((event) => {
-            return (
-              <>
-                <ListItem
-                  className="listItem"
-                  alignItems="flex-start"
-                  onClick={() => {
-                    console.log(`hi im ${event.label}`);
-                    // TODO: Soft coded event name
-                    navigate("/Summer BBQ/booking");
-                  }}
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src="/static/images/avatar/1.jpg"
+          {bookings.length === 0 ? (
+            <></>
+          ) : (
+            bookings.map((booking) => {
+              return (
+                <>
+                  <ListItem
+                    className="listItem"
+                    alignItems="flex-start"
+                    // onClick={() => {
+                    //   console.log(`hi im ${event.label}`);
+                    //   // TODO: Soft coded event name
+                    //   navigate("/Summer BBQ/booking");
+                    // }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/1.jpg"
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={`${booking}`}
+                      secondary={
+                        <Fragment>
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            Ali Connors
+                          </Typography>
+                          {
+                            " — I'll be in your neighborhood doing errands this…"
+                          }
+                        </Fragment>
+                      }
                     />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={`${event.label}`}
-                    secondary={
-                      <Fragment>
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          Ali Connors
-                        </Typography>
-                        {" — I'll be in your neighborhood doing errands this…"}
-                      </Fragment>
-                    }
-                  />
-                </ListItem>
-                {/* <button>cancel booking</button> */}
-                <Divider variant="inset" component="li" />
-              </>
-            );
-          })}
+                  </ListItem>
+                  {/* <button>cancel booking</button> */}
+                  <Divider variant="inset" component="li" />
+                </>
+              );
+            })
+          )}
         </List>
       </div>
     </>
