@@ -65,6 +65,13 @@ const Home = () => {
       setSearchEvent(filter);
     }
   }, [allEvents, text]);
+  const viewSixMonths = () => {
+    Axiosapi.get("/public/events/six-months", {
+      headers: {
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    }).then((res) => console.log(res));
+  };
   console.log(searchEvent);
   return (
     <div className="homeContainer">
@@ -81,7 +88,7 @@ const Home = () => {
         >
           {currentUser.userType === "EventPlanner" &&
           hostedEvent.length === 0 ? (
-            <></>
+            <h2>No hosted Events</h2>
           ) : currentUser.userType === "EventPlanner" &&
             hostedEvent.length !== 0 ? (
             hostedEvent.map((hostedevent, index) => {
@@ -265,6 +272,9 @@ const Home = () => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar sx={{ marginTop: "5rem" }} />
           </LocalizationProvider>
+          <button id="section-setting-button" onClick={() => viewSixMonths()}>
+            View events in 6 months
+          </button>
         </div>
       )}
     </div>
