@@ -80,6 +80,7 @@ const EventCreation = () => {
       value,
     });
   };
+  // console.log(timeRange);
   const createEvent = async (e) => {
     e.preventDefault();
     // console.log(sections);
