@@ -24,9 +24,9 @@ const Home = () => {
   // ];
   const currentUser = useSelector(selectorCurrentUser);
   const [text, setText] = useState("");
-  const [hostedEvent, setHostedEvent] = useState(null);
+  const [hostedEvent, setHostedEvent] = useState([]);
   const [allEvents, setAllEvents] = useState(null);
-  const [searchEvent, setSearchEvent] = useState(null);
+  const [searchEvent, setSearchEvent] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
     async function getAllHostedEvent() {
@@ -65,7 +65,7 @@ const Home = () => {
       setSearchEvent(filter);
     }
   }, [allEvents, text]);
-  // console.log(searchEvent);
+  console.log(searchEvent);
   return (
     <div className="homeContainer">
       <div className="eventsList">
@@ -79,7 +79,11 @@ const Home = () => {
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          {currentUser.userType === "EventPlanner" && hostedEvent !== null ? (
+          {currentUser.userType === "EventPlanner" &&
+          hostedEvent.length === 0 ? (
+            <></>
+          ) : currentUser.userType === "EventPlanner" &&
+            hostedEvent.length !== 0 ? (
             hostedEvent.map((hostedevent, index) => {
               const start = new Date(hostedevent.startTime);
               const end = new Date(hostedevent.endTime);
@@ -146,9 +150,11 @@ const Home = () => {
                 </>
               );
             })
-          ) : searchEvent === null ? (
+          ) : currentUser.userType === "Customer" &&
+            searchEvent.length === 0 ? (
             <></>
-          ) : (
+          ) : currentUser.userType === "Customer" &&
+            searchEvent.length !== 0 ? (
             searchEvent.map((event) => {
               return (
                 <>
@@ -160,6 +166,46 @@ const Home = () => {
 
                       navigate(`/booking?eventId=${event.id}`);
                     }}
+                  >
+                    <ListItemAvatar>
+                      {/* <Avatar
+                    alt="Remy Sharp"
+                    src="/static/images/avatar/1.jpg"
+                  /> */}
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={`${event.title}`}
+                      secondary={
+                        <Fragment>
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            Artist: {event.artist}
+                          </Typography>
+                          {`${event.startTime} - ${event.endTime}`}
+                        </Fragment>
+                      }
+                    />
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </>
+              );
+            })
+          ) : (
+            searchEvent.map((event) => {
+              return (
+                <>
+                  <ListItem
+                    className="listItem"
+                    alignItems="flex-start"
+                    // onClick={() => {
+                    //   console.log(`hi im ${event.title}`);
+
+                    //   navigate(`/booking?eventId=${event.id}`);
+                    // }}
                   >
                     <ListItemAvatar>
                       {/* <Avatar
