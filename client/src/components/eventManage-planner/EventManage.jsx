@@ -132,7 +132,10 @@ const EventManage = () => {
               Authorization: `Bearer ${currentUser.token}`,
             },
           }
-        ).then((res) => console.log(res));
+        ).then((res) => {
+          console.log(res);
+          alert("modify successfully");
+        });
       } else {
         await AxiosApi.put(
           "/planner/events",
@@ -151,7 +154,10 @@ const EventManage = () => {
               Authorization: `Bearer ${currentUser.token}`,
             },
           }
-        ).then((res) => console.log(res));
+        ).then((res) => {
+          console.log(res);
+          alert("modify successfully");
+        });
       }
     } else {
       await AxiosApi.put(
@@ -171,7 +177,11 @@ const EventManage = () => {
             Authorization: `Bearer ${currentUser.token}`,
           },
         }
-      ).then((res) => console.log(res));
+      ).then((res) => {
+        console.log(res);
+
+        alert("modify successfully");
+      });
     }
   };
   const cancelEvent = async (e) => {
@@ -194,14 +204,21 @@ const EventManage = () => {
           Authorization: `Bearer ${currentUser.token}`,
         },
       }
-    ).then((res) => console.log(res));
+    ).then((res) => {
+      console.log(res);
+      alert("cancel successfully");
+    });
   };
   const inviteOhterPlanner = async () => {
-    await AxiosApi.get(`/planner/invite/${planner}/${eventId}`, {
-      headers: {
-        Authorization: `Bearer ${currentUser.token}`,
-      },
-    }).then((res) => {
+    await AxiosApi.post(
+      `/planner/invite/${planner}/${eventId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }
+    ).then((res) => {
       console.log(res);
       alert("invite successfully");
     });
