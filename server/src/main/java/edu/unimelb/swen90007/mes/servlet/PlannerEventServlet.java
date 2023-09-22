@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
+import edu.unimelb.swen90007.mes.exceptions.InvalidTimeRangeException;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.model.*;
@@ -62,7 +63,7 @@ public class PlannerEventServlet extends HttpServlet {
         try {
             eventPlannerService.createEvent(event);
             ResponseWriter.write(response, 201, "Success");
-        } catch (CapacityExceedsException | TimeConflictException e) {
+        } catch (CapacityExceedsException | TimeConflictException | InvalidTimeRangeException e) {
             ResponseWriter.write(response, 400, e.getMessage());
         } catch (SQLException e) {
             ResponseWriter.write(response, 500, "Unexpected system error");
@@ -86,7 +87,7 @@ public class PlannerEventServlet extends HttpServlet {
             ResponseWriter.write(response, 200, "Success");
         } catch (PermissionDeniedException e) {
             ResponseWriter.write(response, 403, e.getMessage());
-        } catch (CapacityExceedsException | TimeConflictException e) {
+        } catch (CapacityExceedsException | TimeConflictException | InvalidTimeRangeException e) {
             ResponseWriter.write(response, 400, e.getMessage());
         } catch (SQLException e) {
             ResponseWriter.write(response, 500, "Unexpected system error");

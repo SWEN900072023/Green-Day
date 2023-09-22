@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -132,8 +133,8 @@ public final class EventMapper {
             String artist = resultSet.getString("artist").trim();
             int venueId = resultSet.getInt("venue_id");
             int status = resultSet.getInt("status");
-            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class);
-            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class);
+            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(11);
+            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(11);
 
             List<Section> sections = SectionMapper.loadSectionsByEventId(eventId);
 
@@ -158,8 +159,8 @@ public final class EventMapper {
             String artist = resultSet.getString("artist").trim();
             int venueId = resultSet.getInt("venue_id");
             int status = resultSet.getInt("status");
-            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class);
-            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class);
+            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(11);
+            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(11);
 
             Venue venue = new Venue(venueId);
 
