@@ -23,24 +23,7 @@ import { selectorCurrentUser } from "../../store/user/user.selector";
 
 const EventCreation = () => {
   const currentUser = useSelector(selectorCurrentUser);
-  const currencies = [
-    {
-      value: "USD",
-      label: "$",
-    },
-    {
-      value: "EUR",
-      label: "€",
-    },
-    {
-      value: "BTC",
-      label: "฿",
-    },
-    {
-      value: "JPY",
-      label: "¥",
-    },
-  ];
+
   const [accordions, setAccordions] = useState([]);
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
@@ -107,7 +90,7 @@ const EventCreation = () => {
       alert("event create successfully");
     });
   };
-  // console.log(venue);
+  console.log(accordions);
   return (
     // <div className="container">
     <div className="Contain">
@@ -176,6 +159,17 @@ const EventCreation = () => {
                   >
                     <Typography>Section {index + 1}</Typography>
                   </AccordionSummary>
+                  <button
+                    id="delete-section-button"
+                    onClick={() => {
+                      const updatedAccordions = accordions.filter(
+                        (accordion, accIndex) => index !== accIndex
+                      );
+                      setAccordions(updatedAccordions);
+                    }}
+                  >
+                    Delete section
+                  </button>
                   <AccordionDetails>
                     <Form
                       label="Section Name"
