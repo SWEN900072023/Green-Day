@@ -159,7 +159,7 @@ const Home = () => {
             })
           ) : currentUser.userType === "Customer" &&
             searchEvent.length === 0 ? (
-            <></>
+            <h2 style={{ marginLeft: "1rem" }}>No events</h2>
           ) : currentUser.userType === "Customer" &&
             searchEvent.length !== 0 ? (
             searchEvent.map((event) => {

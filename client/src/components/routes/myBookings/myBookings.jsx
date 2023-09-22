@@ -13,7 +13,7 @@ import { selectorCurrentUser } from "../../store/user/user.selector";
 const MyBookings = () => {
   //   const currentUser = useSelector(selectorCurrentUser);
   const currentUser = useSelector(selectorCurrentUser);
-  const [bookings, setMyBookings] = useState(null);
+  const [bookings, setMyBookings] = useState([]);
   //   const convertDateFormat = () => {
   //     const dateObject = new Date(review.createdAt);
   //     const options = { year: "numeric", month: "short", timeZone: "UTC" };
@@ -55,7 +55,9 @@ const MyBookings = () => {
             <h1>No review</h1>
           )}
         </Stack> */}
-          {bookings != null ? (
+          {bookings.length === 0 ? (
+            <h2 style={{ marginLeft: "1rem" }}>No Bookings</h2>
+          ) : (
             bookings.map((booking) => {
               const start = new Date(booking.event.startTime);
               const end = new Date(booking.event.endTime);
@@ -183,8 +185,6 @@ const MyBookings = () => {
                 </Paper>
               );
             })
-          ) : (
-            <h1>No reviews</h1>
           )}
         </Box>
       </div>
