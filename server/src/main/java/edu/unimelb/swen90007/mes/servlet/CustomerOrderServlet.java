@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
+import edu.unimelb.swen90007.mes.exceptions.TicketInsufficientException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.ICustomerService;
 import edu.unimelb.swen90007.mes.service.impl.CustomerService;
@@ -99,7 +100,10 @@ public class CustomerOrderServlet extends HttpServlet {
         try {
             customerService.placeOrder(order);
             ResponseWriter.write(response, 201, "Success");
-        } catch (Exception e) {
+        } catch (TicketInsufficientException tie){
+            ResponseWriter.write(response, 400, "Unexpected system error");
+            logger.error(tie.getMessage());
+        } catch (SQLException e) {
             ResponseWriter.write(response, 500, "Unexpected system error");
             logger.error(e.getMessage());
         }

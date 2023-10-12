@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +69,7 @@ public final class OrderMapper {
             int orderID = resultSet.getInt("id");
             int eventID = resultSet.getInt("event_id");
             int customerID = resultSet.getInt("customer_id");
-            OffsetDateTime createdAt = resultSet.getObject("created_at", OffsetDateTime.class);
+            LocalDateTime createdAt = resultSet.getObject("created_at", LocalDateTime.class);
             String status = resultSet.getString("status").trim();
 
             Customer customer = (Customer) AppUserMapper.loadByIdPartial(customerID);

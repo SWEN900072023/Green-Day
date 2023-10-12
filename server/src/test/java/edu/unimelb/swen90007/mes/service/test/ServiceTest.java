@@ -7,14 +7,15 @@ import edu.unimelb.swen90007.mes.service.impl.*;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ServiceTest {
     public static void main(String[] args)
-            throws SQLException, CapacityExceedsException, PermissionDeniedException, TimeConflictException, UserAlreadyExistsException, InvalidTimeRangeException {
+            throws SQLException, CapacityExceedsException, PermissionDeniedException,
+            TimeConflictException, UserAlreadyExistsException, InvalidTimeRangeException,
+            TicketInsufficientException {
 
         // Create Service
         AppUserService appUserService = new AppUserService();
@@ -41,7 +42,7 @@ public class ServiceTest {
         Venue venue1 = new Venue("Name1", "Address1", 120);
         Venue venue2 = new Venue("Name2", "Address2", 120);
 
-        OffsetDateTime now = OffsetDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         Event event1 = new Event("Title1", "Michael", venue1, now.plusDays(10), now.plusDays(11));
         Event event2 = new Event("Title2", "Michael", venue2, now.plusDays(10), now.plusDays(11));
 

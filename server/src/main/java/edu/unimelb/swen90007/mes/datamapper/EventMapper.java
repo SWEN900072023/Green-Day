@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +45,7 @@ public final class EventMapper {
         String sql = "UPDATE events SET status = 3 WHERE end_time <= ? AND status = 1";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setObject(1, OffsetDateTime.now());
+        preparedStatement.setObject(1, LocalDateTime.now());
         preparedStatement.executeUpdate();
 
         logger.info("Update Events Status to Ended");
@@ -55,7 +55,7 @@ public final class EventMapper {
         String sql = "UPDATE events SET status = 1 WHERE start_time <= ? AND status = 2";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setObject(1, OffsetDateTime.now());
+        preparedStatement.setObject(1, LocalDateTime.now());
         preparedStatement.executeUpdate();
 
         logger.info("Update Events Status to Ended");
@@ -133,8 +133,8 @@ public final class EventMapper {
             String artist = resultSet.getString("artist").trim();
             int venueId = resultSet.getInt("venue_id");
             int status = resultSet.getInt("status");
-            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(11);
-            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(11);
+            LocalDateTime startTime = resultSet.getObject("start_time", LocalDateTime.class);
+            LocalDateTime endTime = resultSet.getObject("end_time", LocalDateTime.class);
 
             List<Section> sections = SectionMapper.loadSectionsByEventId(eventId);
 
@@ -159,8 +159,8 @@ public final class EventMapper {
             String artist = resultSet.getString("artist").trim();
             int venueId = resultSet.getInt("venue_id");
             int status = resultSet.getInt("status");
-            OffsetDateTime startTime = resultSet.getObject("start_time", OffsetDateTime.class).plusHours(11);
-            OffsetDateTime endTime = resultSet.getObject("end_time", OffsetDateTime.class).plusHours(11);
+            LocalDateTime startTime = resultSet.getObject("start_time", LocalDateTime.class);
+            LocalDateTime endTime = resultSet.getObject("end_time", LocalDateTime.class);
 
             Venue venue = new Venue(venueId);
 

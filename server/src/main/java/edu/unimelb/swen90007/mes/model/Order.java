@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter @Setter
@@ -18,10 +18,10 @@ public class Order {
     private Event event;
     private Customer customer;
     private List<SubOrder> subOrders;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private String status;
 
-    public Order(Integer id, Event event, Customer customer, List<SubOrder> subOrders, OffsetDateTime createdAt, String status) {
+    public Order(Integer id, Event event, Customer customer, List<SubOrder> subOrders, LocalDateTime createdAt, String status) {
         this.id = id;
         this.event = event;
         this.customer = customer;
@@ -35,7 +35,7 @@ public class Order {
         this.event = event;
         this.customer = customer;
         this.subOrders = subOrders;
-        this.createdAt = OffsetDateTime.now();
+        this.createdAt = LocalDateTime.now();
         this.status = Constant.ORDER_SUCCESS;
     }
 
@@ -61,7 +61,7 @@ public class Order {
         return subOrders;
     }
 
-    public OffsetDateTime loadCreatedAt() {
+    public LocalDateTime loadCreatedAt() {
         if (createdAt == null)
             load();
         return createdAt;

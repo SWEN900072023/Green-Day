@@ -1,5 +1,8 @@
 package edu.unimelb.swen90007.mes.model;
 
+import lombok.Getter;
+
+@Getter
 public class SubOrder {
     private Integer orderId;
     private final Section section;
@@ -19,23 +22,8 @@ public class SubOrder {
         this.money = money;
     }
 
-    public Integer getOrderId() {
-        return orderId;
-    }
-
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }
 
-    public Section getSection() {
-        return section;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public Money getMoney() {
-        return money;
-    }
 }
