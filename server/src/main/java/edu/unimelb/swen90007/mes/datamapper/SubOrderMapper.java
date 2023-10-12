@@ -1,6 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
 import edu.unimelb.swen90007.mes.model.Money;
+import edu.unimelb.swen90007.mes.model.Order;
 import edu.unimelb.swen90007.mes.model.Section;
 import edu.unimelb.swen90007.mes.model.SubOrder;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,7 @@ public final class SubOrderMapper {
 
     public static void create(SubOrder subOrder) throws SQLException {
         String sql = "INSERT INTO order_sections (order_id, section_id, quantity, unit_price, currency) VALUES (?, ?, ?, ?, ?)";
-        int OrderId = subOrder.getOrderId();
+        int OrderId = subOrder.getOrder().getId();
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, OrderId);
@@ -29,8 +30,6 @@ public final class SubOrderMapper {
         preparedStatement.setString(5, subOrder.getMoney().getCurrency());
         preparedStatement.executeUpdate();
         logger.info("New Association Created [order_id=" + OrderId + "], [section_id=" + subOrder.getSection().getId() + "]");
-
-        SectionMapper.decreaseRemainingTickets(subOrder.getSection().getId(), subOrder.getQuantity());
     }
 
     public static List<SubOrder> loadByOrderId(int orderId) throws SQLException {
@@ -52,9 +51,9 @@ public final class SubOrderMapper {
             BigDecimal unitPrice = resultSet.getBigDecimal("unit_price");
             String currency = resultSet.getString("currency").trim();
 
-            Section section = SectionMapper.loadSectionOnlyName(sectionId);
+            Section section = SectionMapper.loadSectionName(sectionId);
             Money money = new Money(unitPrice, currency);
-            SubOrder subOrder = new SubOrder(orderId, section, quantity, money);
+            SubOrder subOrder = new SubOrder(new Order(orderId), section, quantity, money);
 
             subOrders.add(subOrder);
             logger.info("Association Loaded [order_id=" + orderId + "], [section_id=" + sectionId + "]");

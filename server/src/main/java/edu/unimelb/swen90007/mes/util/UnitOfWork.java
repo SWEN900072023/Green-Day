@@ -85,6 +85,8 @@ public class UnitOfWork {
             try {
                 if (object instanceof Event) {
                     EventMapper.update((Event) object);
+                } else if (object instanceof Section) {
+                    SectionMapper.update((Section) object);
                 } else if (object instanceof Order) {
                     OrderMapper.cancel((Order) object);
                 }

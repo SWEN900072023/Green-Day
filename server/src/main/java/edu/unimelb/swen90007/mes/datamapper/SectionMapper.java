@@ -50,7 +50,7 @@ public final class SectionMapper {
         return load(resultSet).get(0);
     }
 
-    public static Section loadSectionOnlyName(int id) throws SQLException {
+    public static Section loadSectionName(int id) throws SQLException {
         String sql = "SELECT name FROM sections WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -84,37 +84,17 @@ public final class SectionMapper {
 
     public static void update(Section section) throws SQLException {
         String sql = "UPDATE sections SET name = ?, unit_price = ?, currency = ?, capacity = ?," +
-                "remaining_tickets = remaining_tickets - capacity + ? WHERE id = ?";
+                "remaining_tickets = ? WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, section.getName());
         preparedStatement.setBigDecimal(2, section.getMoney().getUnitPrice());
         preparedStatement.setString(3, section.getMoney().getCurrency());
         preparedStatement.setInt(4, section.getCapacity());
-        preparedStatement.setInt(5, section.getCapacity());
+        preparedStatement.setInt(5, section.getRemainingTickets());
         preparedStatement.setInt(6, section.getId());
         preparedStatement.executeUpdate();
         logger.info("Section Updated [id=" + section.getId() + "]");
-    }
-
-    public static void increaseRemainingTickets(int id, int quantity) throws SQLException {
-        String sql = "UPDATE sections SET remaining_tickets = remaining_tickets + ? WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, quantity);
-        preparedStatement.setInt(2, id);
-        preparedStatement.executeUpdate();
-        logger.info("Remaining Tickets Increased By " + quantity + " [id=" + id + "]");
-    }
-
-    public static void decreaseRemainingTickets(int id, int quantity) throws SQLException {
-        String sql = "UPDATE sections SET remaining_tickets = remaining_tickets - ? WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, quantity);
-        preparedStatement.setInt(2, id);
-        preparedStatement.executeUpdate();
-        logger.info("Remaining Tickets Decreased By " + quantity + " [id=" + id + "]");
     }
 
     public static void delete(Section section) throws SQLException {

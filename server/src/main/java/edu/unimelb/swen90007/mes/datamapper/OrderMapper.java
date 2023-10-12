@@ -25,12 +25,7 @@ public final class OrderMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next()) {
-            int orderId = generatedKeys.getInt("id");
             order.setId(generatedKeys.getInt("id"));
-            for (SubOrder subOrder : order.getSubOrders()) {
-                subOrder.setOrderId(orderId);
-                SubOrderMapper.create(subOrder);
-            }
         }
         logger.info("New Order Created [id=" + order.getId() + "]");
     }
@@ -98,10 +93,6 @@ public final class OrderMapper {
             preparedStatement.setString(1, Constant.ORDER_CANCELLED);
             preparedStatement.setInt(2, order.getId());
             preparedStatement.executeUpdate();
-
-            // use loader as some fields might be null
-            for (SubOrder subOrder : order.loadSubOrders())
-                SectionMapper.increaseRemainingTickets(subOrder.getSection().getId(), subOrder.getQuantity());
 
             logger.info("Existing Order Cancelled [id=" + order.getId() + "]");
         }

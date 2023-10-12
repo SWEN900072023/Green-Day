@@ -32,13 +32,6 @@ public final class EventMapper {
         logger.info("New Event Created [id=" + event.getId() + "]");
 
         PlannerEventMapper.create(event.getId(), event.getFirstPlannerId());
-
-        List<Section> sections = event.getSections();
-        for (Section section : sections) {
-            section.setEvent(event);
-            SectionMapper.create(section);
-            section.setEvent(event);
-        }
     }
 
     public static void updateEndedEvent() throws SQLException {
@@ -192,13 +185,6 @@ public final class EventMapper {
         return resultSet.isBeforeFirst();
     }
 
-    public static void cancel(Event event) throws SQLException {
-        List<Order> orders = OrderMapper.loadByEventId(event.getId());
-        for(Order order : orders) {
-            OrderMapper.cancel(order);
-        }
-    }
-
     public static void update(Event event) throws SQLException {
         String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
         Connection connection = DBConnection.getConnection();
@@ -211,12 +197,6 @@ public final class EventMapper {
         preparedStatement.setObject(6, event.getEndTime());
         preparedStatement.setInt(7, event.getId());
         preparedStatement.executeUpdate();
-
-        for (Section section : event.getSections())
-            SectionMapper.update(section);
-
-        if (event.getStatus().equals(Constant.EVENT_CANCELLED))
-            EventMapper.cancel(event);
 
         logger.info("Event Updated [id=" + event.getId() + "]");
     }

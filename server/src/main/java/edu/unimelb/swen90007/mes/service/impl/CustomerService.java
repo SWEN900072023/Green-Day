@@ -1,6 +1,8 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
+import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
+import edu.unimelb.swen90007.mes.datamapper.SubOrderMapper;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TicketInsufficientException;
 import edu.unimelb.swen90007.mes.model.Customer;
@@ -20,6 +22,14 @@ public class CustomerService implements ICustomerService {
         if (!isTicketSufficient(order))
             throw new TicketInsufficientException();
         UnitOfWork.getInstance().registerNew(order);
+        for (SubOrder subOrder : order.getSubOrders()) {
+            subOrder.setOrder(order);
+            UnitOfWork.getInstance().registerNew(subOrder);
+            Section section = subOrder.getSection();
+            int remainingTickets = section.loadRemainingTickets();
+            section.setRemainingTickets(remainingTickets - subOrder.getQuantity());
+            UnitOfWork.getInstance().registerDirty(section);
+        }
         UnitOfWork.getInstance().commit();
     }
 
@@ -34,6 +44,12 @@ public class CustomerService implements ICustomerService {
         if (!Objects.equals(customer.getId(), order.loadCustomer().getId()))
             throw new PermissionDeniedException();
         UnitOfWork.getInstance().registerDirty(order);
+        for (SubOrder subOrder : order.loadSubOrders()) {
+            Section section = subOrder.getSection();
+            int remainingTickets = section.loadRemainingTickets();
+            section.setRemainingTickets(remainingTickets + subOrder.getQuantity());
+            UnitOfWork.getInstance().registerDirty(section);
+        }
         UnitOfWork.getInstance().commit();
     }
 

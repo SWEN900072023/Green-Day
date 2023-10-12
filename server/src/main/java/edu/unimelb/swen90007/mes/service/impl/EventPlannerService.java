@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.InvalidTimeRangeException;
@@ -22,7 +23,12 @@ public class EventPlannerService implements IEventPlannerService {
             throw new CapacityExceedsException();
         if(EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
+        List<Section> sections = event.getSections();
         UnitOfWork.getInstance().registerNew(event);
+        for (Section section : sections) {
+            section.setEvent(event);
+            UnitOfWork.getInstance().registerNew(section);
+        }
         UnitOfWork.getInstance().commit();
     }
 
@@ -38,7 +44,18 @@ public class EventPlannerService implements IEventPlannerService {
             throw new CapacityExceedsException();
         if(EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
+
         UnitOfWork.getInstance().registerDirty(event);
+        for (Section section : event.getSections()) {
+            UnitOfWork.getInstance().registerDirty(section);
+        }
+        if (event.getStatus().equals(Constant.EVENT_CANCELLED)) {
+            List<Order> orders = OrderMapper.loadByEventId(event.getId());
+            for(Order order : orders) {
+                UnitOfWork.getInstance().registerDirty(order);
+            }
+        }
+
         UnitOfWork.getInstance().commit();
     }
 
@@ -93,6 +110,12 @@ public class EventPlannerService implements IEventPlannerService {
         if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
         UnitOfWork.getInstance().registerDirty(order);
+        for (SubOrder subOrder : order.loadSubOrders()) {
+            Section section = subOrder.getSection();
+            int remainingTickets = section.loadRemainingTickets();
+            section.setRemainingTickets(remainingTickets + subOrder.getQuantity());
+            UnitOfWork.getInstance().registerDirty(section);
+        }
         UnitOfWork.getInstance().commit();
     }
 

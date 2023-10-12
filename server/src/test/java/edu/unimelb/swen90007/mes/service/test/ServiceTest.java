@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.test;
 
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.exceptions.*;
 import edu.unimelb.swen90007.mes.model.*;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ServiceTest {
@@ -49,10 +51,10 @@ public class ServiceTest {
         Money money = new Money(new BigDecimal(100), "Australia");
         List<Section> sections1 = new ArrayList<>();
         List<Section> sections2 = new ArrayList<>();
-        sections1.add(new Section(event1, "Normal", money, 100, 0));
-        sections1.add(new Section(event1, "VIP", money, 20, 0));
-        sections2.add(new Section(event2, "Normal", money, 100, 0));
-        sections2.add(new Section(event2, "VIP", money, 20, 0));
+        sections1.add(new Section(event1, "Normal", money, 100, 100));
+        sections1.add(new Section(event1, "VIP", money, 20, 20));
+        sections2.add(new Section(event2, "Normal", money, 100, 100));
+        sections2.add(new Section(event2, "VIP", money, 20, 20));
         event1.setSections(sections1);
         event2.setSections(sections2);
         event1.setFirstPlannerId(ep1.getId());
@@ -127,10 +129,9 @@ public class ServiceTest {
 
         event1.setArtist("Tom");
         sections2.get(0).setCapacity(90);
-        event2.setStatus(4);
+        event2.setStatus(Constant.EVENT_CANCELLED);
         eventPlannerService.modifyEvent(ep1, event1);
         eventPlannerService.modifyEvent(ep2, event2);
-        EventMapper.updateEndedEvent();
 
         ep1.setUserDetail("YYY@YYY.YYY", "abcdefg", "YYY", "YYY");
         publicService.modifyUser(ep1);
