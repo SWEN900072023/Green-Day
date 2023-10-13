@@ -15,6 +15,8 @@ public class ServiceTest {
         ep1.createEvents(6);
         ep2.createEvents(10);
         ep2.createEvents(11);
+        ep1.inviteEventPlanner(ep2.getEP());
+        ep2.inviteEventPlanner(ep1.getEP());
         Admin.viewUsers();
 
         ep1.start();

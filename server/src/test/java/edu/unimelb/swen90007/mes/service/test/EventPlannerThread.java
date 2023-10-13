@@ -39,7 +39,7 @@ public class EventPlannerThread extends Thread{
             Venue venue = venues.get(index);
             LocalDateTime now = LocalDateTime.now();
             Event event = new Event
-                    ("Title" + ep.getPassword(), ep.getFirstName(), venue, now.plusDays(days), now.plusDays(days).plusHours(5));
+                    ("Title" + ep.getLastName(), ep.getFirstName(), venue, now.plusDays(days), now.plusDays(days).plusHours(5));
 
             // Create Sections
             List<Section> sections = new ArrayList<>();
@@ -56,6 +56,23 @@ public class EventPlannerThread extends Thread{
             throw new RuntimeException(e);
         } catch (CapacityExceedsException e) {
             System.out.println(ep.getFirstName() + " cannot update capacity. The capacity exceeds the limitation");
+        }
+    }
+
+    public EventPlanner getEP() {
+        return ep;
+    }
+
+    public void inviteEventPlanner(EventPlanner another) {
+        try{
+            List<Event> events = eventPlannerService.viewHostedEvent(ep);
+            for(Event event : events){
+                eventPlannerService.inviteEventPlanner(ep, another, event);
+            }
+        } catch (SQLException e) {
+            System.out.println("relation already exist");
+        } catch (PermissionDeniedException e) {
+            System.out.println("Permission Denied");
         }
     }
 
