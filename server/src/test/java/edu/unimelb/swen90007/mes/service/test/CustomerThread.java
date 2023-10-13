@@ -41,14 +41,16 @@ public class CustomerThread extends Thread{
             e = publicService.viewEventDetail(e);
             List<SubOrder> subOrders = new LinkedList<>();
             for(Section section : e.loadSections()){
-                SubOrder subOrder = new SubOrder(section, 1, money);
+                SubOrder subOrder = new SubOrder(section, 2, money);
                 subOrders.add(subOrder);
             }
             Order order = new Order(e, customer, subOrders);
             customerService.placeOrder(order);
 
-        } catch (SQLException | TicketInsufficientException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (TicketInsufficientException e) {
+            System.out.println(customer.getFirstName() + " Failed to buy tickets. The tickets is insufficient");
         }
     }
 

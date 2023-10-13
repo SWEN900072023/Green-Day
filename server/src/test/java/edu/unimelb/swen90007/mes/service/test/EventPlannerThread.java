@@ -51,9 +51,11 @@ public class EventPlannerThread extends Thread{
             event.setFirstPlannerId(ep.getId());
             eventPlannerService.createEvent(event);
 
-        } catch (TimeConflictException | SQLException | CapacityExceedsException |
+        } catch (TimeConflictException | SQLException |
                  InvalidTimeRangeException e) {
             throw new RuntimeException(e);
+        } catch (CapacityExceedsException e) {
+            System.out.println(ep.getFirstName() + " cannot update capacity. The capacity exceeds the limitation");
         }
     }
 
