@@ -33,14 +33,17 @@ public class UnitOfWork {
     private UnitOfWork() {
     }
 
-    public static void setCurrent(UnitOfWork uow) {
-        current.set(uow);
+    public static void setCurrent() {
+        current.set(new UnitOfWork());
     }
 
     public static UnitOfWork getInstance() {
-        if (instance == null)
-            instance = new UnitOfWork();
-        return instance;
+        if (current.get() == null) {
+            if (instance == null)
+                instance = new UnitOfWork();
+            return instance;
+        }
+        else return current.get();
     }
 
     public void registerNew(Object o) {
@@ -119,7 +122,6 @@ public class UnitOfWork {
             connection.commit();
 
         } catch (SQLException | VersionUnmatchedException e) {
-            logger.error("UoW commit error: " + e.getMessage());
             try {
                 System.out.println("Rolling back transaction: " + e.getMessage());
                 connection.rollback();
