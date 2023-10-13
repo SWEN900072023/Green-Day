@@ -13,9 +13,8 @@ import java.util.List;
 public final class OrderMapper {
     private static final Logger logger = LogManager.getLogger(OrderMapper.class);
 
-    public static void create(Order order) throws SQLException {
+    public static void create(Order order, Connection connection) throws SQLException {
         String sql = "INSERT INTO orders (event_id, customer_id, created_at, status) VALUES (?, ?, ?, ?)";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setInt(1, order.getEvent().getId());
         preparedStatement.setInt(2, order.getCustomer().getId());
@@ -79,9 +78,8 @@ public final class OrderMapper {
         return orders;
     }
 
-    public static void cancel(Order order) throws SQLException {
+    public static void cancel(Order order, Connection connection) throws SQLException {
         String sqlSelect = "SELECT status FROM orders WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sqlSelect);
         preparedStatement.setInt(1, order.getId());
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -98,11 +96,10 @@ public final class OrderMapper {
         }
     }
 
-    public static void delete(Order order) throws SQLException {
+    public static void delete(Order order, Connection connection) throws SQLException {
         int id = order.getId();
         SubOrderMapper.deleteByOrderId(id);
         String sql = "DELETE FROM orders WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();

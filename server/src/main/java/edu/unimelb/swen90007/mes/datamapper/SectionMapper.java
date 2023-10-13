@@ -14,9 +14,8 @@ import java.util.List;
 public final class SectionMapper {
     private static final Logger logger = LogManager.getLogger(SectionMapper.class);
 
-    public static void create(Section section) throws SQLException {
+    public static void create(Section section, Connection connection) throws SQLException {
         String sql = "INSERT INTO sections (event_id, name, unit_price, currency, capacity, remaining_tickets) VALUES (?, ?, ?, ?, ?, ?)";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setInt(1, section.getEvent().getId());
         preparedStatement.setString(2, section.getName());
@@ -82,10 +81,9 @@ public final class SectionMapper {
         return sections;
     }
 
-    public static void update(Section section) throws SQLException {
+    public static void update(Section section, Connection connection) throws SQLException {
         String sql = "UPDATE sections SET name = ?, unit_price = ?, currency = ?, capacity = ?," +
                 "remaining_tickets = ? WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, section.getName());
         preparedStatement.setBigDecimal(2, section.getMoney().getUnitPrice());
@@ -97,10 +95,9 @@ public final class SectionMapper {
         logger.info("Section Updated [id=" + section.getId() + "]");
     }
 
-    public static void delete(Section section) throws SQLException {
+    public static void delete(Section section, Connection connection) throws SQLException {
         int id = section.getId();
         String sql = "DELETE FROM sections WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();

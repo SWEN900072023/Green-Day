@@ -18,10 +18,9 @@ import java.util.List;
 public final class SubOrderMapper {
     private static final Logger logger = LogManager.getLogger(SubOrderMapper.class);
 
-    public static void create(SubOrder subOrder) throws SQLException {
+    public static void create(SubOrder subOrder, Connection connection) throws SQLException {
         String sql = "INSERT INTO order_sections (order_id, section_id, quantity, unit_price, currency) VALUES (?, ?, ?, ?, ?)";
         int OrderId = subOrder.getOrder().getId();
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, OrderId);
         preparedStatement.setInt(2, subOrder.getSection().getId());

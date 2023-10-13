@@ -5,6 +5,7 @@ import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,55 +63,76 @@ public class UnitOfWork {
     }
 
     public void commit() {
-        for (Object object : newObjects) {
-            try {
+        Connection connection = getConnection();
+        if (connection == null) return;
+
+        try {
+            connection.setAutoCommit(false);
+
+            for (Object object : newObjects) {
                 if (object instanceof Event) {
-                    EventMapper.create((Event) object);
+                    EventMapper.create((Event) object, connection);
                 } else if (object instanceof Order) {
-                    OrderMapper.create((Order) object);
+                    OrderMapper.create((Order) object, connection);
                 } else if (object instanceof SubOrder) {
-                    SubOrderMapper.create((SubOrder) object);
+                    SubOrderMapper.create((SubOrder) object, connection);
                 } else if (object instanceof Section) {
-                    SectionMapper.create((Section) object);
+                    SectionMapper.create((Section) object, connection);
                 } else if (object instanceof Venue) {
-                    VenueMapper.create((Venue) object);
+                    VenueMapper.create((Venue) object, connection);
                 }
-            } catch (SQLException e) {
-                logger.error("UoW commit error: " + e.getMessage());
             }
-        }
-        newObjects.clear();
+            newObjects.clear();
 
-        for (Object object : dirtyObjects) {
-            try {
+            for (Object object : dirtyObjects) {
                 if (object instanceof Event) {
-                    EventMapper.update((Event) object);
+                    EventMapper.update((Event) object, connection);
                 } else if (object instanceof Section) {
-                    SectionMapper.update((Section) object);
+                    SectionMapper.update((Section) object, connection);
                 } else if (object instanceof Order) {
-                    OrderMapper.cancel((Order) object);
+                    OrderMapper.cancel((Order) object, connection);
                 }
-            } catch (SQLException e) {
-                logger.error("UoW commit error: " + e.getMessage());
             }
-        }
-        dirtyObjects.clear();
+            dirtyObjects.clear();
 
-        for (Object object : deletedObjects) {
-            try {
+            for (Object object : deletedObjects) {
                 if (object instanceof Event) {
-                    EventMapper.delete((Event) object);
+                    EventMapper.delete((Event) object, connection);
                 } else if (object instanceof Order) {
-                    OrderMapper.delete((Order) object);
+                    OrderMapper.delete((Order) object, connection);
                 } else if (object instanceof Section) {
-                    SectionMapper.delete((Section) object);
+                    SectionMapper.delete((Section) object, connection);
                 } else if (object instanceof Venue) {
-                    VenueMapper.delete((Venue) object);
+                    VenueMapper.delete((Venue) object, connection);
                 }
+            }
+            deletedObjects.clear();
+
+            connection.commit();
+
+        } catch (SQLException e) {
+            logger.error("UoW commit error: " + e.getMessage());
+            try {
+                System.out.println("Rolling back transaction: " + e.getMessage());
+                connection.rollback();
+            } catch (SQLException e1) {
+                logger.error("Uow commit failed to rollback: " + e.getMessage());
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
             } catch (SQLException e) {
-                logger.error("UoW commit error: " + e.getMessage());
+                logger.error("Failed to set connection automatic commit: " + e.getMessage());
             }
         }
-        deletedObjects.clear();
+    }
+
+    public Connection getConnection(){
+        try{
+            return DBConnection.getConnection();
+        } catch (SQLException e){
+            logger.error("Failed to get a database connection: " + e.getMessage());
+            return null;
+        }
     }
 }

@@ -14,9 +14,8 @@ import java.util.List;
 public final class EventMapper {
     private static final Logger logger = LogManager.getLogger(EventMapper.class);
 
-    public static void create(Event event) throws SQLException {
+    public static void create(Event event, Connection connection) throws SQLException {
         String sql = "INSERT INTO events (title, artist, venue_id, status, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
@@ -185,9 +184,8 @@ public final class EventMapper {
         return resultSet.isBeforeFirst();
     }
 
-    public static void update(Event event) throws SQLException {
+    public static void update(Event event, Connection connection) throws SQLException {
         String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
@@ -201,11 +199,10 @@ public final class EventMapper {
         logger.info("Event Updated [id=" + event.getId() + "]");
     }
 
-    public static void delete(Event event) throws SQLException {
+    public static void delete(Event event, Connection connection) throws SQLException {
         int eventId = event.getId();
         PlannerEventMapper.deleteByEvent(eventId);
         String sql = "DELETE FROM events WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, eventId);
         preparedStatement.executeUpdate();
