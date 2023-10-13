@@ -1,6 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
 import edu.unimelb.swen90007.mes.constants.Constant;
+import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
 import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,7 @@ public final class EventMapper {
     private static final Logger logger = LogManager.getLogger(EventMapper.class);
 
     public static void create(Event event, Connection connection) throws SQLException {
-        String sql = "INSERT INTO events (title, artist, venue_id, status, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO events (title, artist, venue_id, status, start_time, end_time, version_number) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
@@ -23,6 +24,7 @@ public final class EventMapper {
         preparedStatement.setInt(4, event.getStatus());
         preparedStatement.setObject(5, event.getStartTime());
         preparedStatement.setObject(6, event.getEndTime());
+        preparedStatement.setObject(7, 0);
         preparedStatement.executeUpdate();
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -116,6 +118,24 @@ public final class EventMapper {
         return loadPartial(resultSet);
     }
 
+    private static int loadVersionNumber(int id, Connection connection) throws SQLException {
+        String sql = "SELECT version_number FROM events WHERE id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt("version_number");
+    }
+
+    private static void versionIncrement(int eventId, int versionNumber, Connection connection) throws SQLException {
+        String sql = "UPDATE events SET version_number = ? WHERE id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, versionNumber);
+        preparedStatement.setInt(2, eventId);
+        preparedStatement.executeUpdate();
+        logger.info("Event Version Updated [id=" + eventId + "]");
+    }
+
     private static List<Event> load(ResultSet resultSet) throws SQLException {
         List<Event> events = new LinkedList<>();
 
@@ -184,7 +204,9 @@ public final class EventMapper {
         return resultSet.isBeforeFirst();
     }
 
-    public static void update(Event event, Connection connection) throws SQLException {
+    public static void update(Event event, Connection connection) throws SQLException, VersionUnmatchedException {
+        int versionDirty = loadVersionNumber(event.getId(), connection);
+
         String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, event.getTitle());
@@ -196,6 +218,10 @@ public final class EventMapper {
         preparedStatement.setInt(7, event.getId());
         preparedStatement.executeUpdate();
 
+        int versionNew = loadVersionNumber(event.getId(), connection);
+        if (versionDirty != versionNew)
+            throw new VersionUnmatchedException();
+        versionIncrement(event.getId(), versionNew + 1, connection);
         logger.info("Event Updated [id=" + event.getId() + "]");
     }
 

@@ -1,14 +1,18 @@
 package edu.unimelb.swen90007.mes.util;
 
 import edu.unimelb.swen90007.mes.datamapper.*;
+import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
 import edu.unimelb.swen90007.mes.model.*;
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 /**
  * The unit of work class.<br>
@@ -24,7 +28,7 @@ public class UnitOfWork {
     private final List<Object> dirtyObjects = new ArrayList<>();
     private final ArrayList<Object> deletedObjects = new ArrayList<>();
 
-    private static final Logger logger = LogManager.getLogger(AppUserMapper.class);
+    private static final Logger logger = LogManager.getLogger(UnitOfWork.class);
 
     private UnitOfWork() {
     }
@@ -66,6 +70,8 @@ public class UnitOfWork {
         Connection connection = getConnection();
         if (connection == null) return;
 
+        List<Lock> lockList = acquireWriteLocks();
+
         try {
             connection.setAutoCommit(false);
 
@@ -89,6 +95,8 @@ public class UnitOfWork {
                     EventMapper.update((Event) object, connection);
                 } else if (object instanceof Section) {
                     SectionMapper.update((Section) object, connection);
+                } else if (object instanceof SectionTickets) {
+                    SectionMapper.ticketsUpdate((SectionTickets) object, connection);
                 } else if (object instanceof Order) {
                     OrderMapper.cancel((Order) object, connection);
                 }
@@ -110,15 +118,16 @@ public class UnitOfWork {
 
             connection.commit();
 
-        } catch (SQLException e) {
+        } catch (SQLException | VersionUnmatchedException e) {
             logger.error("UoW commit error: " + e.getMessage());
             try {
                 System.out.println("Rolling back transaction: " + e.getMessage());
                 connection.rollback();
             } catch (SQLException e1) {
-                logger.error("Uow commit failed to rollback: " + e.getMessage());
+                logger.error("UoW commit failed to rollback: " + e.getMessage());
             }
         } finally {
+            releaseWriteLocks(lockList);
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
@@ -133,6 +142,25 @@ public class UnitOfWork {
         } catch (SQLException e){
             logger.error("Failed to get a database connection: " + e.getMessage());
             return null;
+        }
+    }
+
+    public List<Lock> acquireWriteLocks() {
+        List<Lock> lockList = new LinkedList<>();
+        for (Object object : dirtyObjects) {
+            if (object instanceof SectionTickets) {
+                int sectionId = ((SectionTickets) object).sectionId;
+                Lock writeLock = LockManager.getInstance().getTicketsWriteLock(sectionId);
+                writeLock.lock();
+                lockList.add(writeLock);
+            }
+        }
+        return lockList;
+    }
+
+    public void releaseWriteLocks(List<Lock> lockList) {
+        for(Lock lock : lockList) {
+            lock.unlock();
         }
     }
 }

@@ -24,6 +24,7 @@ CREATE TABLE Events (
     status INT NOT NULL,
 	start_time TIMESTAMP,
 	end_time TIMESTAMP,
+	version_number INT NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (venue_id)
 		REFERENCES Venues(id)
@@ -49,6 +50,7 @@ CREATE TABLE Sections (
 	currency CHAR(15) NOT NULL,
 	capacity INT NOT NULL,
 	remaining_tickets INT NOT NULL,
+	version_number INT NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (event_id)
 		REFERENCES Events(id)

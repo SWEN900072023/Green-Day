@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class SubOrder {
+
     private Order order;
     private final Section section;
     private final Integer quantity;

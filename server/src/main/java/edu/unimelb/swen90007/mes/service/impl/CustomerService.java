@@ -5,10 +5,7 @@ import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
 import edu.unimelb.swen90007.mes.datamapper.SubOrderMapper;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TicketInsufficientException;
-import edu.unimelb.swen90007.mes.model.Customer;
-import edu.unimelb.swen90007.mes.model.Order;
-import edu.unimelb.swen90007.mes.model.Section;
-import edu.unimelb.swen90007.mes.model.SubOrder;
+import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.ICustomerService;
 import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
@@ -27,8 +24,9 @@ public class CustomerService implements ICustomerService {
             UnitOfWork.getInstance().registerNew(subOrder);
             Section section = subOrder.getSection();
             int remainingTickets = section.loadRemainingTickets();
-            section.setRemainingTickets(remainingTickets - subOrder.getQuantity());
-            UnitOfWork.getInstance().registerDirty(section);
+            SectionTickets sectionTickets =
+                    new SectionTickets(section.getId(), remainingTickets - subOrder.getQuantity());
+            UnitOfWork.getInstance().registerDirty(sectionTickets);
         }
         UnitOfWork.getInstance().commit();
     }
@@ -40,16 +38,10 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void cancelOrder(Customer customer, Order order)
-            throws PermissionDeniedException {
+            throws PermissionDeniedException{
         if (!Objects.equals(customer.getId(), order.loadCustomer().getId()))
             throw new PermissionDeniedException();
-        UnitOfWork.getInstance().registerDirty(order);
-        for (SubOrder subOrder : order.loadSubOrders()) {
-            Section section = subOrder.getSection();
-            int remainingTickets = section.loadRemainingTickets();
-            section.setRemainingTickets(remainingTickets + subOrder.getQuantity());
-            UnitOfWork.getInstance().registerDirty(section);
-        }
+        PublicService.cancelOrder(order);
         UnitOfWork.getInstance().commit();
     }
 

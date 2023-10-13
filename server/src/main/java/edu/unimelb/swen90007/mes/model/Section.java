@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.model;
 
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +17,7 @@ public class Section {
     private String name;
     private Money money;
     private Integer capacity;
-    private Integer remainingTickets;
+    private SectionTickets remainingTickets;
 
     public Section(Integer id) {
         this.id = id;
@@ -27,13 +28,12 @@ public class Section {
         this.name = name;
     }
 
-    public Section(Integer id, Event event, String name, Money money, Integer capacity, Integer remainingTickets) {
+    public Section(Integer id, Event event, String name, Money money, Integer capacity) {
         this.id = id;
         this.event = event;
         this.name = name;
         this.money = money;
         this.capacity = capacity;
-        this.remainingTickets = remainingTickets;
     }
 
     public Section(Event event, String name, Money money, Integer capacity, Integer remainingTickets) {
@@ -41,7 +41,7 @@ public class Section {
         this.name = name;
         this.money = money;
         this.capacity = capacity;
-        this.remainingTickets = remainingTickets;
+        this.remainingTickets = new SectionTickets(remainingTickets);
     }
 
     public Event loadEvent() {
@@ -69,20 +69,28 @@ public class Section {
     }
 
     public Integer loadRemainingTickets() {
-        if (remainingTickets == null)
-            load();
-        return remainingTickets;
+        if (remainingTickets == null) {
+            LockManager.getInstance().acquireTicketsReadLock(id);
+            try{
+                remainingTickets = SectionMapper.loadRemainingTickets(id);
+            } catch (SQLException e) {
+                logger.error(String.format("Error loading remaining tickets of the Section [id=%d]: %s",
+                        id, e.getMessage()));
+            } finally {
+                LockManager.getInstance().releaseTicketsReadLock(id);
+            }
+        }
+        return remainingTickets.remainingTickets;
     }
 
     private void load() {
         logger.info("Loading Section [id=" + id + "]");
         try {
             Section section = SectionMapper.loadById(id);
-            event = section.loadEvent();
-            name = section.loadName();
-            money = section.loadMoney();
-            capacity = section.loadCapacity();
-            remainingTickets = section.loadRemainingTickets();
+            event = section.getEvent();
+            name = section.getName();
+            money = section.getMoney();
+            capacity = section.getCapacity();
         } catch (SQLException e) {
             logger.error(String.format("Error loading Section [id=%d]: %s", id, e.getMessage()));
         }

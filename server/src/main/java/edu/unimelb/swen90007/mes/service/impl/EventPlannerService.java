@@ -52,7 +52,7 @@ public class EventPlannerService implements IEventPlannerService {
         if (event.getStatus().equals(Constant.EVENT_CANCELLED)) {
             List<Order> orders = OrderMapper.loadByEventId(event.getId());
             for(Order order : orders) {
-                UnitOfWork.getInstance().registerDirty(order);
+                PublicService.cancelOrder(order);
             }
         }
 
@@ -109,13 +109,7 @@ public class EventPlannerService implements IEventPlannerService {
             throws SQLException, PermissionDeniedException {
         if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
-        UnitOfWork.getInstance().registerDirty(order);
-        for (SubOrder subOrder : order.loadSubOrders()) {
-            Section section = subOrder.getSection();
-            int remainingTickets = section.loadRemainingTickets();
-            section.setRemainingTickets(remainingTickets + subOrder.getQuantity());
-            UnitOfWork.getInstance().registerDirty(section);
-        }
+        PublicService.cancelOrder(order);
         UnitOfWork.getInstance().commit();
     }
 
