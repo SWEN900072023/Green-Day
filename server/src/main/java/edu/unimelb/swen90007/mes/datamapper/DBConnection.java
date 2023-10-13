@@ -7,11 +7,28 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public final class DBConnection {
+public class DBConnection {
+    private static final ThreadLocal<Connection> current = new ThreadLocal<>();
     private static final Logger logger = LogManager.getLogger(DBConnection.class);
     private static Connection connection;
 
+    private DBConnection() {}
+
+    public static void setCurrent() {
+        try {
+            Connection threadConnection = DriverManager.getConnection(
+                    System.getProperty("jdbc.url"),
+                    System.getProperty("jdbc.user"),
+                    System.getProperty("jdbc.password")
+            );
+            current.set(threadConnection);
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public static Connection getConnection() throws SQLException {
+        if (current.get() != null) return current.get();
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {

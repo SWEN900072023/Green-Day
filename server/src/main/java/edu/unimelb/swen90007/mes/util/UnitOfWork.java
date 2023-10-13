@@ -38,12 +38,10 @@ public class UnitOfWork {
     }
 
     public static UnitOfWork getInstance() {
-        if (current.get() == null) {
-            if (instance == null)
-                instance = new UnitOfWork();
-            return instance;
-        }
-        else return current.get();
+        if (current.get() != null) return current.get();
+        if (instance == null)
+            instance = new UnitOfWork();
+        return instance;
     }
 
     public void registerNew(Object o) {
@@ -122,8 +120,9 @@ public class UnitOfWork {
             connection.commit();
 
         } catch (SQLException | VersionUnmatchedException e) {
+            logger.error("UoW commit error: " + e.getMessage());
             try {
-                System.out.println("Rolling back transaction: " + e.getMessage());
+                logger.info("Rolling back the transaction: ");
                 connection.rollback();
             } catch (SQLException e1) {
                 logger.error("UoW commit failed to rollback: " + e.getMessage());

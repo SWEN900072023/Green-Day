@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.test;
 
+import edu.unimelb.swen90007.mes.datamapper.DBConnection;
 import edu.unimelb.swen90007.mes.exceptions.*;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.impl.*;
@@ -89,6 +90,7 @@ public class EventPlannerThread extends Thread{
     @Override
     public void run(){
         UnitOfWork.setCurrent();
+        DBConnection.setCurrent();
         for(int i = 0; i < 20; i++){
             modifyEvent();
         }
