@@ -56,8 +56,6 @@ public class CustomerThread extends Thread{
 
     @Override
     public void run(){
-        UnitOfWork.setCurrent();
-        DBConnection.setCurrent();
         for(int i = 0; i < 20; i++){
             placeOrder();
         }

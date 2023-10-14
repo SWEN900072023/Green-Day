@@ -14,17 +14,13 @@ public class DBConnection {
 
     private DBConnection() {}
 
-    public static void setCurrent() {
-        try {
-            Connection threadConnection = DriverManager.getConnection(
-                    System.getProperty("jdbc.url"),
-                    System.getProperty("jdbc.user"),
-                    System.getProperty("jdbc.password")
-            );
-            current.set(threadConnection);
-        } catch (SQLException e) {
-            logger.error(e.getMessage());
-        }
+    public static void setCurrent() throws SQLException {
+        Connection threadConnection = DriverManager.getConnection(
+                System.getProperty("jdbc.url"),
+                System.getProperty("jdbc.user"),
+                System.getProperty("jdbc.password")
+        );
+        current.set(threadConnection);
     }
 
     public static Connection getConnection() throws SQLException {
@@ -49,6 +45,12 @@ public class DBConnection {
         }
 
         return connection;
+    }
+
+    public static Connection getCurrent() throws SQLException {
+        if (current.get() == null)
+            setCurrent();
+        return current.get();
     }
 
     public static void closeConnection() {

@@ -33,15 +33,17 @@ public class UnitOfWork {
     private UnitOfWork() {
     }
 
-    public static void setCurrent() {
+    private static void setCurrent() {
         current.set(new UnitOfWork());
     }
 
     public static UnitOfWork getInstance() {
-        if (current.get() != null) return current.get();
-        if (instance == null)
-            instance = new UnitOfWork();
-        return instance;
+        if (current.get() == null)
+            setCurrent();
+        return current.get();
+//        if (instance == null)
+//            instance = new UnitOfWork();
+//        return instance;
     }
 
     public void registerNew(Object o) {
@@ -139,7 +141,7 @@ public class UnitOfWork {
 
     public Connection getConnection(){
         try{
-            return DBConnection.getConnection();
+            return DBConnection.getCurrent();
         } catch (SQLException e){
             logger.error("Failed to get a database connection: " + e.getMessage());
             return null;
