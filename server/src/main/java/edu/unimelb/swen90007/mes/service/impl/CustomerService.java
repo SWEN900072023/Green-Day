@@ -16,14 +16,16 @@ import java.util.Objects;
 public class CustomerService implements ICustomerService {
     @Override
     public void placeOrder(Order order) throws TicketInsufficientException {
-        if (!isTicketSufficient(order))
-            throw new TicketInsufficientException();
         UnitOfWork.getInstance().registerNew(order);
         for (SubOrder subOrder : order.getSubOrders()) {
             subOrder.setOrder(order);
             UnitOfWork.getInstance().registerNew(subOrder);
             Section section = subOrder.getSection();
             int remainingTickets = section.loadRemainingTickets();
+            if (remainingTickets < subOrder.getQuantity()) {
+                UnitOfWork.getInstance().clear();
+                throw new TicketInsufficientException();
+            }
             SectionTickets sectionTickets =
                     new SectionTickets(section.getId(), remainingTickets - subOrder.getQuantity());
             UnitOfWork.getInstance().registerDirty(sectionTickets);
@@ -43,15 +45,5 @@ public class CustomerService implements ICustomerService {
             throw new PermissionDeniedException();
         PublicService.cancelOrder(order);
         UnitOfWork.getInstance().commit();
-    }
-
-    public boolean isTicketSufficient(Order order) {
-        for(SubOrder so: order.getSubOrders()){
-            Section se = so.getSection();
-            int remainingTickets = se.loadRemainingTickets();
-            int orderTickets = so.getQuantity();
-            if (orderTickets > remainingTickets) return false;
-        }
-        return true;
     }
 }

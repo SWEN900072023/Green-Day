@@ -65,11 +65,17 @@ public class UnitOfWork {
         }
     }
 
+    public void clear() {
+        newObjects.clear();
+        dirtyObjects.clear();
+        deletedObjects.clear();
+    }
+
     public void commit() {
         Connection connection = getConnection();
         if (connection == null) return;
 
-        List<Lock> lockList = acquireWriteLocks();
+        List<Integer> lockList = acquireWriteLocks();
 
         try {
             connection.setAutoCommit(false);
@@ -87,7 +93,6 @@ public class UnitOfWork {
                     VenueMapper.create((Venue) object, connection);
                 }
             }
-            newObjects.clear();
 
             for (Object object : dirtyObjects) {
                 if (object instanceof Event) {
@@ -100,7 +105,6 @@ public class UnitOfWork {
                     OrderMapper.cancel((Order) object, connection);
                 }
             }
-            dirtyObjects.clear();
 
             for (Object object : deletedObjects) {
                 if (object instanceof Event) {
@@ -113,7 +117,6 @@ public class UnitOfWork {
                     VenueMapper.delete((Venue) object, connection);
                 }
             }
-            deletedObjects.clear();
 
             connection.commit();
 
@@ -126,6 +129,7 @@ public class UnitOfWork {
                 logger.error("UoW commit failed to rollback: " + e.getMessage());
             }
         } finally {
+            clear();
             releaseWriteLocks(lockList);
             try {
                 connection.setAutoCommit(true);
@@ -144,22 +148,19 @@ public class UnitOfWork {
         }
     }
 
-    public List<Lock> acquireWriteLocks() {
-        List<Lock> lockList = new LinkedList<>();
+    public List<Integer> acquireWriteLocks() {
+        List<Integer> lockList = new LinkedList<>();
         for (Object object : dirtyObjects) {
             if (object instanceof SectionTickets) {
                 int sectionId = ((SectionTickets) object).sectionId;
-                Lock writeLock = LockManager.getInstance().getTicketsWriteLock(sectionId);
-                writeLock.lock();
-                lockList.add(writeLock);
+                lockList.add(sectionId);
             }
         }
+        LockManager.getInstance().acquireTicketsWriteLock(lockList);
         return lockList;
     }
 
-    public void releaseWriteLocks(List<Lock> lockList) {
-        for(Lock lock : lockList) {
-            lock.unlock();
-        }
+    public void releaseWriteLocks(List<Integer> lockList) {
+        LockManager.getInstance().releaseTicketsWriteLock(lockList);
     }
 }

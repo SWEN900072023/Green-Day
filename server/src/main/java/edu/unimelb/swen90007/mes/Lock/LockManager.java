@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.Lock;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
@@ -21,7 +22,7 @@ public class LockManager {
         ticketsLocks = new ConcurrentHashMap<>();
     }
 
-    public synchronized void acquireTicketsReadLock(int sectionId) {
+    public void acquireTicketsReadLock(int sectionId) {
         if (!ticketsLocks.containsKey(sectionId)) {
             ticketsLocks.put(sectionId, new ReentrantReadWriteLock());
         }
@@ -29,16 +30,26 @@ public class LockManager {
         readLock.lock();
     }
 
-    public synchronized void releaseTicketsReadLock(int sectionId) {
+    public void releaseTicketsReadLock(int sectionId) {
         Lock readLock = ticketsLocks.get(sectionId).readLock();
         readLock.unlock();
     }
 
-    public synchronized Lock getTicketsWriteLock(int sectionId) {
-        if (!ticketsLocks.containsKey(sectionId)) {
-            ticketsLocks.put(sectionId, new ReentrantReadWriteLock());
+    public void acquireTicketsWriteLock(List<Integer> sectionIds) {
+        for(int sectionId : sectionIds){
+            if (!ticketsLocks.containsKey(sectionId)) {
+                ticketsLocks.put(sectionId, new ReentrantReadWriteLock());
+            }
+            Lock writeLock = ticketsLocks.get(sectionId).writeLock();
+            writeLock.lock();
         }
-        return ticketsLocks.get(sectionId).writeLock();
+    }
+
+    public void releaseTicketsWriteLock(List<Integer> sectionIds) {
+        for(int sectionId : sectionIds){
+            Lock writeLock = ticketsLocks.get(sectionId).writeLock();
+            writeLock.unlock();
+        }
     }
 
 }
