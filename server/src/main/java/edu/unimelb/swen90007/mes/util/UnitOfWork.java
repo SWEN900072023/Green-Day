@@ -23,7 +23,6 @@ import java.util.concurrent.locks.Lock;
  */
 public class UnitOfWork {
     private static final ThreadLocal<UnitOfWork> current = new ThreadLocal<>();
-    private static UnitOfWork instance;
     private final List<Object> newObjects = new ArrayList<>();
     private final List<Object> dirtyObjects = new ArrayList<>();
     private final ArrayList<Object> deletedObjects = new ArrayList<>();
@@ -41,9 +40,6 @@ public class UnitOfWork {
         if (current.get() == null)
             setCurrent();
         return current.get();
-//        if (instance == null)
-//            instance = new UnitOfWork();
-//        return instance;
     }
 
     public void registerNew(Object o) {
@@ -124,7 +120,7 @@ public class UnitOfWork {
         } catch (SQLException | VersionUnmatchedException e) {
             logger.error("UoW commit error: " + e.getMessage());
             try {
-                logger.info("Rolling back the transaction: ");
+                logger.info("Rolling back the transaction......");
                 connection.rollback();
             } catch (SQLException e1) {
                 logger.error("UoW commit failed to rollback: " + e.getMessage());
@@ -141,7 +137,7 @@ public class UnitOfWork {
 
     public Connection getConnection(){
         try{
-            return DBConnection.getCurrent();
+            return DBConnection.getConnection();
         } catch (SQLException e){
             logger.error("Failed to get a database connection: " + e.getMessage());
             return null;
