@@ -113,7 +113,7 @@ public class PlannerEventServlet extends HttpServlet {
             // set event.remainingTickets
             if (section.getRemainingTickets() == null) {
                 // create request
-                section.setRemainingTickets(new SectionTickets(section.getId(), section.getCapacity()));
+                section.setRemainingTickets(section.getCapacity());
             }
         }
 

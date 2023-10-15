@@ -24,7 +24,7 @@ public final class SectionMapper {
         preparedStatement.setBigDecimal(3, section.getMoney().getUnitPrice());
         preparedStatement.setString(4, section.getMoney().getCurrency());
         preparedStatement.setInt(5, section.getCapacity());
-        preparedStatement.setInt(6, section.getRemainingTickets().remainingTickets);
+        preparedStatement.setInt(6, section.getRemainingTickets());
         preparedStatement.setInt(7, 0);
         preparedStatement.executeUpdate();
 
@@ -32,7 +32,6 @@ public final class SectionMapper {
         if (generatedKeys.next()) {
             int id = generatedKeys.getInt("id");
             section.setId(id);
-            section.getRemainingTickets().sectionId = id;
         }
         logger.info("New Section Created [id=" + section.getId() + "]");
     }
@@ -66,15 +65,14 @@ public final class SectionMapper {
         return new Section(id, name);
     }
 
-    public static SectionTickets loadRemainingTickets(int sectionId) throws SQLException {
+    public static Integer loadRemainingTickets(int sectionId) throws SQLException {
         String sql = "SELECT remaining_tickets FROM sections WHERE id = ?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, sectionId);
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
-        int remainingTickets = resultSet.getInt("remaining_tickets");
-        return new SectionTickets(sectionId, remainingTickets);
+        return resultSet.getInt("remaining_tickets");
     }
 
     private static int loadVersionNumber(int id, Connection connection) throws SQLException {

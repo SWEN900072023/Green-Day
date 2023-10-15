@@ -17,7 +17,7 @@ public class Section {
     private String name;
     private Money money;
     private Integer capacity;
-    private SectionTickets remainingTickets;
+    private Integer remainingTickets;
 
     public Section(Integer id) {
         this.id = id;
@@ -41,7 +41,7 @@ public class Section {
         this.name = name;
         this.money = money;
         this.capacity = capacity;
-        this.remainingTickets = new SectionTickets(remainingTickets);
+        this.remainingTickets = remainingTickets;
     }
 
     public Event loadEvent() {
@@ -80,7 +80,7 @@ public class Section {
                 LockManager.getInstance().releaseTicketsReadLock(id);
             }
         }
-        return remainingTickets.remainingTickets;
+        return remainingTickets;
     }
 
     private void load() {

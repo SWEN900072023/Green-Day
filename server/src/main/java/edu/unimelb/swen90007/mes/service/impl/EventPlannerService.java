@@ -23,9 +23,8 @@ public class EventPlannerService implements IEventPlannerService {
             throw new CapacityExceedsException();
         if(EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
-        List<Section> sections = event.getSections();
         UnitOfWork.getInstance().registerNew(event);
-        for (Section section : sections) {
+        for (Section section : event.getSections()) {
             section.setEvent(event);
             UnitOfWork.getInstance().registerNew(section);
         }
