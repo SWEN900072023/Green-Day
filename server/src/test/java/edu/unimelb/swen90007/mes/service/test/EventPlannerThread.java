@@ -1,10 +1,8 @@
 package edu.unimelb.swen90007.mes.service.test;
 
-import edu.unimelb.swen90007.mes.datamapper.DBConnection;
 import edu.unimelb.swen90007.mes.exceptions.*;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.impl.*;
-import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -33,27 +31,29 @@ public class EventPlannerThread extends Thread{
         try{
             List<Venue> venues = publicService.viewAllVenues();
             int size = venues.size();
-            // Create Events
             Random r = new Random();
             int index = r.nextInt(size);
-            Venue venue = venues.get(index);
+            // Create Events
+            Venue venue = venues.get(0);
             LocalDateTime now = LocalDateTime.now();
             Event event = new Event
                     ("Title" + ep.getLastName(), ep.getFirstName(), venue, now.plusDays(days), now.plusDays(days).plusHours(5));
 
             // Create Sections
             List<Section> sections = new ArrayList<>();
-            sections.add(new Section(event, "Normal", money, 200, 200));
-            sections.add(new Section(event, "Special", money, 100, 100));
-            sections.add(new Section(event, "VIP", money, 50, 50));
-            sections.add(new Section(event, "V-VIP", money, 20, 20));
+            sections.add(new Section(event, "Normal", money, 30, 30));
+            sections.add(new Section(event, "Special", money, 20, 20));
+            sections.add(new Section(event, "VIP", money, 10, 10));
+            sections.add(new Section(event, "V-VIP", money, 5, 5));
             event.setSections(sections);
             event.setFirstPlannerId(ep.getId());
             eventPlannerService.createEvent(event);
 
-        } catch (TimeConflictException | SQLException |
-                 InvalidTimeRangeException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        catch (TimeConflictException | InvalidTimeRangeException e) {
+            System.out.println("Time Conflict");
         } catch (CapacityExceedsException e) {
             System.out.println(ep.getFirstName() + " cannot update capacity. The capacity exceeds the limitation");
         }
@@ -97,23 +97,12 @@ public class EventPlannerThread extends Thread{
             throw new RuntimeException(e);
         } catch (TimeConflictException e) {
             System.out.println("Time Conflict");
-            throw new RuntimeException(e);
         } catch (CapacityExceedsException e) {
             System.out.println("Capacity Exceeds");
-            throw new RuntimeException(e);
         } catch (PermissionDeniedException e) {
             System.out.println("Permission Denied");
-            throw new RuntimeException(e);
         } catch (InvalidTimeRangeException e) {
             System.out.println("Invalid Time Range");
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void run(){
-        for(int i = 0; i < 100; i++){
-            modifyEvent();
         }
     }
 }

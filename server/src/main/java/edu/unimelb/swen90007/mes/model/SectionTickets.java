@@ -4,9 +4,6 @@ public class SectionTickets {
     public int sectionId;
     public int remainingTickets;
 
-    public SectionTickets(int number){
-        this.remainingTickets = number;
-    }
     public SectionTickets(int sectionId, int number){
         this.sectionId = sectionId;
         this.remainingTickets = number;

@@ -11,12 +11,8 @@ public class Admin extends Thread {
         // Create Venues
         Venue venue1 = new Venue("Name1", "Address1", 1000);
         Venue venue2 = new Venue("Name2", "Address2", 1000);
-        Venue venue3 = new Venue("Name3", "Address3", 1000);
-        Venue venue4 = new Venue("Name4", "Address4", 1000);
         adminService.createVenue(venue1);
         adminService.createVenue(venue2);
-        adminService.createVenue(venue3);
-        adminService.createVenue(venue4);
     }
 
     public static void viewUsers() {

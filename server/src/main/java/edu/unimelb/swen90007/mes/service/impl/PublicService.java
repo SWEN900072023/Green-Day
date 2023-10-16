@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
 import edu.unimelb.swen90007.mes.datamapper.EventMapper;
 import edu.unimelb.swen90007.mes.datamapper.PlannerEventMapper;
@@ -30,7 +31,10 @@ public class PublicService implements IPublicService {
 
     @Override
     public Event viewEventDetail(Event event) throws SQLException {
-        return EventMapper.loadByIdAll(event.getId());
+        LockManager.getInstance().acquireTicketsReadLock(event);
+        event = EventMapper.loadByIdAll(event.getId());
+        LockManager.getInstance().releaseTicketsReadLock(event);
+        return event;
     }
 
     @Override

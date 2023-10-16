@@ -1,6 +1,7 @@
 package edu.unimelb.swen90007.mes.util;
 
 import edu.unimelb.swen90007.mes.datamapper.*;
+import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.Lock.LockManager;
@@ -75,8 +76,6 @@ public class UnitOfWork {
         Connection connection = getConnection();
         if (connection == null) return;
 
-        List<Integer> lockList = acquireWriteLocks();
-
         try {
             connection.setAutoCommit(false);
 
@@ -120,7 +119,7 @@ public class UnitOfWork {
 
             connection.commit();
 
-        } catch (SQLException | VersionUnmatchedException e) {
+        } catch (SQLException | VersionUnmatchedException | TimeConflictException e) {
             logger.error("UoW commit error: " + e.getMessage());
             try {
                 logger.info("Rolling back the transaction......");
@@ -130,7 +129,6 @@ public class UnitOfWork {
             }
         } finally {
             clear();
-            releaseWriteLocks(lockList);
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
@@ -148,19 +146,4 @@ public class UnitOfWork {
         }
     }
 
-    public List<Integer> acquireWriteLocks() {
-        List<Integer> lockList = new LinkedList<>();
-        for (Object object : dirtyObjects) {
-            if (object instanceof SectionTickets) {
-                int sectionId = ((SectionTickets) object).sectionId;
-                lockList.add(sectionId);
-            }
-        }
-        LockManager.getInstance().acquireTicketsWriteLock(lockList);
-        return lockList;
-    }
-
-    public void releaseWriteLocks(List<Integer> lockList) {
-        LockManager.getInstance().releaseTicketsWriteLock(lockList);
-    }
 }

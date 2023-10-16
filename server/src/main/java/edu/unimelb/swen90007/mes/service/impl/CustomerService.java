@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
 import edu.unimelb.swen90007.mes.datamapper.SubOrderMapper;
@@ -16,21 +17,26 @@ import java.util.Objects;
 public class CustomerService implements ICustomerService {
     @Override
     public void placeOrder(Order order) throws TicketInsufficientException {
-        UnitOfWork.getInstance().registerNew(order);
-        for (SubOrder subOrder : order.getSubOrders()) {
-            subOrder.setOrder(order);
-            UnitOfWork.getInstance().registerNew(subOrder);
-            Section section = subOrder.getSection();
-            int remainingTickets = section.loadRemainingTickets();
-            if (remainingTickets < subOrder.getQuantity()) {
-                UnitOfWork.getInstance().clear();
-                throw new TicketInsufficientException();
+        LockManager.getInstance().acquireTicketsWriteLock(order);
+        try{
+            UnitOfWork.getInstance().registerNew(order);
+            for (SubOrder subOrder : order.getSubOrders()) {
+                subOrder.setOrder(order);
+                UnitOfWork.getInstance().registerNew(subOrder);
+                Section section = subOrder.getSection();
+                int remainingTickets = section.loadRemainingTickets();
+                if (remainingTickets < subOrder.getQuantity()) {
+                    UnitOfWork.getInstance().clear();
+                    throw new TicketInsufficientException();
+                }
+                SectionTickets sectionTickets =
+                        new SectionTickets(section.getId(), remainingTickets - subOrder.getQuantity());
+                UnitOfWork.getInstance().registerDirty(sectionTickets);
             }
-            SectionTickets sectionTickets =
-                    new SectionTickets(section.getId(), remainingTickets - subOrder.getQuantity());
-            UnitOfWork.getInstance().registerDirty(sectionTickets);
+            UnitOfWork.getInstance().commit();
+        } finally {
+            LockManager.getInstance().releaseTicketsWriteLock(order);
         }
-        UnitOfWork.getInstance().commit();
     }
 
     @Override
@@ -43,7 +49,9 @@ public class CustomerService implements ICustomerService {
             throws PermissionDeniedException{
         if (!Objects.equals(customer.getId(), order.loadCustomer().getId()))
             throw new PermissionDeniedException();
+        LockManager.getInstance().releaseTicketsWriteLock(order);
         PublicService.cancelOrder(order);
         UnitOfWork.getInstance().commit();
+        LockManager.getInstance().releaseTicketsWriteLock(order);
     }
 }

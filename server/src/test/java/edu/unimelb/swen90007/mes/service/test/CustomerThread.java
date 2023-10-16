@@ -41,7 +41,7 @@ public class CustomerThread extends Thread{
             e = publicService.viewEventDetail(e);
             List<SubOrder> subOrders = new LinkedList<>();
             for(Section section : e.loadSections()){
-                SubOrder subOrder = new SubOrder(section, 2, money);
+                SubOrder subOrder = new SubOrder(section, 4, money);
                 subOrders.add(subOrder);
             }
             Order order = new Order(e, customer, subOrders);

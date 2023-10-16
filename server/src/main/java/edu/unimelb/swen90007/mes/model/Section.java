@@ -28,12 +28,13 @@ public class Section {
         this.name = name;
     }
 
-    public Section(Integer id, Event event, String name, Money money, Integer capacity) {
+    public Section(Integer id, Event event, String name, Money money, Integer capacity, Integer remainingTickets) {
         this.id = id;
         this.event = event;
         this.name = name;
         this.money = money;
         this.capacity = capacity;
+        this.remainingTickets = remainingTickets;
     }
 
     public Section(Event event, String name, Money money, Integer capacity, Integer remainingTickets) {
@@ -70,14 +71,11 @@ public class Section {
 
     public Integer loadRemainingTickets() {
         if (remainingTickets == null) {
-            LockManager.getInstance().acquireTicketsReadLock(id);
             try{
                 remainingTickets = SectionMapper.loadRemainingTickets(id);
             } catch (SQLException e) {
                 logger.error(String.format("Error loading remaining tickets of the Section [id=%d]: %s",
                         id, e.getMessage()));
-            } finally {
-                LockManager.getInstance().releaseTicketsReadLock(id);
             }
         }
         return remainingTickets;

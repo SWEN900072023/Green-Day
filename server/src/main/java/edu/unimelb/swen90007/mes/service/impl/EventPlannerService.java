@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
@@ -21,7 +22,7 @@ public class EventPlannerService implements IEventPlannerService {
             throw new InvalidTimeRangeException();
         if(isCapacityExceeded(event))
             throw new CapacityExceedsException();
-        if(EventMapper.doesTimeConflict(event))
+        if (EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
         UnitOfWork.getInstance().registerNew(event);
         for (Section section : event.getSections()) {
@@ -41,7 +42,7 @@ public class EventPlannerService implements IEventPlannerService {
             throw new PermissionDeniedException();
         if(isCapacityExceeded(event))
             throw new CapacityExceedsException();
-        if(EventMapper.doesTimeConflict(event))
+        if (EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
 
         UnitOfWork.getInstance().registerDirty(event);
@@ -108,8 +109,10 @@ public class EventPlannerService implements IEventPlannerService {
             throws SQLException, PermissionDeniedException {
         if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
+        LockManager.getInstance().acquireTicketsWriteLock(order);
         PublicService.cancelOrder(order);
         UnitOfWork.getInstance().commit();
+        LockManager.getInstance().releaseTicketsWriteLock(order);
     }
 
     private boolean isCapacityExceeded(Event event) {

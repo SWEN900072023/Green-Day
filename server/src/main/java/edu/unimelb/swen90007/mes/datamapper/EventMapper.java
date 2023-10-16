@@ -1,6 +1,7 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
 import edu.unimelb.swen90007.mes.constants.Constant;
+import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
 import edu.unimelb.swen90007.mes.model.*;
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +16,7 @@ import java.util.List;
 public final class EventMapper {
     private static final Logger logger = LogManager.getLogger(EventMapper.class);
 
-    public static void create(Event event, Connection connection) throws SQLException {
+    public static void create(Event event, Connection connection) throws SQLException, TimeConflictException {
         String sql = "INSERT INTO events (title, artist, venue_id, status, start_time, end_time, version_number) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, event.getTitle());
@@ -31,8 +32,9 @@ public final class EventMapper {
         if (generatedKeys.next())
             event.setId(generatedKeys.getInt("id"));
         logger.info("New Event Created [id=" + event.getId() + "]");
-
         PlannerEventMapper.create(event.getId(), event.getFirstPlannerId());
+        if (doesTimeConflict(event))
+            throw new TimeConflictException();
     }
 
     public static void updateEndedEvent() throws SQLException {
@@ -204,7 +206,7 @@ public final class EventMapper {
         return resultSet.isBeforeFirst();
     }
 
-    public static void update(Event event, Connection connection) throws SQLException, VersionUnmatchedException {
+    public static void update(Event event, Connection connection) throws SQLException, VersionUnmatchedException, TimeConflictException {
         int versionDirty = loadVersionNumber(event.getId(), connection);
 
         String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
@@ -222,6 +224,8 @@ public final class EventMapper {
         if (versionDirty != versionNew)
             throw new VersionUnmatchedException();
         versionIncrement(event.getId(), versionNew + 1, connection);
+        if (doesTimeConflict(event))
+            throw new TimeConflictException();
         logger.info("Event Updated [id=" + event.getId() + "]");
     }
 

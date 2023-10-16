@@ -3,25 +3,29 @@ package edu.unimelb.swen90007.mes.service.test;
 public class ServiceTest {
     public static void main(String[] args){
         Admin.createVenue();
-        EventPlannerThread ep1 = new EventPlannerThread
-                ("AAA@XXX.XXX", "123456", "Bruce", "Wayne");
-        EventPlannerThread ep2 = new EventPlannerThread
-                ("BBB@XXX.XXX", "123456", "Tony", "Sack");
+        CreateEventThread ep1 = new CreateEventThread
+                ("ep1@XXX.XXX", "123456", "Bruce", "Wayne");
+        CreateEventThread ep2 = new CreateEventThread
+                ("ep2@XXX.XXX", "123456", "Tony", "Sack");
+        ModifyEventThread ep3 = new ModifyEventThread
+                ("ep3@XXX.XXX", "123456", "Tony", "Sack");
+        ModifyEventThread ep4 = new ModifyEventThread
+                ("ep4@XXX.XXX", "123456", "Tony", "Sack");
         CustomerThread customer1 = new CustomerThread
-                ("CCC@XXX.XXX", "123456", "Peter", "Park");
+                ("CCC1@XXX.XXX", "123456", "Peter", "Park");
         CustomerThread customer2 = new CustomerThread
-                ("DDD@XXX.XXX", "123456", "Ethan", "Winters");
-        ep1.createEvents(5);
-        ep1.createEvents(6);
-        ep2.createEvents(10);
-        ep2.createEvents(11);
-        ep1.inviteEventPlanner(ep2.getEP());
-        ep2.inviteEventPlanner(ep1.getEP());
-        Admin.viewUsers();
+                ("CCC2@XXX.XXX", "123456", "Ethan", "Winters");
+//        ep3.createEvents(5);
+//        ep4.createEvents(10);
+//        ep3.inviteEventPlanner(ep4.getEP());
+//        ep4.inviteEventPlanner(ep3.getEP());
+//        Admin.viewUsers();
 
         ep1.start();
         ep2.start();
-        customer1.start();
-        customer2.start();
+//        ep3.start();
+//        ep4.start();
+//        customer1.start();
+//        customer2.start();
     }
 }

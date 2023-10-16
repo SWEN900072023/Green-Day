@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
 import edu.unimelb.swen90007.mes.model.Event;
 import edu.unimelb.swen90007.mes.model.Money;
@@ -103,10 +104,11 @@ public final class SectionMapper {
             BigDecimal unitPrice = resultSet.getBigDecimal("unit_price");
             String currency = resultSet.getString("currency").trim();
             int capacity = resultSet.getInt("capacity");
+            int remainingTickets = resultSet.getInt("remaining_tickets");
 
             Event event = new Event(eventId);
 
-            sections.add(new Section(sectionId, event, name, new Money(unitPrice, currency), capacity));
+            sections.add(new Section(sectionId, event, name, new Money(unitPrice, currency), capacity, remainingTickets));
             logger.info("Section Loaded [id=" + sectionId + "]");
         }
 
