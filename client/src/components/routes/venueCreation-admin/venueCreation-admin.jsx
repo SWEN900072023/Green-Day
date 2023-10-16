@@ -21,15 +21,9 @@ const VenueCreation = () => {
         capacity: Number(capacity),
       },
       {
-<<<<<<< HEAD
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
         },
-=======
-          headers: {
-              Authorization: `Bearer ${currentUser.token}`,
-          }
->>>>>>> origin
       }
     ).then((res) => {
       console.log(res);
