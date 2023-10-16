@@ -37,7 +37,8 @@ public class EventPlannerThread extends Thread{
             Venue venue = venues.get(0);
             LocalDateTime now = LocalDateTime.now();
             Event event = new Event
-                    ("Title" + ep.getLastName(), ep.getFirstName(), venue, now.plusDays(days), now.plusDays(days).plusHours(5));
+                    ("Title" + ep.getLastName(), ep.getFirstName(), venue, now.plusDays(days).plusHours(1),
+                            now.plusDays(days).plusHours(5));
 
             // Create Sections
             List<Section> sections = new ArrayList<>();

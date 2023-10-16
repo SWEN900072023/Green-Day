@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.exceptions.TimeConflictException;
 import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
@@ -33,8 +34,14 @@ public final class EventMapper {
             event.setId(generatedKeys.getInt("id"));
         logger.info("New Event Created [id=" + event.getId() + "]");
         PlannerEventMapper.create(event.getId(), event.getFirstPlannerId());
-        if (doesTimeConflict(event))
-            throw new TimeConflictException();
+        LockManager.getInstance().validationLock.lock();
+        try{
+            if (doesTimeConflict(event))
+                throw new TimeConflictException();
+            connection.commit();
+        } finally {
+            LockManager.getInstance().validationLock.unlock();
+        }
     }
 
     public static void updateEndedEvent() throws SQLException {

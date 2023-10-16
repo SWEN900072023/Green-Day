@@ -20,6 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class LockManager {
     private static LockManager instance;
     private final ConcurrentMap<Integer, ReadWriteLock> ticketsLocks;
+    public final Lock validationLock = new ReentrantLock();
 
     public static synchronized LockManager getInstance() {
         if(instance == null) {

@@ -8,7 +8,7 @@ public class CreateEventThread extends EventPlannerThread{
 
     @Override
     public void run(){
-        for(int i = 0; i < 20; i++){
+        for(int i = 0; i < 50; i++){
             createEvents(i);
         }
     }
