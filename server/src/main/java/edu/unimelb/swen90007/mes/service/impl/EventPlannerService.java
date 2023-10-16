@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
+import edu.unimelb.swen90007.mes.constants.Constant;
 import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.CapacityExceedsException;
 import edu.unimelb.swen90007.mes.exceptions.InvalidTimeRangeException;
@@ -23,6 +24,10 @@ public class EventPlannerService implements IEventPlannerService {
         if(EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
         UnitOfWork.getInstance().registerNew(event);
+        for (Section section : event.getSections()) {
+            section.setEvent(event);
+            UnitOfWork.getInstance().registerNew(section);
+        }
         UnitOfWork.getInstance().commit();
     }
 
@@ -38,7 +43,18 @@ public class EventPlannerService implements IEventPlannerService {
             throw new CapacityExceedsException();
         if(EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
+
         UnitOfWork.getInstance().registerDirty(event);
+        for (Section section : event.getSections()) {
+            UnitOfWork.getInstance().registerDirty(section);
+        }
+        if (event.getStatus().equals(Constant.EVENT_CANCELLED)) {
+            List<Order> orders = OrderMapper.loadByEventId(event.getId());
+            for(Order order : orders) {
+                PublicService.cancelOrder(order);
+            }
+        }
+
         UnitOfWork.getInstance().commit();
     }
 
@@ -92,7 +108,7 @@ public class EventPlannerService implements IEventPlannerService {
             throws SQLException, PermissionDeniedException {
         if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
-        UnitOfWork.getInstance().registerDirty(order);
+        PublicService.cancelOrder(order);
         UnitOfWork.getInstance().commit();
     }
 

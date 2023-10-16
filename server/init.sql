@@ -22,8 +22,9 @@ CREATE TABLE Events (
 	artist VARCHAR(255) NOT NULL,
 	venue_id INT NOT NULL,
     status INT NOT NULL,
-	start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-	end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+	start_time TIMESTAMP,
+	end_time TIMESTAMP,
+	version_number INT NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (venue_id)
 		REFERENCES Venues(id)
@@ -49,6 +50,7 @@ CREATE TABLE Sections (
 	currency CHAR(15) NOT NULL,
 	capacity INT NOT NULL,
 	remaining_tickets INT NOT NULL,
+	version_number INT NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (event_id)
 		REFERENCES Events(id)
@@ -58,7 +60,7 @@ CREATE TABLE Orders (
 	id INT GENERATED ALWAYS AS IDENTITY,
 	event_id INT NOT NULL ,
 	customer_id INT NOT NULL,
-	created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+	created_at TIMESTAMP,
 	status CHAR(15) NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (event_id)

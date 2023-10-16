@@ -20,9 +20,8 @@ public final class VenueMapper {
      * @param venue a venue object
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static void create(Venue venue) throws SQLException {
+    public static void create(Venue venue, Connection connection) throws SQLException {
         String sql = "INSERT INTO venues (name, address, capacity) VALUES (?, ?, ?)";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, venue.getName());
         preparedStatement.setString(2, venue.getAddress());
@@ -95,10 +94,9 @@ public final class VenueMapper {
      * @param venue the venue
      * @throws SQLException if some error occurs while interacting with the database
      */
-    public static void delete(Venue venue) throws SQLException {
+    public static void delete(Venue venue, Connection connection) throws SQLException {
         int id = venue.getId();
         String sql = "DELETE FROM venues WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();

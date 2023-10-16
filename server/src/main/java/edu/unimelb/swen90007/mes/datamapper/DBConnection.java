@@ -7,37 +7,31 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public final class DBConnection {
+public class DBConnection {
+    private static final ThreadLocal<Connection> current = new ThreadLocal<>();
     private static final Logger logger = LogManager.getLogger(DBConnection.class);
-    private static Connection connection;
+
+    private DBConnection() {}
+
+    public static void setCurrent() throws SQLException {
+        Connection threadConnection = DriverManager.getConnection(
+                System.getProperty("jdbc.url"),
+                System.getProperty("jdbc.user"),
+                System.getProperty("jdbc.password")
+        );
+        current.set(threadConnection);
+    }
 
     public static Connection getConnection() throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            logger.error("Class Not Located: " + e.getMessage());
-        }
-
-        if (connection == null) {
-            try {
-                connection = DriverManager.getConnection(
-                        System.getProperty("jdbc.url"),
-                        System.getProperty("jdbc.user"),
-                        System.getProperty("jdbc.password")
-                );
-            } catch (SQLException e) {
-                logger.error(e.getMessage());
-                throw e;
-            }
-        }
-
-        return connection;
+        if (current.get() == null)
+            setCurrent();
+        return current.get();
     }
 
     public static void closeConnection() {
-        if (connection != null) {
+        if (current.get() != null) {
             try {
-                connection.close();
+                current.get().close();
             } catch (SQLException e) {
                 logger.error(e.getMessage());
             }

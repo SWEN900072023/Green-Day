@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter @Setter
@@ -21,15 +21,15 @@ public class Event {
     private String artist;
     private Venue venue;
     private Integer status; // 1 : Within 6 Months, 2 : Out Of 6 Months, 3 : Ended, 4 : Cancelled
-    private OffsetDateTime startTime;
-    private OffsetDateTime endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     public Event(Integer id) {
         this.id = id;
     }
 
     public Event(Integer id, List<Section> sections, String title, String artist,
-                 Venue venue, Integer status, OffsetDateTime startTime, OffsetDateTime endTime) {
+                 Venue venue, Integer status, LocalDateTime startTime, LocalDateTime endTime) {
         this.id = id;
         this.sections = sections;
         this.title = title;
@@ -41,7 +41,7 @@ public class Event {
     }
 
     public Event(Integer id, String title, String artist,
-                 Venue venue, Integer status, OffsetDateTime startTime, OffsetDateTime endTime) {
+                 Venue venue, Integer status, LocalDateTime startTime, LocalDateTime endTime) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -52,15 +52,15 @@ public class Event {
     }
 
     public Event(String title, String artist,
-                 Venue venue, OffsetDateTime startTime, OffsetDateTime endTime) {
+                 Venue venue, LocalDateTime startTime, LocalDateTime endTime) {
         this.title = title;
         this.artist = artist;
         this.venue = venue;
         this.startTime = startTime;
         this.endTime = endTime;
-        if(startTime.isBefore(OffsetDateTime.now()))
+        if(startTime.isBefore(LocalDateTime.now()))
             this.status = Constant.EVENT_PAST;
-        else if (startTime.isBefore(OffsetDateTime.now().plusMonths(6)))
+        else if (startTime.isBefore(LocalDateTime.now().plusMonths(6)))
             this.status = Constant.EVENT_IN_SIX;
         else
             this.status = Constant.EVENT_OUT_SIX;
@@ -96,22 +96,22 @@ public class Event {
         return status;
     }
 
-    public OffsetDateTime loadStartTime() {
+    public LocalDateTime loadStartTime() {
         if (startTime == null)
             load();
         return startTime;
     }
 
-    public OffsetDateTime loadEndTime() {
+    public LocalDateTime loadEndTime() {
         if (endTime == null)
             load();
         return endTime;
     }
 
-    public void setStartTime(OffsetDateTime startTime) {
-        if(startTime.isBefore(OffsetDateTime.now()))
+    public void setStartTime(LocalDateTime startTime) {
+        if(startTime.isBefore(LocalDateTime.now()))
             this.status = 3;
-        else if (startTime.isBefore(OffsetDateTime.now().plusMonths(6)))
+        else if (startTime.isBefore(LocalDateTime.now().plusMonths(6)))
             this.status = 1;
         else
             this.status = 2;

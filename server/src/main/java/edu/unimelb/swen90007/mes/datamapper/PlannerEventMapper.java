@@ -35,20 +35,6 @@ public class PlannerEventMapper {
         logger.info("Invite EventPlanner [id=" + planner_id + "]");
     }
 
-    public static List<Integer> loadEventsByPlanner(EventPlanner e) throws SQLException {
-        List<Integer> eventIds = new LinkedList<>();
-        String sql = "SELECT event_id FROM planner_events WHERE planner_id = ?";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setObject(1, e.getId());
-        ResultSet resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()) {
-            int eventId = resultSet.getInt("event_id");
-            eventIds.add(eventId);
-        }
-        return eventIds;
-    }
-
     public static void deleteByEvent(int eventId) throws SQLException {
         String sql = "DELETE FROM planner_events WHERE event_id = ?";
         Connection connection = DBConnection.getConnection();

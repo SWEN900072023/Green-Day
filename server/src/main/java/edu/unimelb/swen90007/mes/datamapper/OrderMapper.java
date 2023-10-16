@@ -6,16 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class OrderMapper {
     private static final Logger logger = LogManager.getLogger(OrderMapper.class);
 
-    public static void create(Order order) throws SQLException {
+    public static void create(Order order, Connection connection) throws SQLException {
         String sql = "INSERT INTO orders (event_id, customer_id, created_at, status) VALUES (?, ?, ?, ?)";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setInt(1, order.getEvent().getId());
         preparedStatement.setInt(2, order.getCustomer().getId());
@@ -25,12 +24,7 @@ public final class OrderMapper {
 
         ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
         if (generatedKeys.next()) {
-            int orderId = generatedKeys.getInt("id");
             order.setId(generatedKeys.getInt("id"));
-            for (SubOrder subOrder : order.getSubOrders()) {
-                subOrder.setOrderId(orderId);
-                SubOrderMapper.create(subOrder);
-            }
         }
         logger.info("New Order Created [id=" + order.getId() + "]");
     }
@@ -69,7 +63,7 @@ public final class OrderMapper {
             int orderID = resultSet.getInt("id");
             int eventID = resultSet.getInt("event_id");
             int customerID = resultSet.getInt("customer_id");
-            OffsetDateTime createdAt = resultSet.getObject("created_at", OffsetDateTime.class);
+            LocalDateTime createdAt = resultSet.getObject("created_at", LocalDateTime.class);
             String status = resultSet.getString("status").trim();
 
             Customer customer = (Customer) AppUserMapper.loadByIdPartial(customerID);
@@ -84,9 +78,8 @@ public final class OrderMapper {
         return orders;
     }
 
-    public static void cancel(Order order) throws SQLException {
+    public static void cancel(Order order, Connection connection) throws SQLException {
         String sqlSelect = "SELECT status FROM orders WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sqlSelect);
         preparedStatement.setInt(1, order.getId());
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -99,19 +92,14 @@ public final class OrderMapper {
             preparedStatement.setInt(2, order.getId());
             preparedStatement.executeUpdate();
 
-            // use loader as some fields might be null
-            for (SubOrder subOrder : order.loadSubOrders())
-                SectionMapper.increaseRemainingTickets(subOrder.getSection().getId(), subOrder.getQuantity());
-
             logger.info("Existing Order Cancelled [id=" + order.getId() + "]");
         }
     }
 
-    public static void delete(Order order) throws SQLException {
+    public static void delete(Order order, Connection connection) throws SQLException {
         int id = order.getId();
         SubOrderMapper.deleteByOrderId(id);
         String sql = "DELETE FROM orders WHERE id = ?";
-        Connection connection = DBConnection.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();

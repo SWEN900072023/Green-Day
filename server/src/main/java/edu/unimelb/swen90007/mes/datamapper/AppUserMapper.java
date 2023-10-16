@@ -79,28 +79,6 @@ public final class AppUserMapper {
         return resultSet.isBeforeFirst();
     }
 
-    /**
-     * Verify user's email and password.
-     *
-     * @param user an AppUser object
-     * @return a boolean indicating whether the user authentication was successful
-     * @throws SQLException if some error occurs while interacting with the database
-     */
-    public static String userAuthentication(AppUser user) throws SQLException {
-        String sql = "SELECT type FROM users WHERE email = ? AND password = ?";
-        Connection connection = DBConnection.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, user.getEmail());
-        preparedStatement.setString(2, user.getPassword());
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if(resultSet.isBeforeFirst()) {
-            resultSet.next();
-            return resultSet.getString("type");
-        }
-        else {
-            return  null;
-        }
-    }
 
     /**
      * Load all event planners and customers.

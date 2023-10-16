@@ -1,13 +1,18 @@
 package edu.unimelb.swen90007.mes.util;
 
 import edu.unimelb.swen90007.mes.datamapper.*;
+import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
 import edu.unimelb.swen90007.mes.model.*;
+import edu.unimelb.swen90007.mes.Lock.LockManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 /**
  * The unit of work class.<br>
@@ -18,24 +23,23 @@ import java.util.List;
  */
 public class UnitOfWork {
     private static final ThreadLocal<UnitOfWork> current = new ThreadLocal<>();
-    private static UnitOfWork instance;
     private final List<Object> newObjects = new ArrayList<>();
     private final List<Object> dirtyObjects = new ArrayList<>();
     private final ArrayList<Object> deletedObjects = new ArrayList<>();
 
-    private static final Logger logger = LogManager.getLogger(AppUserMapper.class);
+    private static final Logger logger = LogManager.getLogger(UnitOfWork.class);
 
     private UnitOfWork() {
     }
 
-    public static void setCurrent(UnitOfWork uow) {
-        current.set(uow);
+    private static void setCurrent() {
+        current.set(new UnitOfWork());
     }
 
     public static UnitOfWork getInstance() {
-        if (instance == null)
-            instance = new UnitOfWork();
-        return instance;
+        if (current.get() == null)
+            setCurrent();
+        return current.get();
     }
 
     public void registerNew(Object o) {
@@ -61,54 +65,102 @@ public class UnitOfWork {
         }
     }
 
-    public void commit() {
-        for (Object object : newObjects) {
-            try {
-                if (object instanceof Event) {
-                    EventMapper.create((Event) object);
-                } else if (object instanceof Order) {
-                    OrderMapper.create((Order) object);
-                } else if (object instanceof SubOrder) {
-                    SubOrderMapper.create((SubOrder) object);
-                } else if (object instanceof Section) {
-                    SectionMapper.create((Section) object);
-                } else if (object instanceof Venue) {
-                    VenueMapper.create((Venue) object);
-                }
-            } catch (SQLException e) {
-                logger.error("UoW commit error: " + e.getMessage());
-            }
-        }
+    public void clear() {
         newObjects.clear();
-
-        for (Object object : dirtyObjects) {
-            try {
-                if (object instanceof Event) {
-                    EventMapper.update((Event) object);
-                } else if (object instanceof Order) {
-                    OrderMapper.cancel((Order) object);
-                }
-            } catch (SQLException e) {
-                logger.error("UoW commit error: " + e.getMessage());
-            }
-        }
         dirtyObjects.clear();
+        deletedObjects.clear();
+    }
 
-        for (Object object : deletedObjects) {
-            try {
+    public void commit() {
+        Connection connection = getConnection();
+        if (connection == null) return;
+
+        List<Integer> lockList = acquireWriteLocks();
+
+        try {
+            connection.setAutoCommit(false);
+
+            for (Object object : newObjects) {
                 if (object instanceof Event) {
-                    EventMapper.delete((Event) object);
+                    EventMapper.create((Event) object, connection);
                 } else if (object instanceof Order) {
-                    OrderMapper.delete((Order) object);
+                    OrderMapper.create((Order) object, connection);
+                } else if (object instanceof SubOrder) {
+                    SubOrderMapper.create((SubOrder) object, connection);
                 } else if (object instanceof Section) {
-                    SectionMapper.delete((Section) object);
+                    SectionMapper.create((Section) object, connection);
                 } else if (object instanceof Venue) {
-                    VenueMapper.delete((Venue) object);
+                    VenueMapper.create((Venue) object, connection);
                 }
+            }
+
+            for (Object object : dirtyObjects) {
+                if (object instanceof Event) {
+                    EventMapper.update((Event) object, connection);
+                } else if (object instanceof Section) {
+                    SectionMapper.update((Section) object, connection);
+                } else if (object instanceof SectionTickets) {
+                    SectionMapper.ticketsUpdate((SectionTickets) object, connection);
+                } else if (object instanceof Order) {
+                    OrderMapper.cancel((Order) object, connection);
+                }
+            }
+
+            for (Object object : deletedObjects) {
+                if (object instanceof Event) {
+                    EventMapper.delete((Event) object, connection);
+                } else if (object instanceof Order) {
+                    OrderMapper.delete((Order) object, connection);
+                } else if (object instanceof Section) {
+                    SectionMapper.delete((Section) object, connection);
+                } else if (object instanceof Venue) {
+                    VenueMapper.delete((Venue) object, connection);
+                }
+            }
+
+            connection.commit();
+
+        } catch (SQLException | VersionUnmatchedException e) {
+            logger.error("UoW commit error: " + e.getMessage());
+            try {
+                logger.info("Rolling back the transaction......");
+                connection.rollback();
+            } catch (SQLException e1) {
+                logger.error("UoW commit failed to rollback: " + e.getMessage());
+            }
+        } finally {
+            clear();
+            releaseWriteLocks(lockList);
+            try {
+                connection.setAutoCommit(true);
             } catch (SQLException e) {
-                logger.error("UoW commit error: " + e.getMessage());
+                logger.error("Failed to set connection automatic commit: " + e.getMessage());
             }
         }
-        deletedObjects.clear();
+    }
+
+    public Connection getConnection(){
+        try{
+            return DBConnection.getConnection();
+        } catch (SQLException e){
+            logger.error("Failed to get a database connection: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Integer> acquireWriteLocks() {
+        List<Integer> lockList = new LinkedList<>();
+        for (Object object : dirtyObjects) {
+            if (object instanceof SectionTickets) {
+                int sectionId = ((SectionTickets) object).sectionId;
+                lockList.add(sectionId);
+            }
+        }
+        LockManager.getInstance().acquireTicketsWriteLock(lockList);
+        return lockList;
+    }
+
+    public void releaseWriteLocks(List<Integer> lockList) {
+        LockManager.getInstance().releaseTicketsWriteLock(lockList);
     }
 }
