@@ -110,9 +110,12 @@ public class EventPlannerService implements IEventPlannerService {
         if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
         LockManager.getInstance().acquireTicketsWriteLock(order);
-        PublicService.cancelOrder(order);
-        UnitOfWork.getInstance().commit();
-        LockManager.getInstance().releaseTicketsWriteLock(order);
+        try{
+            PublicService.cancelOrder(order);
+            UnitOfWork.getInstance().commit();
+        } finally {
+            LockManager.getInstance().releaseTicketsWriteLock(order);
+        }
     }
 
     private boolean isCapacityExceeded(Event event) {

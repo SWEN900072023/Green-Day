@@ -49,9 +49,12 @@ public class CustomerService implements ICustomerService {
             throws PermissionDeniedException{
         if (!Objects.equals(customer.getId(), order.loadCustomer().getId()))
             throw new PermissionDeniedException();
-        LockManager.getInstance().releaseTicketsWriteLock(order);
-        PublicService.cancelOrder(order);
-        UnitOfWork.getInstance().commit();
-        LockManager.getInstance().releaseTicketsWriteLock(order);
+        LockManager.getInstance().acquireTicketsWriteLock(order);
+        try{
+            PublicService.cancelOrder(order);
+            UnitOfWork.getInstance().commit();
+        } finally {
+            LockManager.getInstance().releaseTicketsWriteLock(order);
+        }
     }
 }
