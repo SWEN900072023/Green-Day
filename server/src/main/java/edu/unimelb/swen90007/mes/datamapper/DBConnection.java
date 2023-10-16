@@ -23,6 +23,11 @@ public class DBConnection {
     }
 
     public static Connection getConnection() throws SQLException {
+        try{
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e){
+            logger.error("Class Not Located: " + e.getMessage());
+        }
         if (current.get() == null)
             setCurrent();
         return current.get();
