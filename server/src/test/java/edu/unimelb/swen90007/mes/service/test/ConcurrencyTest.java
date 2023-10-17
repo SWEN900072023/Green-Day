@@ -7,6 +7,9 @@ import edu.unimelb.swen90007.mes.service.impl.AdminService;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entry point for the concurrency test.
+ */
 public class ConcurrencyTest {
     /**
      * Simulate the administrator to create two venues.
@@ -51,7 +54,7 @@ public class ConcurrencyTest {
         ep1.setInvitedEventPlanners(invitedEventPlanners);
         ep2.setInvitedEventPlanners(invitedEventPlanners);
 
-        // Start the first two event planner threads.
+        // Start the first two event planner threads that create events simultaneously.
         ep1.start();
         ep2.start();
 

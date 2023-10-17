@@ -13,6 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Thread representing a customer placing orders in the concurrency test.
+ */
 public class CustomerThread extends Thread {
     private static final int NUM_ORDERS = 50;
     private final Customer customer;
@@ -31,14 +34,14 @@ public class CustomerThread extends Thread {
     }
 
     /**
-     * Simulate a customer to place an order.
+     * Simulate a customer to place an order for a random event.
      */
     public void placeOrder() {
         try {
             List<Event> events = publicService.viewAllEvents();
             int size = events.size();
             int index = ThreadLocalRandom.current().nextInt(size);
-            Event event = events.get(index);
+            Event event = events.get(index); // A random event
             event = publicService.viewEventDetail(event);
             List<SubOrder> subOrders = new LinkedList<>();
             for (Section section : event.loadSections()) {

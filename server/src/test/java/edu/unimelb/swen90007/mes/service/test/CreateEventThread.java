@@ -5,6 +5,9 @@ import edu.unimelb.swen90007.mes.model.EventPlanner;
 
 import java.util.List;
 
+/**
+ * Thread representing an event planner who only creates events in the concurrency test.
+ */
 public class CreateEventThread extends EventPlannerThread {
     private static final int NUM_EVENTS = 50;
     private List<EventPlanner> invitedEventPlanners;
@@ -20,6 +23,9 @@ public class CreateEventThread extends EventPlannerThread {
     public void run() {
         for (int i = 0; i < NUM_EVENTS; i++) {
             Event event = createEvent(i);
+            // Event creation fails due to time conflict.
+            if (event == null)
+                return;
             for (EventPlanner anotherEventPlanner : invitedEventPlanners)
                 inviteEventPlanner(anotherEventPlanner, event);
         }

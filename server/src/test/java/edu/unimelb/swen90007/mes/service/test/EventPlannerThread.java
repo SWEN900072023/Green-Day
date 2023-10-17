@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Thread representing an event planner.
+ */
 public class EventPlannerThread extends Thread {
     private final EventPlanner eventPlanner;
     private final PublicService publicService = new PublicService();
@@ -18,7 +21,7 @@ public class EventPlannerThread extends Thread {
     private final Money money = new Money(new BigDecimal(100), "AUD");
 
     /**
-     * Simulate the administrator to register an event planner.
+     * In the constructor, simulate the administrator to register an event planner.
      *
      * @param email     the event planner's email
      * @param password  the event planner's password

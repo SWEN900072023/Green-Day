@@ -1,5 +1,8 @@
 package edu.unimelb.swen90007.mes.service.test;
 
+/**
+ * Thread representing an event planner who only modifies events in the concurrency test.
+ */
 public class ModifyEventThread extends EventPlannerThread {
     private static final int NUM_MODIFICATIONS = 20;
 
