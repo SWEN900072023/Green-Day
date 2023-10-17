@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PublicService implements IPublicService {
+
     @Override
     public List<Event> viewAllEvents() throws SQLException {
         return EventMapper.loadAll();

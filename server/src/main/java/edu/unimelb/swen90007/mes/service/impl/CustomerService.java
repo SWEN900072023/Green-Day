@@ -2,8 +2,6 @@ package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.datamapper.OrderMapper;
-import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
-import edu.unimelb.swen90007.mes.datamapper.SubOrderMapper;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TicketInsufficientException;
 import edu.unimelb.swen90007.mes.model.*;
@@ -18,7 +16,7 @@ public class CustomerService implements ICustomerService {
     @Override
     public void placeOrder(Order order) throws TicketInsufficientException {
         LockManager.getInstance().acquireTicketsWriteLock(order);
-        try{
+        try {
             UnitOfWork.getInstance().registerNew(order);
             for (SubOrder subOrder : order.getSubOrders()) {
                 subOrder.setOrder(order);
@@ -46,11 +44,11 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void cancelOrder(Customer customer, Order order)
-            throws PermissionDeniedException{
+            throws PermissionDeniedException {
         if (!Objects.equals(customer.getId(), order.loadCustomer().getId()))
             throw new PermissionDeniedException();
         LockManager.getInstance().acquireTicketsWriteLock(order);
-        try{
+        try {
             PublicService.cancelOrder(order);
             UnitOfWork.getInstance().commit();
         } finally {

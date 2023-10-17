@@ -36,17 +36,17 @@ public class AdminService implements IAdminService {
         List<Event> events = EventMapper.loadByVenue(venue);
         List<Section> sections = new ArrayList<>();
         List<Order> orders = new ArrayList<>();
-        for(Event e : events) {
+        for (Event e : events) {
             sections.addAll(SectionMapper.loadSectionsByEventId(e.getId()));
             orders.addAll(OrderMapper.loadByEventId(e.getId()));
         }
-        for(Order o : orders) {
+        for (Order o : orders) {
             UnitOfWork.getInstance().registerDeleted(o);
         }
-        for(Section s : sections) {
+        for (Section s : sections) {
             UnitOfWork.getInstance().registerDeleted(s);
         }
-        for(Event e : events) {
+        for (Event e : events) {
             UnitOfWork.getInstance().registerDeleted(e);
         }
         UnitOfWork.getInstance().registerDeleted(venue);
@@ -58,10 +58,9 @@ public class AdminService implements IAdminService {
     public void deleteAppUser(AppUser user) throws SQLException {
         if (user instanceof Customer) {
             List<Order> orders = OrderMapper.loadByCustomerID(user.getId());
-            for(Order o : orders)
+            for (Order o : orders)
                 UnitOfWork.getInstance().registerDeleted(o);
-        }
-        else if (user instanceof EventPlanner) {
+        } else if (user instanceof EventPlanner) {
             PlannerEventMapper.deleteByEventPlanner(user.getId());
         }
         UnitOfWork.getInstance().commit();

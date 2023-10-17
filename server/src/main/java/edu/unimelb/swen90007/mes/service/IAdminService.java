@@ -8,9 +8,14 @@ import java.util.ArrayList;
 
 public interface IAdminService {
     ArrayList<AppUser> viewAllEventPlanners() throws SQLException;
+
     ArrayList<AppUser> viewAllCustomers() throws SQLException;
+
     ArrayList<AppUser> viewAllUsers() throws SQLException;
+
     void createVenue(Venue venue) throws SQLException;
+
     void deleteVenue(Venue venue) throws SQLException;
+
     void deleteAppUser(AppUser user) throws SQLException;
 }
