@@ -5,20 +5,24 @@ import edu.unimelb.swen90007.mes.service.impl.AdminService;
 
 import java.sql.SQLException;
 
-public class Admin extends Thread {
+public class Admin {
+    /**
+     * Simulate the administrator to create two venues.
+     */
     public static void createVenue() {
         AdminService adminService = new AdminService();
-        // Create Venues
-        Venue venue1 = new Venue("Name1", "Address1", 1000);
-        Venue venue2 = new Venue("Name2", "Address2", 1000);
+        Venue venue1 = new Venue("Mock Venue 1", "Mock Venue 1 Address", 1000);
+        Venue venue2 = new Venue("Mock Venue 2", "Mock Venue 2 Address", 1000);
         adminService.createVenue(venue1);
         adminService.createVenue(venue2);
     }
 
+    /**
+     * Simulate the administrator to view all other users.
+     */
     public static void viewUsers() {
         AdminService adminService = new AdminService();
-        // View Users
-        try{
+        try {
             adminService.viewAllCustomers();
             adminService.viewAllEventPlanners();
             adminService.viewAllUsers();

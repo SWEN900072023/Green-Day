@@ -1,13 +1,11 @@
 package edu.unimelb.swen90007.mes.service.test;
 
-import edu.unimelb.swen90007.mes.datamapper.DBConnection;
 import edu.unimelb.swen90007.mes.exceptions.TicketInsufficientException;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.impl.AppUserService;
 import edu.unimelb.swen90007.mes.service.impl.CustomerService;
 import edu.unimelb.swen90007.mes.service.impl.PublicService;
-import edu.unimelb.swen90007.mes.util.UnitOfWork;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -15,15 +13,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class CustomerThread extends Thread{
+public class CustomerThread extends Thread {
     private final Customer customer;
     private final PublicService publicService = new PublicService();
     private final CustomerService customerService = new CustomerService();
-    private final Money money = new Money(new BigDecimal(100), "Australia");
+    private final Money money = new Money(new BigDecimal(100), "AUD");
 
     public CustomerThread(String email, String password, String firstName, String lastName) {
         customer = new Customer(email, password, firstName, lastName);
-        try{
+        try {
             AppUserService appUserService = new AppUserService();
             appUserService.register(customer);
         } catch (SQLException | UserAlreadyExistsException e) {
@@ -31,20 +29,23 @@ public class CustomerThread extends Thread{
         }
     }
 
+    /**
+     * Simulate a customer to place an order.
+     */
     public void placeOrder() {
-        try{
+        try {
             List<Event> events = publicService.viewAllEvents();
             int size = events.size();
-            Random r = new Random();
-            int index = r.nextInt(size);
-            Event e = events.get(index);
-            e = publicService.viewEventDetail(e);
+            Random random = new Random();
+            int index = random.nextInt(size);
+            Event event = events.get(index);
+            event = publicService.viewEventDetail(event);
             List<SubOrder> subOrders = new LinkedList<>();
-            for(Section section : e.loadSections()){
+            for (Section section : event.loadSections()) {
                 SubOrder subOrder = new SubOrder(section, 4, money);
                 subOrders.add(subOrder);
             }
-            Order order = new Order(e, customer, subOrders);
+            Order order = new Order(event, customer, subOrders);
             customerService.placeOrder(order);
 
         } catch (SQLException e) {
@@ -55,8 +56,8 @@ public class CustomerThread extends Thread{
     }
 
     @Override
-    public void run(){
-        for(int i = 0; i < 50; i++){
+    public void run() {
+        for (int i = 0; i < 50; i++) {
             placeOrder();
         }
     }

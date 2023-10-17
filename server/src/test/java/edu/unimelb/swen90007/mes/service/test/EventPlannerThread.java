@@ -11,69 +11,81 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class EventPlannerThread extends Thread{
-    private final EventPlanner ep;
+public class EventPlannerThread extends Thread {
+    private final EventPlanner eventPlanner;
     private final PublicService publicService = new PublicService();
     private final EventPlannerService eventPlannerService = new EventPlannerService();
-    private final Money money = new Money(new BigDecimal(100), "Australia");
+    private final Money money = new Money(new BigDecimal(100), "AUD");
 
+    /**
+     * Simulate the administrator to register an event planner.
+     *
+     * @param email     the event planner's email
+     * @param password  the event planner's password
+     * @param firstName the event planner's first name
+     * @param lastName  the event planner's last name
+     */
     public EventPlannerThread(String email, String password, String firstName, String lastName) {
-        ep = new EventPlanner(email, password, firstName, lastName);
-        try{
+        eventPlanner = new EventPlanner(email, password, firstName, lastName);
+        try {
             AppUserService appUserService = new AppUserService();
-            appUserService.register(ep);
+            appUserService.register(eventPlanner);
         } catch (SQLException | UserAlreadyExistsException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void createEvents(int days) {
-        try{
+    /**
+     * Simulate an event planner to create an event.
+     *
+     * @param days the number of days from the start of the event to now
+     */
+    public void createEvent(int days) {
+        try {
+            // Simulate an event planner to view all existing venues.
             List<Venue> venues = publicService.viewAllVenues();
-            int size = venues.size();
-            Random r = new Random();
-            int index = r.nextInt(size);
-            // Create Events
+
+            // Simulate an event planner to create an event.
+            String title = "Jay Chou's Concert";
+            String artist = "Jay Chou";
             Venue venue = venues.get(0);
             LocalDateTime now = LocalDateTime.now();
             Event event = new Event
-                    ("Title" + ep.getLastName(), ep.getFirstName(), venue, now.plusDays(days).plusHours(1),
-                            now.plusDays(days).plusHours(5));
+                    (title, artist, venue, now.plusDays(days).plusHours(1), now.plusDays(days).plusHours(5));
 
-            // Create Sections
             List<Section> sections = new ArrayList<>();
             sections.add(new Section(event, "Normal", money, 30, 30));
             sections.add(new Section(event, "Special", money, 20, 20));
             sections.add(new Section(event, "VIP", money, 10, 10));
             sections.add(new Section(event, "V-VIP", money, 5, 5));
             event.setSections(sections);
-            event.setFirstPlannerId(ep.getId());
+            event.setFirstPlannerId(eventPlanner.getId());
             eventPlannerService.createEvent(event);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-        catch (TimeConflictException | InvalidTimeRangeException e) {
+        } catch (TimeConflictException | InvalidTimeRangeException e) {
             System.out.println("Time Conflict");
         } catch (CapacityExceedsException e) {
-            System.out.println(ep.getFirstName() + " cannot update capacity. The capacity exceeds the limitation");
+            System.out.println("Capacity Exceeds");
         }
     }
 
-    public EventPlanner getEP() {
-        return ep;
-    }
-
+    /**
+     * Simulate an event planner to invite another event planner.
+     *
+     * @param another another event planner
+     */
     public void inviteEventPlanner(EventPlanner another) {
-        try{
-            List<Event> events = eventPlannerService.viewHostedEvent(ep);
-            for(Event event : events){
-                try{
-                    eventPlannerService.inviteEventPlanner(ep, another, event);
+        try {
+            List<Event> events = eventPlannerService.viewHostedEvent(eventPlanner);
+            for (Event event : events) {
+                try {
+                    eventPlannerService.inviteEventPlanner(eventPlanner, another, event);
                 } catch (PermissionDeniedException e) {
                     System.out.println("Permission Denied");
-                } catch (SQLException e){
-                    System.out.println("relation already exist");
+                } catch (SQLException e) {
+                    System.out.println("Already Invited");
                 }
             }
         } catch (SQLException e) {
@@ -81,19 +93,22 @@ public class EventPlannerThread extends Thread{
         }
     }
 
+    /**
+     * Simulate an event planner to modify an existing hosted event.
+     */
     public void modifyEvent() {
-        try{
-            List<Event> events = eventPlannerService.viewHostedEvent(ep);
+        try {
+            List<Event> events = eventPlannerService.viewHostedEvent(eventPlanner);
             int size = events.size();
-            Random r = new Random();
-            int index = r.nextInt(size);
-            Event e = events.get(index);
-            e.setArtist(ep.getFirstName() + r.nextInt(100));
-            for(Section section : e.loadSections()){
-                int update = r.nextBoolean() ? -1 : 1;
+            Random random = new Random();
+            int index = random.nextInt(size);
+            Event event = events.get(index);
+            event.setArtist(eventPlanner.getFirstName() + random.nextInt(100));
+            for (Section section : event.loadSections()) {
+                int update = random.nextBoolean() ? -1 : 1;
                 section.setCapacity(section.getCapacity() + update);
             }
-            eventPlannerService.modifyEvent(ep, e);
+            eventPlannerService.modifyEvent(eventPlanner, event);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (TimeConflictException e) {
@@ -105,5 +120,9 @@ public class EventPlannerThread extends Thread{
         } catch (InvalidTimeRangeException e) {
             System.out.println("Invalid Time Range");
         }
+    }
+
+    public EventPlanner getMockEventPlanner() {
+        return eventPlanner;
     }
 }
