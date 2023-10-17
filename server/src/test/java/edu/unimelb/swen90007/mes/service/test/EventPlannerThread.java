@@ -84,10 +84,10 @@ public class EventPlannerThread extends Thread {
     public void inviteEventPlanner(EventPlanner another) {
         try {
             List<Event> events = eventPlannerService.viewHostedEvent(eventPlanner);
-            for(Event event: events){
-                try{
+            for (Event event : events) {
+                try {
                     eventPlannerService.inviteEventPlanner(eventPlanner, another, event);
-                } catch (Exception e){
+                } catch (Exception e) {
                     System.out.println("Relation Already Exist");
                 }
             }

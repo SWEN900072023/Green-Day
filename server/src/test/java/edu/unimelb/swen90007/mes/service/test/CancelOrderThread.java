@@ -8,17 +8,18 @@ import edu.unimelb.swen90007.mes.service.impl.CustomerService;
 import java.sql.SQLException;
 import java.util.List;
 
-public class CancelOrderThread extends Thread{
-    private Customer customer;
-    private CustomerService customerService = new CustomerService();
+public class CancelOrderThread extends Thread {
+    private final Customer customer;
+    private final CustomerService customerService = new CustomerService();
+
     public CancelOrderThread(Customer customer) {
         this.customer = customer;
     }
 
-    public void cancelOrder(){
-        try{
+    public void cancelOrder() {
+        try {
             List<Order> orders = customerService.viewOwnOrder(customer);
-            for(Order order : orders){
+            for (Order order : orders) {
                 customerService.cancelOrder(customer, order);
             }
         } catch (SQLException | PermissionDeniedException e) {
@@ -27,7 +28,7 @@ public class CancelOrderThread extends Thread{
     }
 
     @Override
-    public void run(){
+    public void run() {
         cancelOrder();
     }
 }

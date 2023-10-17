@@ -1,11 +1,7 @@
 package edu.unimelb.swen90007.mes.service.test;
 
-import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.model.Venue;
 import edu.unimelb.swen90007.mes.service.impl.AdminService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Entry point for the concurrency test.
@@ -46,7 +42,7 @@ public class ConcurrencyTest {
         CustomerThread customer2 = new CustomerThread
                 ("customer2@gmail.com", "customer2@gmail.com", "Chris", "Ewin");
 
-        // Let two event planners create a event and invite each other
+        // Let the last two event planners create events and invite each other.
         ep3.createEvent(56);
         ep4.createEvent(55);
         ep3.inviteEventPlanner(ep4.getMockEventPlanner());
@@ -78,13 +74,13 @@ public class ConcurrencyTest {
             System.out.println(e.getMessage());
         }
 
-        CancelOrderThread cancel1 = new CancelOrderThread(customer1.getCustomer());
-        CancelOrderThread cancel2 = new CancelOrderThread(customer1.getCustomer());
+        CancelOrderThread cancel1 = new CancelOrderThread(customer1.getMockCustomer());
+        CancelOrderThread cancel2 = new CancelOrderThread(customer2.getMockCustomer());
 
         cancel1.start();
         cancel2.start();
 
-        try{
+        try {
             cancel1.join();
             cancel2.join();
         } catch (InterruptedException e) {

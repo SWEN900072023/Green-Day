@@ -1,9 +1,6 @@
 package edu.unimelb.swen90007.mes.service.test;
 
 import edu.unimelb.swen90007.mes.model.Event;
-import edu.unimelb.swen90007.mes.model.EventPlanner;
-
-import java.util.List;
 
 /**
  * Thread representing an event planner who only creates events in the concurrency test.
