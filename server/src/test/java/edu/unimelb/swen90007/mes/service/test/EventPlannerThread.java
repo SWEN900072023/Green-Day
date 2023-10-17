@@ -39,8 +39,9 @@ public class EventPlannerThread extends Thread {
      * Simulate an event planner to create an event.
      *
      * @param days the number of days from the start of the event to now
+     * @return the created event object
      */
-    public void createEvent(int days) {
+    public Event createEvent(int days) {
         try {
             // Simulate an event planner to view all existing venues.
             List<Venue> venues = publicService.viewAllVenues();
@@ -61,7 +62,7 @@ public class EventPlannerThread extends Thread {
             event.setSections(sections);
             event.setFirstPlannerId(eventPlanner.getId());
             eventPlannerService.createEvent(event);
-
+            return event;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (TimeConflictException | InvalidTimeRangeException e) {
@@ -69,6 +70,7 @@ public class EventPlannerThread extends Thread {
         } catch (CapacityExceedsException e) {
             System.out.println("Capacity Exceeds");
         }
+        return null;
     }
 
     /**
@@ -76,25 +78,18 @@ public class EventPlannerThread extends Thread {
      *
      * @param another another event planner
      */
-    public void inviteEventPlanner(EventPlanner another) {
+    public void inviteEventPlanner(EventPlanner another, Event event) {
         try {
-            List<Event> events = eventPlannerService.viewHostedEvent(eventPlanner);
-            for (Event event : events) {
-                try {
-                    eventPlannerService.inviteEventPlanner(eventPlanner, another, event);
-                } catch (PermissionDeniedException e) {
-                    System.out.println("Permission Denied");
-                } catch (SQLException e) {
-                    System.out.println("Already Invited");
-                }
-            }
+            eventPlannerService.inviteEventPlanner(eventPlanner, another, event);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } catch (PermissionDeniedException e) {
+            System.out.println("Permission Denied");
         }
     }
 
     /**
-     * Simulate an event planner to modify an existing hosted event.
+     * Simulate an event planner to modify a random hosted event.
      */
     public void modifyEvent() {
         try {

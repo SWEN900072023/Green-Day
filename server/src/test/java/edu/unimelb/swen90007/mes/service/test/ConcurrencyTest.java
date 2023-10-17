@@ -1,7 +1,11 @@
 package edu.unimelb.swen90007.mes.service.test;
 
+import edu.unimelb.swen90007.mes.model.EventPlanner;
 import edu.unimelb.swen90007.mes.model.Venue;
 import edu.unimelb.swen90007.mes.service.impl.AdminService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConcurrencyTest {
     /**
@@ -9,8 +13,8 @@ public class ConcurrencyTest {
      */
     public static void createVenue() {
         AdminService adminService = new AdminService();
-        Venue venue1 = new Venue("Mock Venue 1", "Mock Venue 1 Address", 100);
-        Venue venue2 = new Venue("Mock Venue 2", "Mock Venue 2 Address", 100);
+        Venue venue1 = new Venue("Mock Venue 1", "Mock Venue Address 1", 100);
+        Venue venue2 = new Venue("Mock Venue 2", "Mock Venue Address 2", 100);
         adminService.createVenue(venue1);
         adminService.createVenue(venue2);
     }
@@ -21,7 +25,9 @@ public class ConcurrencyTest {
         // Simulate the administrator to create two venues.
         createVenue();
 
-        // Create three event planners.
+        // Create four event planners.
+        // The first two event planners create events,
+        // whereas the last two modify the music events created by the first two.
         CreateEventThread ep1 = new CreateEventThread
                 ("ep1@gmail.com", "ep1@gmail.com", "Quanchi", "Chen");
         CreateEventThread ep2 = new CreateEventThread
@@ -37,23 +43,34 @@ public class ConcurrencyTest {
         CustomerThread customer2 = new CustomerThread
                 ("customer2@gmail.com", "customer2@gmail.com", "Chris", "Ewin");
 
-        ep3.createEvent(5);
-        ep4.createEvent(10);
 
-        ep3.inviteEventPlanner(ep4.getMockEventPlanner());
-        ep4.inviteEventPlanner(ep3.getMockEventPlanner());
+        // Let the last two event planners also be the planners of the events created by the first two event planners.
+        List<EventPlanner> invitedEventPlanners = new ArrayList<>();
+        invitedEventPlanners.add(ep3.getMockEventPlanner());
+        invitedEventPlanners.add(ep4.getMockEventPlanner());
+        ep1.setInvitedEventPlanners(invitedEventPlanners);
+        ep2.setInvitedEventPlanners(invitedEventPlanners);
 
+        // Start the first two event planner threads.
         ep1.start();
         ep2.start();
+
+        try {
+            ep1.join();
+            ep2.join();
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
+
+        // Start the last two event planner threads and the customer threads.
         ep3.start();
         ep4.start();
         customer1.start();
         customer2.start();
 
         try {
-            ep1.join();
-            ep2.join();
             ep3.join();
+            ep4.join();
             customer1.join();
             customer2.join();
         } catch (InterruptedException e) {
