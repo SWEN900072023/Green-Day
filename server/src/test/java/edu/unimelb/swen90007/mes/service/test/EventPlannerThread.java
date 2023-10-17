@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EventPlannerThread extends Thread {
     private final EventPlanner eventPlanner;
@@ -46,18 +46,18 @@ public class EventPlannerThread extends Thread {
             List<Venue> venues = publicService.viewAllVenues();
 
             // Simulate an event planner to create an event.
-            String title = "Jay Chou's Concert";
-            String artist = "Jay Chou";
+            String title = eventPlanner.getFirstName() + eventPlanner.getLastName() + days;
+            String artist = "Mock Artist";
             Venue venue = venues.get(0);
             LocalDateTime now = LocalDateTime.now();
             Event event = new Event
                     (title, artist, venue, now.plusDays(days).plusHours(1), now.plusDays(days).plusHours(5));
 
             List<Section> sections = new ArrayList<>();
-            sections.add(new Section(event, "Normal", money, 30, 30));
-            sections.add(new Section(event, "Special", money, 20, 20));
-            sections.add(new Section(event, "VIP", money, 10, 10));
-            sections.add(new Section(event, "V-VIP", money, 5, 5));
+            sections.add(new Section(event, event.getTitle() + "Bronze", money, 30, 30));
+            sections.add(new Section(event, event.getTitle() + "Silver", money, 20, 20));
+            sections.add(new Section(event, event.getTitle() + "Gold", money, 10, 10));
+            sections.add(new Section(event, event.getTitle() + "VIP", money, 5, 5));
             event.setSections(sections);
             event.setFirstPlannerId(eventPlanner.getId());
             eventPlannerService.createEvent(event);
@@ -100,12 +100,11 @@ public class EventPlannerThread extends Thread {
         try {
             List<Event> events = eventPlannerService.viewHostedEvent(eventPlanner);
             int size = events.size();
-            Random random = new Random();
-            int index = random.nextInt(size);
+            int index = ThreadLocalRandom.current().nextInt(size);
             Event event = events.get(index);
-            event.setArtist(eventPlanner.getFirstName() + random.nextInt(100));
+            event.setArtist(eventPlanner.getFirstName() + ThreadLocalRandom.current().nextInt(100));
             for (Section section : event.loadSections()) {
-                int update = random.nextBoolean() ? -1 : 1;
+                int update = ThreadLocalRandom.current().nextBoolean() ? -1 : 1;
                 section.setCapacity(section.getCapacity() + update);
             }
             eventPlannerService.modifyEvent(eventPlanner, event);

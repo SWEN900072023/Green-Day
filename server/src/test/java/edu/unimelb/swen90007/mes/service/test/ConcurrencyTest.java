@@ -9,8 +9,8 @@ public class ConcurrencyTest {
      */
     public static void createVenue() {
         AdminService adminService = new AdminService();
-        Venue venue1 = new Venue("Mock Venue 1", "Mock Venue 1 Address", 1000);
-        Venue venue2 = new Venue("Mock Venue 2", "Mock Venue 2 Address", 1000);
+        Venue venue1 = new Venue("Mock Venue 1", "Mock Venue 1 Address", 100);
+        Venue venue2 = new Venue("Mock Venue 2", "Mock Venue 2 Address", 100);
         adminService.createVenue(venue1);
         adminService.createVenue(venue2);
     }
@@ -29,7 +29,7 @@ public class ConcurrencyTest {
         ModifyEventThread ep3 = new ModifyEventThread
                 ("ep3@gmail.com", "ep3@gmail.com", "Jingning", "Qian");
         ModifyEventThread ep4 = new ModifyEventThread
-                ("ep4@gmail.com", "123456", "Tony", "Sack");
+                ("ep4@gmail.com", "ep4@gmail.com", "Wenxuan", "Xie");
 
         // Create two customers.
         CustomerThread customer1 = new CustomerThread

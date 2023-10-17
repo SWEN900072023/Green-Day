@@ -11,9 +11,10 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CustomerThread extends Thread {
+    private static final int NUM_ORDERS = 50;
     private final Customer customer;
     private final PublicService publicService = new PublicService();
     private final CustomerService customerService = new CustomerService();
@@ -36,8 +37,7 @@ public class CustomerThread extends Thread {
         try {
             List<Event> events = publicService.viewAllEvents();
             int size = events.size();
-            Random random = new Random();
-            int index = random.nextInt(size);
+            int index = ThreadLocalRandom.current().nextInt(size);
             Event event = events.get(index);
             event = publicService.viewEventDetail(event);
             List<SubOrder> subOrders = new LinkedList<>();
@@ -55,9 +55,12 @@ public class CustomerThread extends Thread {
         }
     }
 
+    /**
+     * Simulate a customer to place NUM_ORDERS orders for potentially different events.
+     */
     @Override
     public void run() {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < NUM_ORDERS; i++) {
             placeOrder();
         }
     }
