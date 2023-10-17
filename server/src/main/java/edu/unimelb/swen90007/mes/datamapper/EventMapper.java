@@ -215,7 +215,7 @@ public final class EventMapper {
 
     public static void update(Event event, Connection connection) throws SQLException, VersionUnmatchedException, TimeConflictException {
         int versionDirty = loadVersionNumber(event.getId(), connection);
-
+        System.out.println(event.getArtist());
         String sql = "UPDATE events SET title = ?, artist = ?, venue_id = ?, status = ?, start_time = ?, end_time = ? WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, event.getTitle());

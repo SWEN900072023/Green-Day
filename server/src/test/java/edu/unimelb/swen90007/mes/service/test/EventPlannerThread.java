@@ -88,11 +88,11 @@ public class EventPlannerThread extends Thread{
             Random r = new Random();
             int index = r.nextInt(size);
             Event e = events.get(index);
-            e.setArtist(ep.getFirstName() + r.nextInt(100));
             for(Section section : e.loadSections()){
                 int update = r.nextBoolean() ? -1 : 1;
                 section.setCapacity(section.getCapacity() + update);
             }
+            e.setArtist(ep.getFirstName() + r.nextInt(100));
             eventPlannerService.modifyEvent(ep, e);
         } catch (SQLException e) {
             throw new RuntimeException(e);

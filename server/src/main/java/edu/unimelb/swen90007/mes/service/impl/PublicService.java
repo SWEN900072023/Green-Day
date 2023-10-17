@@ -1,10 +1,7 @@
 package edu.unimelb.swen90007.mes.service.impl;
 
 import edu.unimelb.swen90007.mes.Lock.LockManager;
-import edu.unimelb.swen90007.mes.datamapper.AppUserMapper;
-import edu.unimelb.swen90007.mes.datamapper.EventMapper;
-import edu.unimelb.swen90007.mes.datamapper.PlannerEventMapper;
-import edu.unimelb.swen90007.mes.datamapper.VenueMapper;
+import edu.unimelb.swen90007.mes.datamapper.*;
 import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.model.*;
 import edu.unimelb.swen90007.mes.service.IPublicService;
@@ -48,6 +45,12 @@ public class PublicService implements IPublicService {
     }
 
     public static void cancelOrder(Order order){
+        try{
+            if (OrderMapper.isCanceled(order.getId()))
+                return;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         UnitOfWork.getInstance().registerDirty(order);
         for (SubOrder subOrder : order.loadSubOrders()) {
             Section section = subOrder.getSection();
