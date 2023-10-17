@@ -11,7 +11,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 public class Event {
     private static final Logger logger = LogManager.getLogger(Event.class);
     private Integer id;
@@ -58,7 +59,7 @@ public class Event {
         this.venue = venue;
         this.startTime = startTime;
         this.endTime = endTime;
-        if(startTime.isBefore(LocalDateTime.now()))
+        if (startTime.isBefore(LocalDateTime.now()))
             this.status = Constant.EVENT_PAST;
         else if (startTime.isBefore(LocalDateTime.now().plusMonths(6)))
             this.status = Constant.EVENT_IN_SIX;
@@ -106,16 +107,6 @@ public class Event {
         if (endTime == null)
             load();
         return endTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        if(startTime.isBefore(LocalDateTime.now()))
-            this.status = 3;
-        else if (startTime.isBefore(LocalDateTime.now().plusMonths(6)))
-            this.status = 1;
-        else
-            this.status = 2;
-        this.startTime = startTime;
     }
 
     private void load() {

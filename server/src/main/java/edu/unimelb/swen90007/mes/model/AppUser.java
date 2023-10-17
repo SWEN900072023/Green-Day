@@ -12,17 +12,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 public abstract class AppUser implements UserDetails {
     private static final Logger logger = LogManager.getLogger(AppUser.class);
+    private final List<UserType> authorities = new ArrayList<>();
     private Integer id;
     private String email;
     @JSONField(serialize = false)
     private String password;
     private String firstName;
     private String lastName;
-
-    private final List<UserType> authorities = new ArrayList<>();
 
     public AppUser(Integer id) {
         this.id = id;
@@ -43,7 +43,8 @@ public abstract class AppUser implements UserDetails {
         this.lastName = lastName;
     }
 
-    @Override @JSONField(serialize = false)
+    @Override
+    @JSONField(serialize = false)
     public String getUsername() {
         return email;
     }
@@ -72,34 +73,32 @@ public abstract class AppUser implements UserDetails {
         return lastName;
     }
 
-    public void setUserDetail(String email, String password, String firstName, String lastName){
-        this.email = email;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    @Override @JSONField(serialize = false)
+    @Override
+    @JSONField(serialize = false)
     public List<UserType> getAuthorities() {
         return authorities;
     }
 
-    @Override @JSONField(serialize = false)
+    @Override
+    @JSONField(serialize = false)
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override @JSONField(serialize = false)
+    @Override
+    @JSONField(serialize = false)
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override @JSONField(serialize = false)
+    @Override
+    @JSONField(serialize = false)
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override @JSONField(serialize = false)
+    @Override
+    @JSONField(serialize = false)
     public boolean isEnabled() {
         return true;
     }

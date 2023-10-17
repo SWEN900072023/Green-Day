@@ -8,7 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 
-@Getter @Setter
+@Getter
+@Setter
 public class Venue {
     private static final Logger logger = LogManager.getLogger(Venue.class);
     private Integer id;

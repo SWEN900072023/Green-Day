@@ -1,6 +1,5 @@
 package edu.unimelb.swen90007.mes.model;
 
-import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.datamapper.SectionMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 
-@Getter @Setter
+@Getter
+@Setter
 public class Section {
     private static final Logger logger = LogManager.getLogger(Section.class);
     private Integer id;
@@ -45,24 +45,6 @@ public class Section {
         this.remainingTickets = remainingTickets;
     }
 
-    public Event loadEvent() {
-        if (event == null)
-            load();
-        return event;
-    }
-
-    public String loadName() {
-        if (name == null)
-            load();
-        return name;
-    }
-
-    public Money loadMoney() {
-        if (money == null)
-            load();
-        return money;
-    }
-
     public Integer loadCapacity() {
         if (capacity == null)
             load();
@@ -71,7 +53,7 @@ public class Section {
 
     public Integer loadRemainingTickets() {
         if (remainingTickets == null) {
-            try{
+            try {
                 remainingTickets = SectionMapper.loadRemainingTickets(id);
             } catch (SQLException e) {
                 logger.error(String.format("Error loading remaining tickets of the Section [id=%d]: %s",
