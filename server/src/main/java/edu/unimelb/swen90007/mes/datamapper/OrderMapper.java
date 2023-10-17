@@ -56,6 +56,17 @@ public final class OrderMapper {
         return load(resultSet).get(0);
     }
 
+    public static boolean isCanceled(int id) throws SQLException {
+        String sql = "SELECT status FROM orders WHERE id = ?";
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        String status = resultSet.getString("status").trim();
+        return (status.equals(Constant.ORDER_CANCELLED));
+    }
+
     private static List<Order> load(ResultSet resultSet) throws SQLException {
         List<Order> orders = new ArrayList<>();
 
