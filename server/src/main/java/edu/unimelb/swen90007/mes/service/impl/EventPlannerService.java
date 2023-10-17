@@ -22,8 +22,6 @@ public class EventPlannerService implements IEventPlannerService {
             throw new InvalidTimeRangeException();
         if (isCapacityExceeded(event))
             throw new CapacityExceedsException();
-        if (EventMapper.doesTimeConflict(event))
-            throw new TimeConflictException();
         UnitOfWork.getInstance().registerNew(event);
         for (Section section : event.getSections()) {
             section.setEvent(event);
@@ -42,8 +40,6 @@ public class EventPlannerService implements IEventPlannerService {
             throw new PermissionDeniedException();
         if (isCapacityExceeded(event))
             throw new CapacityExceedsException();
-        if (EventMapper.doesTimeConflict(event))
-            throw new TimeConflictException();
 
         UnitOfWork.getInstance().registerDirty(event);
         for (Section section : event.getSections()) {
