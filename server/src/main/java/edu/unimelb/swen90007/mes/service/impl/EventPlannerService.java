@@ -60,24 +60,6 @@ public class EventPlannerService implements IEventPlannerService {
     }
 
     @Override
-    public void deleteEvent(EventPlanner ep, Event event)
-            throws SQLException, PermissionDeniedException {
-        if (!PlannerEventMapper.checkRelation(ep, event))
-            throw new PermissionDeniedException();
-        List<Section> sections = SectionMapper.loadSectionsByEventId(event.getId());
-        List<Order> orders = OrderMapper.loadByEventId(event.getId());
-        for (Order o : orders) {
-            UnitOfWork.getInstance().registerDeleted(o);
-        }
-        for (Section s : sections) {
-            UnitOfWork.getInstance().registerDeleted(s);
-        }
-        UnitOfWork.getInstance().registerDeleted(event);
-
-        UnitOfWork.getInstance().commit();
-    }
-
-    @Override
     public List<Event> viewHostedEvent(EventPlanner ep)
             throws SQLException {
         return EventMapper.loadByEventPlanner(ep);

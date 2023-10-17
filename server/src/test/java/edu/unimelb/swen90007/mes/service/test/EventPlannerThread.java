@@ -100,11 +100,11 @@ public class EventPlannerThread extends Thread {
             int size = events.size();
             int index = ThreadLocalRandom.current().nextInt(size);
             Event event = events.get(index);
-            event.setArtist(eventPlanner.getFirstName() + ThreadLocalRandom.current().nextInt(100));
             for (Section section : event.loadSections()) {
                 int update = ThreadLocalRandom.current().nextBoolean() ? -1 : 1;
                 section.setCapacity(section.getCapacity() + update);
             }
+            event.setArtist(eventPlanner.getFirstName() + ThreadLocalRandom.current().nextInt(100));
             eventPlannerService.modifyEvent(eventPlanner, event);
         } catch (SQLException e) {
             throw new RuntimeException(e);
