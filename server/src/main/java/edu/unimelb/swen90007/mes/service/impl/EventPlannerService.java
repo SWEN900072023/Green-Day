@@ -18,9 +18,9 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void createEvent(Event event)
             throws SQLException, CapacityExceedsException, TimeConflictException, InvalidTimeRangeException {
-        if(invalidTimeRange(event))
+        if (invalidTimeRange(event))
             throw new InvalidTimeRangeException();
-        if(isCapacityExceeded(event))
+        if (isCapacityExceeded(event))
             throw new CapacityExceedsException();
         if (EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
@@ -36,11 +36,11 @@ public class EventPlannerService implements IEventPlannerService {
     public void modifyEvent(EventPlanner ep, Event event)
             throws SQLException, CapacityExceedsException,
             PermissionDeniedException, TimeConflictException, InvalidTimeRangeException {
-        if(invalidTimeRange(event))
+        if (invalidTimeRange(event))
             throw new InvalidTimeRangeException();
-        if(!PlannerEventMapper.checkRelation(ep, event))
+        if (!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
-        if(isCapacityExceeded(event))
+        if (isCapacityExceeded(event))
             throw new CapacityExceedsException();
         if (EventMapper.doesTimeConflict(event))
             throw new TimeConflictException();
@@ -51,7 +51,7 @@ public class EventPlannerService implements IEventPlannerService {
         }
         if (event.getStatus().equals(Constant.EVENT_CANCELLED)) {
             List<Order> orders = OrderMapper.loadByEventId(event.getId());
-            for(Order order : orders) {
+            for (Order order : orders) {
                 PublicService.cancelOrder(order);
             }
         }
@@ -62,14 +62,14 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void deleteEvent(EventPlanner ep, Event event)
             throws SQLException, PermissionDeniedException {
-        if(!PlannerEventMapper.checkRelation(ep, event))
+        if (!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
         List<Section> sections = SectionMapper.loadSectionsByEventId(event.getId());
         List<Order> orders = OrderMapper.loadByEventId(event.getId());
-        for(Order o : orders) {
+        for (Order o : orders) {
             UnitOfWork.getInstance().registerDeleted(o);
         }
-        for(Section s : sections) {
+        for (Section s : sections) {
             UnitOfWork.getInstance().registerDeleted(s);
         }
         UnitOfWork.getInstance().registerDeleted(event);
@@ -91,7 +91,7 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void inviteEventPlanner(EventPlanner inviter, EventPlanner invitee, Event event)
             throws SQLException, PermissionDeniedException {
-        if(!PlannerEventMapper.checkRelation(inviter, event))
+        if (!PlannerEventMapper.checkRelation(inviter, event))
             throw new PermissionDeniedException();
         PlannerEventMapper.inviteEventPlanner(invitee, event);
     }
@@ -99,7 +99,7 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public List<Order> viewOrders(EventPlanner ep, Event event)
             throws SQLException, PermissionDeniedException {
-        if(!PlannerEventMapper.checkRelation(ep, event))
+        if (!PlannerEventMapper.checkRelation(ep, event))
             throw new PermissionDeniedException();
         return OrderMapper.loadByEventId(event.getId());
     }
@@ -107,10 +107,10 @@ public class EventPlannerService implements IEventPlannerService {
     @Override
     public void cancelOrder(EventPlanner ep, Order order)
             throws SQLException, PermissionDeniedException {
-        if(!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
+        if (!PlannerEventMapper.checkRelation(ep, order.loadEvent()))
             throw new PermissionDeniedException();
         LockManager.getInstance().acquireTicketsWriteLock(order);
-        try{
+        try {
             PublicService.cancelOrder(order);
             UnitOfWork.getInstance().commit();
         } finally {
@@ -120,13 +120,13 @@ public class EventPlannerService implements IEventPlannerService {
 
     private boolean isCapacityExceeded(Event event) {
         int eventCapacity = 0;
-        for(Section s : event.loadSections())
+        for (Section s : event.loadSections())
             eventCapacity += s.loadCapacity();
         int venueCapacity = event.loadVenue().loadCapacity();
         return (eventCapacity > venueCapacity);
     }
 
-    public boolean invalidTimeRange(Event event){
+    private boolean invalidTimeRange(Event event) {
         return event.getStartTime().isAfter(event.getEndTime());
     }
 }

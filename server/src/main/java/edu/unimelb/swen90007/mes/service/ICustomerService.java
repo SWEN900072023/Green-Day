@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface ICustomerService {
     void placeOrder(Order order) throws SQLException, TicketInsufficientException;
+
     List<Order> viewOwnOrder(Customer customer) throws SQLException;
+
     void cancelOrder(Customer customer, Order order) throws SQLException, PermissionDeniedException;
 }
