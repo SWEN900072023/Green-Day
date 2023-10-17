@@ -75,7 +75,7 @@ public class ConcurrencyTest {
         }
 
         CancelOrderThread cancel1 = new CancelOrderThread(customer1.getMockCustomer());
-        CancelOrderThread cancel2 = new CancelOrderThread(customer2.getMockCustomer());
+        CancelOrderThread cancel2 = new CancelOrderThread(customer1.getMockCustomer());
 
         cancel1.start();
         cancel2.start();
