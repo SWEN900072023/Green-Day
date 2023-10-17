@@ -231,6 +231,7 @@ public final class EventMapper {
         if (versionDirty != versionNew)
             throw new VersionUnmatchedException();
         versionIncrement(event.getId(), versionNew + 1, connection);
+        LockManager.getInstance().validationLock.lock();
         try{
             if (doesTimeConflict(event))
                 throw new TimeConflictException();

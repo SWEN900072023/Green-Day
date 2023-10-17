@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class CreateEventThread extends EventPlannerThread {
     private static final int NUM_EVENTS = 50;
-    private List<EventPlanner> invitedEventPlanners;
 
     public CreateEventThread(String email, String password, String firstName, String lastName) {
         super(email, password, firstName, lastName);
@@ -26,12 +25,6 @@ public class CreateEventThread extends EventPlannerThread {
             // Event creation fails due to time conflict.
             if (event == null)
                 return;
-            for (EventPlanner anotherEventPlanner : invitedEventPlanners)
-                inviteEventPlanner(anotherEventPlanner, event);
         }
-    }
-
-    public void setInvitedEventPlanners(List<EventPlanner> invitedEventPlanners) {
-        this.invitedEventPlanners = invitedEventPlanners;
     }
 }

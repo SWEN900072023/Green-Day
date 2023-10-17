@@ -32,7 +32,8 @@ public class LockManager {
 
     public void acquireTicketsReadLock(Event event) {
         try {
-            event = EventMapper.loadByIdAll(event.getId());
+            if (event.getSections() == null)
+                event = EventMapper.loadByIdAll(event.getId());
             for (Section section : event.getSections()) {
                 if (!ticketsLocks.containsKey(section.getId())) {
                     ticketsLocks.put(section.getId(), new ReentrantReadWriteLock());

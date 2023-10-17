@@ -46,13 +46,11 @@ public class ConcurrencyTest {
         CustomerThread customer2 = new CustomerThread
                 ("customer2@gmail.com", "customer2@gmail.com", "Chris", "Ewin");
 
-
-        // Let the last two event planners also be the planners of the events created by the first two event planners.
-        List<EventPlanner> invitedEventPlanners = new ArrayList<>();
-        invitedEventPlanners.add(ep3.getMockEventPlanner());
-        invitedEventPlanners.add(ep4.getMockEventPlanner());
-        ep1.setInvitedEventPlanners(invitedEventPlanners);
-        ep2.setInvitedEventPlanners(invitedEventPlanners);
+        // Let two event planners create a event and invite each other
+        ep3.createEvent(56);
+        ep4.createEvent(55);
+        ep3.inviteEventPlanner(ep4.getMockEventPlanner());
+        ep4.inviteEventPlanner(ep3.getMockEventPlanner());
 
         // Start the first two event planner threads that create events simultaneously.
         ep1.start();
@@ -77,7 +75,20 @@ public class ConcurrencyTest {
             customer1.join();
             customer2.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
+        CancelOrderThread cancel1 = new CancelOrderThread(customer1.getCustomer());
+        CancelOrderThread cancel2 = new CancelOrderThread(customer1.getCustomer());
+
+        cancel1.start();
+        cancel2.start();
+
+        try{
+            cancel1.join();
+            cancel2.join();
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
         }
 
         System.out.println("Concurrency Testing Ended");

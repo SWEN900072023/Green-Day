@@ -1,5 +1,6 @@
 package edu.unimelb.swen90007.mes.service.test;
 
+import edu.unimelb.swen90007.mes.exceptions.PermissionDeniedException;
 import edu.unimelb.swen90007.mes.exceptions.TicketInsufficientException;
 import edu.unimelb.swen90007.mes.exceptions.UserAlreadyExistsException;
 import edu.unimelb.swen90007.mes.model.*;
@@ -31,6 +32,10 @@ public class CustomerThread extends Thread {
         } catch (SQLException | UserAlreadyExistsException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Customer getCustomer(){
+        return customer;
     }
 
     /**

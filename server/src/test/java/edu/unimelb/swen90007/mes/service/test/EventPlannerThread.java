@@ -81,13 +81,18 @@ public class EventPlannerThread extends Thread {
      *
      * @param another another event planner
      */
-    public void inviteEventPlanner(EventPlanner another, Event event) {
+    public void inviteEventPlanner(EventPlanner another) {
         try {
-            eventPlannerService.inviteEventPlanner(eventPlanner, another, event);
+            List<Event> events = eventPlannerService.viewHostedEvent(eventPlanner);
+            for(Event event: events){
+                try{
+                    eventPlannerService.inviteEventPlanner(eventPlanner, another, event);
+                } catch (Exception e){
+                    System.out.println("Relation Already Exist");
+                }
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } catch (PermissionDeniedException e) {
-            System.out.println("Permission Denied");
         }
     }
 
