@@ -110,11 +110,6 @@ public class PlannerEventServlet extends HttpServlet {
             Section section = sections.get(i);
             Money money = new Money(unitPrice, currency);
             section.setMoney(money);
-            // set event.remainingTickets
-            if (section.getRemainingTickets() == null) {
-                // create request
-                section.setRemainingTickets(section.getCapacity());
-            }
         }
 
         // set venue

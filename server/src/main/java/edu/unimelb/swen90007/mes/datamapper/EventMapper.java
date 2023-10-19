@@ -23,7 +23,7 @@ public final class EventMapper {
         preparedStatement.setString(1, event.getTitle());
         preparedStatement.setString(2, event.getArtist());
         preparedStatement.setInt(3, event.getVenue().getId());
-        preparedStatement.setInt(4, event.getStatus());
+        preparedStatement.setInt(4, event.updateStatus(event.getStartTime()));
         preparedStatement.setObject(5, event.getStartTime());
         preparedStatement.setObject(6, event.getEndTime());
         preparedStatement.setObject(7, 0);

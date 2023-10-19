@@ -59,12 +59,17 @@ public class Event {
         this.venue = venue;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.updateStatus(startTime);
+    }
+
+    public Integer updateStatus(LocalDateTime startTime) {
         if (startTime.isBefore(LocalDateTime.now()))
             this.status = Constant.EVENT_PAST;
         else if (startTime.isBefore(LocalDateTime.now().plusMonths(6)))
             this.status = Constant.EVENT_IN_SIX;
         else
             this.status = Constant.EVENT_OUT_SIX;
+        return this.status;
     }
 
     public void setStartTime(LocalDateTime startTime) {

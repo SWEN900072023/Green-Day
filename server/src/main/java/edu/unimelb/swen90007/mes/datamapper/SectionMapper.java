@@ -25,7 +25,7 @@ public final class SectionMapper {
         preparedStatement.setBigDecimal(3, section.getMoney().getUnitPrice());
         preparedStatement.setString(4, section.getMoney().getCurrency());
         preparedStatement.setInt(5, section.getCapacity());
-        preparedStatement.setInt(6, section.getRemainingTickets());
+        preparedStatement.setInt(6, section.getCapacity());
         preparedStatement.setInt(7, 0);
         preparedStatement.executeUpdate();
 
@@ -117,13 +117,12 @@ public final class SectionMapper {
 
     public static void update(Section section, Connection connection) throws SQLException, VersionUnmatchedException {
         int versionDirty = loadVersionNumber(section.getId(), connection);
-        String sql = "UPDATE sections SET name = ?, unit_price = ?, currency = ?, capacity = ? WHERE id = ?";
+        String sql = "UPDATE sections SET name = ?, unit_price = ?, currency = ? WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, section.getName());
         preparedStatement.setBigDecimal(2, section.getMoney().getUnitPrice());
         preparedStatement.setString(3, section.getMoney().getCurrency());
         preparedStatement.setInt(4, section.getCapacity());
-        preparedStatement.setInt(5, section.getId());
         preparedStatement.executeUpdate();
         int versionNew = loadVersionNumber(section.getId(), connection);
         if (versionDirty != versionNew)
