@@ -54,6 +54,8 @@ public class EventPlannerThread extends Thread {
             String artist = "Mock Artist";
             Venue venue = venues.get(0);
             LocalDateTime now = LocalDateTime.now();
+            System.out.println(now);
+            System.out.println(now.plusDays(days).plusHours(1));
             Event event = new Event
                     (title, artist, venue, now.plusDays(days).plusHours(1), now.plusDays(days).plusHours(5));
 

@@ -67,6 +67,16 @@ public class Event {
             this.status = Constant.EVENT_OUT_SIX;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        if(startTime.isBefore(LocalDateTime.now()))
+            this.status = Constant.EVENT_PAST;
+        else if (startTime.isBefore(LocalDateTime.now().plusMonths(6)))
+            this.status = Constant.EVENT_IN_SIX;
+        else
+            this.status = Constant.EVENT_OUT_SIX;
+        this.startTime = startTime;
+    }
+
     public List<Section> loadSections() {
         if (sections == null)
             load();
