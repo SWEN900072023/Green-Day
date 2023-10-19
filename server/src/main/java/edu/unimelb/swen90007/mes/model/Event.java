@@ -71,13 +71,17 @@ public class Event {
             this.status = Constant.EVENT_OUT_SIX;
     }
 
+    public Integer getStatus(){
+        if (this.status == null){
+            if (this.startTime != null){
+                updateStatus(this.startTime);
+            }
+        }
+        return status;
+    }
+
     public void setStartTime(LocalDateTime startTime) {
-        if(startTime.isBefore(LocalDateTime.now()))
-            this.status = Constant.EVENT_PAST;
-        else if (startTime.isBefore(LocalDateTime.now().plusMonths(6)))
-            this.status = Constant.EVENT_IN_SIX;
-        else
-            this.status = Constant.EVENT_OUT_SIX;
+        updateStatus(startTime);
         this.startTime = startTime;
     }
 
