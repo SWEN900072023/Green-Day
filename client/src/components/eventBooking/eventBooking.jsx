@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { selectorCurrentUser } from "../store/user/user.selector";
 const EventBooking = () => {
   const navigate = useNavigate();
-  const [counts, setCounts] = useState([{ id: 0, count: 0 }]);
+  const [counts, setCounts] = useState([]);
   const [sections, setSections] = useState(null);
   const currentUser = useSelector(selectorCurrentUser);
   const location = useLocation();
@@ -27,14 +27,14 @@ const EventBooking = () => {
           Authorization: `Bearer ${currentUser.token}`,
         },
       }).then((res) => {
-        // console.log(res);
+        console.log(res);
         setSections(res.data.data.sections);
       });
     }
 
     getEventDetails();
   }, []);
-
+  // console.log(sections);
   useEffect(() => {
     if (sections !== null) {
       const newCounts = sections.map((row) => ({
@@ -46,7 +46,7 @@ const EventBooking = () => {
       setCounts(newCounts);
     }
   }, [sections]);
-  // console.log(counts);
+
   const increment = (id) => {
     setCounts((prevCounts) =>
       prevCounts.map((counter) =>
@@ -56,7 +56,8 @@ const EventBooking = () => {
       )
     );
   };
-  // console.log(counts);
+  console.log(counts);
+  console.log(sections);
   const decrement = (id) => {
     setCounts((prevCounts) =>
       prevCounts.map((counter) =>
@@ -86,6 +87,7 @@ const EventBooking = () => {
       navigate("/home");
     });
   };
+  // console.log(counts.filter((counter) => counter.sectionId === 5)[0].quantity);
   return (
     <>
       <h1>it is booking system</h1>
@@ -103,7 +105,9 @@ const EventBooking = () => {
               <TableCell align="center" sx={{ fontWeight: "bold" }}>
                 Ticket Remaining
               </TableCell>
-              {/* <TableCell align="center">Price</TableCell> */}
+              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                Price
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -135,7 +139,6 @@ const EventBooking = () => {
                               (counter) => counter.sectionId === row.id
                             )[0].quantity
                           }
-                          {/* {index} */}
                         </span>
                         <button onClick={() => increment(row.id)}>+</button>
                       </div>
@@ -144,7 +147,7 @@ const EventBooking = () => {
                   <TableCell align="center">{row.currency}</TableCell>
                   <TableCell align="center">{row.capacity}</TableCell>
                   <TableCell align="center">{row.remainingTickets}</TableCell>
-                  {/* <TableCell align="center">{row.price}</TableCell> */}
+                  <TableCell align="center">{row.unitPrice}</TableCell>
                 </TableRow>
               ))
             )}

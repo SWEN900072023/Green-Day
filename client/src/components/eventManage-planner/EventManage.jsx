@@ -324,9 +324,13 @@ const EventManage = () => {
                       }
                     />
                   </ListItem>
-                  <button onClick={() => cancelOrder(order.id)}>
-                    cancel booking
-                  </button>
+                  {order.status === "Cancelled" ? (
+                    <></>
+                  ) : (
+                    <button onClick={() => cancelOrder(order.id)}>
+                      cancel booking
+                    </button>
+                  )}
                   <Divider variant="inset" component="li" />
                 </>
               );

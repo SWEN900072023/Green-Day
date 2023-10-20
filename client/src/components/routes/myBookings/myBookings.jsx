@@ -21,6 +21,20 @@ const MyBookings = () => {
   //     console.log(formattedDate);
   //     return formattedDate;
   //   };
+  const cancelOrder = async (orderId) => {
+    await AxiosApi.post(
+      `/customer/orders/cancel/${orderId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }
+    ).then((res) => {
+      console.log(res);
+      alert("cancel successfully");
+    });
+  };
   useEffect(() => {
     async function getBookings() {
       await AxiosApi.get(`/customer/orders`, {
@@ -85,9 +99,7 @@ const MyBookings = () => {
                   }}
                 >
                   <Grid container spacing={10}>
-                    <Grid item>
-                      <ButtonBase sx={{ width: 256, height: 256 }}></ButtonBase>
-                    </Grid>
+                    <Grid sx={{ width: 256, height: 256 }}></Grid>
                     <Grid item xs={30} sm container spacing={12}>
                       {/* <Grid
                       item
@@ -131,6 +143,13 @@ const MyBookings = () => {
                         {/* <Typography variant="body2" color="text.secondary">
                           ID: 1030114
                         </Typography> */}
+                        <Typography
+                          variant="body2"
+                          fontSize="15px"
+                          gutterBottom
+                        >
+                          Order Status: {booking.status}
+                        </Typography>
                       </Grid>
                       <Grid item width="30rem">
                         <Typography
@@ -182,6 +201,13 @@ const MyBookings = () => {
                       </Grid>
                     </Grid>
                   </Grid>
+                  {booking.status === "Cancelled" ? (
+                    <></>
+                  ) : (
+                    <button onClick={() => cancelOrder(booking.id)}>
+                      cancel order
+                    </button>
+                  )}
                 </Paper>
               );
             })

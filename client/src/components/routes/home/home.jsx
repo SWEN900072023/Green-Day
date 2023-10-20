@@ -34,20 +34,28 @@ const Home = () => {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
         },
-      }).then((res) => {
-        console.log(res);
-        setHostedEvent(res.data.data);
-      });
+      })
+        .then((res) => {
+          console.log(res);
+          setHostedEvent(res.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
     async function getAllEvents() {
       await Axiosapi.get("/public/events", {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
         },
-      }).then((res) => {
-        console.log(res);
-        setAllEvents(res.data.data);
-      });
+      })
+        .then((res) => {
+          console.log(res);
+          setAllEvents(res.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
     if (currentUser.userType === "EventPlanner") {
       getAllHostedEvent();
@@ -162,7 +170,21 @@ const Home = () => {
             <h2 style={{ marginLeft: "1rem" }}>No events</h2>
           ) : currentUser.userType === "Customer" &&
             searchEvent.length !== 0 ? (
-            searchEvent.map((event) => {
+            searchEvent.map((event, index) => {
+              const start = new Date(event.startTime);
+              const end = new Date(event.endTime);
+              const options = {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                timeZone: "UTC",
+                hour: "numeric",
+                minute: "numeric",
+              };
+              const formattedstartTime = start.toLocaleString("en-AU", options);
+              // console.log(formattedDate);
+              const formattedendTime = end.toLocaleString("en-AU", options);
+              // searchEvent.map((event) => {
               return (
                 <>
                   <ListItem
@@ -192,7 +214,7 @@ const Home = () => {
                           >
                             Artist: {event.artist}
                           </Typography>
-                          {`${event.startTime} - ${event.endTime}`}
+                          {`${formattedstartTime} - ${formattedendTime}`}
                         </Fragment>
                       }
                     />
