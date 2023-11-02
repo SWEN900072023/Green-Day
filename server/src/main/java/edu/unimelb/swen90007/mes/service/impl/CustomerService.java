@@ -16,25 +16,22 @@ public class CustomerService implements ICustomerService {
     @Override
     public void placeOrder(Order order) throws TicketInsufficientException {
         LockManager.getInstance().acquireTicketsWriteLock(order);
-        try {
-            UnitOfWork.getInstance().registerNew(order);
-            for (SubOrder subOrder : order.getSubOrders()) {
-                subOrder.setOrder(order);
-                UnitOfWork.getInstance().registerNew(subOrder);
-                Section section = subOrder.getSection();
-                int remainingTickets = section.loadRemainingTickets();
-                if (remainingTickets < subOrder.getQuantity()) {
-                    UnitOfWork.getInstance().clear();
-                    throw new TicketInsufficientException();
-                }
-                SectionTickets sectionTickets =
-                        new SectionTickets(section.getId(), remainingTickets - subOrder.getQuantity());
-                UnitOfWork.getInstance().registerDirty(sectionTickets);
+        UnitOfWork.getInstance().registerNew(order);
+        for (SubOrder subOrder : order.getSubOrders()) {
+            subOrder.setOrder(order);
+            UnitOfWork.getInstance().registerNew(subOrder);
+            Section section = subOrder.getSection();
+            int remainingTickets = section.loadRemainingTickets();
+            if (remainingTickets < subOrder.getQuantity()) {
+                UnitOfWork.getInstance().clear();
+                throw new TicketInsufficientException();
             }
-            UnitOfWork.getInstance().commit();
-        } finally {
-            LockManager.getInstance().releaseTicketsWriteLock(order);
+            SectionTickets sectionTickets =
+                    new SectionTickets(section.getId(), remainingTickets - subOrder.getQuantity());
+            UnitOfWork.getInstance().registerDirty(sectionTickets);
         }
+        UnitOfWork.getInstance().commit();
+        LockManager.getInstance().releaseTicketsWriteLock(order);
     }
 
     @Override

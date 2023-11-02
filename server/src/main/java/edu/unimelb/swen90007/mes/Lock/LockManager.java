@@ -37,9 +37,7 @@ public class LockManager {
             if (event.getSections() == null)
                 event = EventMapper.loadByIdAll(event.getId());
             for (Section section : event.getSections()) {
-                if (!ticketsLocks.containsKey(section.getId())) {
-                    ticketsLocks.put(section.getId(), new ReentrantReadWriteLock());
-                }
+                ticketsLocks.putIfAbsent(section.getId(), new ReentrantReadWriteLock());
                 Lock readLock = ticketsLocks.get(section.getId()).readLock();
                 readLock.lock();
             }
@@ -63,9 +61,7 @@ public class LockManager {
         }
         sections.sort(null);
         for(int i : sections){
-            if (!ticketsLocks.containsKey(i)) {
-                ticketsLocks.put(i, new ReentrantReadWriteLock());
-            }
+            ticketsLocks.putIfAbsent(i, new ReentrantReadWriteLock());
             Lock writeLock = ticketsLocks.get(i).writeLock();
             writeLock.lock();
         }
