@@ -7,6 +7,8 @@ import edu.unimelb.swen90007.mes.model.Section;
 import edu.unimelb.swen90007.mes.model.SubOrder;
 
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
@@ -54,12 +56,17 @@ public class LockManager {
     }
 
     public void acquireTicketsWriteLock(Order order) {
+        List<Integer> sections = new LinkedList<>();
         for (SubOrder subOrder : order.getSubOrders()) {
             int sectionId = subOrder.getSection().getId();
-            if (!ticketsLocks.containsKey(sectionId)) {
-                ticketsLocks.put(sectionId, new ReentrantReadWriteLock());
+            sections.add(sectionId);
+        }
+        sections.sort(null);
+        for(int i : sections){
+            if (!ticketsLocks.containsKey(i)) {
+                ticketsLocks.put(i, new ReentrantReadWriteLock());
             }
-            Lock writeLock = ticketsLocks.get(sectionId).writeLock();
+            Lock writeLock = ticketsLocks.get(i).writeLock();
             writeLock.lock();
         }
     }
