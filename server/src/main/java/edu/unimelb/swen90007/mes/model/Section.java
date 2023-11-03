@@ -67,10 +67,10 @@ public class Section {
         logger.info("Loading Section [id=" + id + "]");
         try {
             Section section = SectionMapper.loadById(id);
-            event = section.getEvent();
-            name = section.getName();
-            money = section.getMoney();
-            capacity = section.getCapacity();
+            if (event == null) event = section.getEvent();
+            if (name == null) name = section.getName();
+            if (money == null) money = section.getMoney();
+            if (capacity == null) capacity = section.getCapacity();
         } catch (SQLException e) {
             logger.error(String.format("Error loading Section [id=%d]: %s", id, e.getMessage()));
         }

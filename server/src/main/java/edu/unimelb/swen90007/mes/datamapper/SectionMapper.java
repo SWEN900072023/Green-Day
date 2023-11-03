@@ -1,6 +1,5 @@
 package edu.unimelb.swen90007.mes.datamapper;
 
-import edu.unimelb.swen90007.mes.Lock.LockManager;
 import edu.unimelb.swen90007.mes.exceptions.VersionUnmatchedException;
 import edu.unimelb.swen90007.mes.model.Event;
 import edu.unimelb.swen90007.mes.model.Money;
@@ -122,7 +121,7 @@ public final class SectionMapper {
         preparedStatement.setString(1, section.getName());
         preparedStatement.setBigDecimal(2, section.getMoney().getUnitPrice());
         preparedStatement.setString(3, section.getMoney().getCurrency());
-        preparedStatement.setInt(4, section.getCapacity());
+        preparedStatement.setInt(4, section.getId());
         preparedStatement.executeUpdate();
         int versionNew = loadVersionNumber(section.getId(), connection);
         if (versionDirty != versionNew)
