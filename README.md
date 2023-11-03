@@ -55,6 +55,8 @@ password: 123456
 | docs/                 | All the process and product documents generated during the project |
 | docs/part1/           | Assignment Part 1 report                                     |
 | docs/part2/           | Assignment Part 2 report                                     |
+| docs/part3/           | Assignment Part 3 report                                     |
+| docs/part4/           | Assignment Part 4 report                                     |
 | docs/meeting-minutes/ | All the weekly team meeting minutes                          |
 | client/               | Source code for the React application                        |
 | server/               | Source code for the Java web server                          |
@@ -63,6 +65,7 @@ password: 123456
 
 | Date           | Change Log                                                |
 | ----------- | ------------------------------------------------------------ |
+| 3 November 2023 | Add Part 4 report.<br/>Finalise the code. |
 | 19 Sep 2023 | Finalise implementing all the use cases described in the Part 1 A report. |
 | 19 Sep 2023 | Add Part 2 report. |
 | 20 Aug 2023 | Deploy MES to Render.                   |
